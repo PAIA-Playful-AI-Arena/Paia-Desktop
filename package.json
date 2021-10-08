@@ -81,7 +81,8 @@
           "name": "@electron-forge/maker-deb",
           "config": {
             "options": {
-              "icon": "media/paia-logo.png"
+              "icon": "media/paia-logo.png",
+              "bin": "PAIA Desktop"
             }
           }
         },
@@ -89,7 +90,8 @@
           "name": "@electron-forge/maker-rpm",
           "config": {
             "options": {
-              "icon": "media/paia-logo.png"
+              "icon": "media/paia-logo.png",
+              "bin": "PAIA Desktop"
             }
           }
         }

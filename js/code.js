@@ -425,6 +425,15 @@ Code.init = function() {
        move:
           {wheel: true}
       });
+  
+  // Overide prompt function because prompt is not implemented in Electron.
+  Blockly.prompt = function(message, defaultValue, callback) {
+    vex.dialog.prompt({
+      message: message,
+      placeholder: defaultValue,
+      callback: callback
+    });
+  };
 
   // Add to reserved word list: Local variables in execution environment (runJS)
   // and the infinite loop detection function.
@@ -799,11 +808,11 @@ Code.openPath = function() {
   window.openPath(path.join(__dirname, 'MLGame', 'games', Code.GAME, 'ml'))
 };
 
-// Load game messages.
-document.write('<script src="js/game_msg/' + Code.GAME.toLowerCase() + '.js"></script>\n');
 // Load the Code demo's language strings.
 document.write('<script src="js/ui_msg/' + Code.LANG + '.js"></script>\n');
 // Load Blockly's language strings.
-document.write('<script src="js/block_msg/' + Code.LANG + '.js"></script>\n');
+document.write('<script src="node_modules/@paia-arena/blockly/msg/' + Code.LANG + '.js"></script>\n');
+// Load game messages.
+document.write('<script src="node_modules/@paia-arena/blockly/msg/mlgame/' + Code.GAME.toLowerCase() + '.js"></script>\n');
 
 window.addEventListener('load', Code.init);

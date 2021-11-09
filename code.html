@@ -13,9 +13,9 @@
     <script src="node_modules/vex-js/dist/js/vex.combined.min.js"></script>
     <script>vex.defaultOptions.className = 'vex-theme-os'</script>
     <script src="renderer.js"></script>
-    <script src="js/blockly_compressed.js"></script>
-    <script src="js/blocks_compressed.js"></script>
-    <script src="js/python_compressed.js"></script>
+    <script src="node_modules/@paia-arena/blockly/blockly_compressed.js"></script>
+    <script src="node_modules/@paia-arena/blockly/blocks_compressed.js"></script>
+    <script src="node_modules/@paia-arena/blockly/python_compressed.js"></script>
     <script src="js/code.js"></script>
   </head>
   <body>
@@ -480,6 +480,13 @@
             <value name="LIST">
               <block type="variables_get">
                 <field name="VAR">{listVariable}</field>
+              </block>
+            </value>
+          </block>
+          <block type="ndarrays_to_list">
+            <value name="ARRAY">
+              <block type="variables_get">
+                <field name="VAR">{ndarrayVariable}</field>
               </block>
             </value>
           </block>

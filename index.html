@@ -11,6 +11,34 @@
     <script src="renderer.js"></script>
   </head>
   <body>
+    <!-- Login dialog -->
+    <div class="modal fade" id="login-dialog" tabindex="-1" data-backdrop="static" data-keyboard="false">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <h5 class="text-center mt-3">登入 PAIA</h5>
+          <form name="play" action="javascript:login()">
+            <div class="modal-body my-2">
+              <div class="container">
+                <div class="form-group">
+                  <label for="email">Email</label>
+                  <input type="email" class="form-control" id="email" aria-describedby="emailHelp" placeholder="account@gmail.com" required>
+                </div>
+                <div class="form-group">
+                  <label for="password">密碼</label>
+                  <input type="password" class="form-control" id="password" placeholder="Password" required>
+                </div>
+                <button type="submit" class="btn btn-primary">登入</button>
+                <span class="text-danger ml-3" id="state-content"></span>
+              </div>
+            </div>
+          </form>
+          <button type="button" onclick="google_login()">
+            <img src="media/google-login.png" alt="...">
+          </button>
+        </div>
+      </div>
+    </div>
+    <!-- Game list -->
     <div class="card m-3 mx-auto">
       <div class="row g-0">
         <div class="col-md-4">
@@ -99,6 +127,96 @@
 </html>
 
 <script>
+  function token_login() {
+    console.log(window.getAccessToken(), window.getRefreshToken())
+    if (window.getAccessToken() == "no token") {
+      $('#login-dialog').modal('show');
+      return;
+    } else {
+      window.paiaAPI("GET", "auth/token/verify", null, (res) => {
+        // Add log
+        window.addLog('LOGIN', {type: "access token"});
+        return;
+        }, (jqXHR, exception) => {
+          if (jqXHR.status == 401) {
+            // Refresh
+            window.paiaAPI("POST", "auth/token/refresh", {
+                refresh: window.getRefreshToken()
+              }, (res) => {
+                window.setToken(res.access, window.getRefreshToken());
+                // Add log
+                window.addLog('LOGIN', {type: "refresh token"});
+              }, (jqXHR, exception) => {
+                window.clearToken();
+                $('#state-content').html("登入逾期，請重新登入");
+                $('#login-dialog').modal('show');
+                // Add log
+                window.addLog('LOGIN', {type: "fail"});
+              }
+            );
+          } else {
+            window.clearToken();
+            $('#state-content').html("登入逾期，請重新登入");
+            $('#login-dialog').modal('show');
+            window.addLog('LOGIN', {type: "fail"});
+          }
+        }
+      );
+    };
+  };
+  function login() {
+    var email = $('#email').val();
+    var password = $('#password').val();
+    var data = {
+      "type": "general",
+      "account": {
+        "username": email,
+        "password": password
+      }
+    };
+    window.paiaAPI("POST", "auth/token", data, (res) => {
+        window.setToken(res.access, res.refresh);
+        $('#state-content').html('登入成功');
+        $('#login-dialog').modal('hide');
+        // Add log
+        window.addLog('LOGIN', {type: "password"});
+      }, (jqXHR, exception) => {
+        var msg = '';
+        if (jqXHR.status === 0) {
+            msg = '連線錯誤，請確認網路';
+        } else if (jqXHR.status == 401) {
+            msg = '密碼驗證錯誤 [401]';
+        } else if (exception === 'abort') {
+            msg = 'Ajax request aborted.';
+        } else {
+            msg = 'Uncaught Error.\n' + jqXHR.responseText;
+        }
+        $('#state-content').html(msg);
+      }
+    );
+  }
+  function google_login() {
+    $('#state-content').html('請於瀏覽器登入，成功後會自動返回');
+    try {
+      myApiOauth.openAuthWindowAndGetTokens()
+        .then(token => {
+          window.setToken(token);
+          var oauth2 = window.getOauth2();
+          oauth2.userinfo.get(
+            function(err, res) {
+              if (err) {
+                $('#state-content').html('登入失敗，請確認網路連線後重新登入');
+                console.log(err);
+              } else {
+                $('#state-content').html('登入成功');
+                $('#login-dialog').modal('hide');
+              }
+          });
+        });
+    } catch(e) {
+      console.log(e);
+    }
+  };
   function update_version_name() {
     Array.from(document.getElementsByClassName('verison')).forEach(e => {
       var fs = require('fs');
@@ -150,4 +268,5 @@
   };
   document.title += ` ${app.getVersion()}`; 
   update_version_name();
+  //token_login();
 </script>

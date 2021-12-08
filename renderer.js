@@ -4,15 +4,45 @@
 // `nodeIntegration` is turned off. Use `preload.js` to
 // selectively enable features needed in the rendering
 // process.
-const { dialog, shell } = require('electron').remote;
+const { remote } = require('electron')
+const { dialog, shell, app } = require('electron').remote;
 const { PythonShell } = require('python-shell');
-const buffer = require('buffer');
-const Store = require('electron-store');
-const store = new Store();
 const path = require('path');
 const fs = require('fs');
+const { google } = require('googleapis');
+const Store = require('electron-store');
+const schema = {
+	access: {
+		type: "string",
+		default: "no token"
+	},
+	refresh: {
+		type: "string",
+		default: "no token"
+	},
+  log: {
+    type: "array",
+    items: {
+      type: "object",
+    },
+    default: []
+  }
+};
+const store = new Store({schema});
+const ElectronGoogleOAuth2 = require('@getstation/electron-google-oauth2').default;
+const myApiOauth = new ElectronGoogleOAuth2(
+  '514485686482-n8ies0d9kdk6o86tl9mndc8vu4tvv84p.apps.googleusercontent.com',
+  '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',
+  [], { successRedirectURL: 'https://www.paia-arena.com/' }
+);
+const host = 'https://stage-backend.paia-arena.com';
+const api_version = 'v1';
+const baseHeaders = {
+  'Content-Type': 'application/json',
+  'Accept': 'application/json'
+};
 
-window.pythonRun = function(options, script, tmp_file, cwd) {
+window.pythonRun = function(options, script, cwd) {
   var old_cwd = process.cwd();
   process.chdir(cwd);
   let python = new PythonShell(script, options);
@@ -31,7 +61,6 @@ window.pythonRun = function(options, script, tmp_file, cwd) {
     document.getElementById('content_console').textContent += '> Python program finished\n';
     var e = document.getElementById('console-body');
     e.scrollTo(0, e.scrollHeight);
-    fs.unlinkSync(tmp_file);
     process.chdir(old_cwd);
   });
   python.on('error', function () {
@@ -59,4 +88,56 @@ window.selectPath = function(options) {
 
 window.openPath = function(pathname) {
   shell.openPath(pathname);
+};
+
+window.getAccessToken = function() {
+  return store.get('access')
+};
+
+window.getRefreshToken = function() {
+  return store.get('refresh')
+};
+
+window.setToken = function(access, refresh) {
+  store.set('access', access);
+  store.set('refresh', refresh);
+};
+
+window.clearToken = function() {
+  store.reset('access', 'refresh');
+};
+
+window.resetStore = function() {
+  store.clear();
+};
+
+window.getOauth2 = function() {
+  var token = window.getToken();
+  var oauth2Client = new google.auth.OAuth2();
+  oauth2Client.setCredentials({access_token: token.access_token});
+  var oauth2 = google.oauth2({
+    auth: oauth2Client,
+    version: 'v2'
+  });
+  return oauth2;
+};
+
+window.loadPage = function(page) {
+  remote.getCurrentWindow().loadFile(page);
+};
+
+window.paiaAPI = function(method, url, data, response, error) {
+  var headers = baseHeaders;
+  if (window.getAccessToken().length > 0) {
+    headers['Authorization'] = `Bearer ${window.getAccessToken()}`;
+  }
+  $.ajax({
+    url: `${host}/api/${api_version}/${url}`,
+    headers: headers,
+    method: method,
+    timeout: 0,
+    data: JSON.stringify(data),
+    success: response,
+    error: error
+  });
 };

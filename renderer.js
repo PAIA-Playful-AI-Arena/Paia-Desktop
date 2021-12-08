@@ -12,7 +12,7 @@ const store = new Store();
 const path = require('path');
 const fs = require('fs');
 
-window.pythonRun = function(options, script, tmp_file, cwd) {
+window.pythonRun = function(options, script, cwd) {
   var old_cwd = process.cwd();
   process.chdir(cwd);
   let python = new PythonShell(script, options);
@@ -31,7 +31,6 @@ window.pythonRun = function(options, script, tmp_file, cwd) {
     document.getElementById('content_console').textContent += '> Python program finished\n';
     var e = document.getElementById('console-body');
     e.scrollTo(0, e.scrollHeight);
-    fs.unlinkSync(tmp_file);
     process.chdir(old_cwd);
   });
   python.on('error', function () {

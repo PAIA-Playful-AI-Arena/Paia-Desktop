@@ -346,6 +346,9 @@ Code.checkAllGeneratorFunctionsDefined = function(generator) {
  * Initialize Blockly.  Called on page load.
  */
 Code.init = function() {
+  // Add version to the title.
+  document.title += ` ${app.getVersion()}`;
+  
   // Load dialog body for selecting game arguments.
   Code.initGameArgs();
 
@@ -545,7 +548,6 @@ Code.initLanguage = function() {
   codeMenu.addEventListener('change', Code.changeCodingLanguage);
 
   // Inject language strings.
-  document.title += ' - ' + MSG['title'];
   document.getElementById('game_name').textContent = Code.GAME;
   document.getElementById('tab_blocks').textContent = MSG['blocks'];
   document.getElementById('tab_example').textContent = MSG['examples'];

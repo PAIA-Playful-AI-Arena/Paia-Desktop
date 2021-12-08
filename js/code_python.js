@@ -134,6 +134,9 @@ Code.selected = 'python';
  * Initialize Blockly.  Called on page load.
  */
 Code.init = function() {
+  // Add version to the title.
+  document.title += ` ${app.getVersion()}`;
+  
   // Load dialog body for selecting game arguments.
   Code.initGameArgs();
 
@@ -220,7 +223,6 @@ Code.init = function() {
  */
 Code.initLanguage = function() {
   // Inject language strings.
-  document.title += ' - ' + MSG['title'];
   document.getElementById('game_name').textContent = Code.GAME;
   document.getElementById('tab_lang').textContent = MSG['lang'];
   document.getElementById('tab_option').textContent = MSG['options'];

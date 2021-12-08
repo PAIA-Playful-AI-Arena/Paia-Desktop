@@ -416,10 +416,7 @@ Code.init = function() {
   }
 
   // Construct the toolbox XML, replacing translated variable names.
-  var xml_path = path.join(__dirname, 'xml', 'blocks', Code.GAME.toLowerCase() + '.xml');
-  var xml_text = window.readFile(xml_path);
-  $('#MLGame_blocks').append(xml_text);
-  var toolboxText = document.getElementById('toolbox').outerHTML;
+  var toolboxText = window.readFile(path.join(__dirname, 'js', 'toolbox', `${Code.GAME}_${"desktop"}.xml`));
   toolboxText = toolboxText.replace(/(^|[^%]){(\w+)}/g,
       function(m, p1, p2) {return p1 + MSG[p2];});
   var toolboxXml = Blockly.Xml.textToDom(toolboxText);

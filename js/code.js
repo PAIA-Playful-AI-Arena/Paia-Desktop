@@ -655,6 +655,8 @@ Code.loadExample = function(name) {
       var xml_text = '';
     }
     Code.loadBlocks(xml_text);
+    // Add log
+    window.addLog('EDIT', {type: "example", name: name, project: Code.PROJECT, game: Code.GAME});
   }
 };
 
@@ -702,6 +704,8 @@ Code.play = function() {
   document.getElementById('content_console').textContent = '> Python program running\n';
   $('#console-dialog').modal('show');
   window.pythonRun(options, "MLGame.py", project_path);
+  // Add log
+  window.addLog('RUN', {type: "play", game: Code.GAME});
 };
 
 Code.execute = function() {
@@ -717,7 +721,8 @@ Code.execute = function() {
   document.getElementById('content_console').textContent = '> Python program running\n';
   $('#console-dialog').modal('show');
   window.pythonRun(options, "ml_play.py", project_path);
-  window.pythonRun(options, file_name, file_path, ml_path);
+  // Add log
+  window.addLog('RUN', {type: "execute", game: Code.GAME});
 };
 
 Code.showReadme = function() {

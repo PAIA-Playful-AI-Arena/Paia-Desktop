@@ -258,9 +258,13 @@
         });
         if (err) {
           window.alert(err);
+          // Add log
+          window.addLog('UPDATE', {type: 'fail', game: path.basename(destination)});
         } else {
           var config = JSON.parse(window.readFile(path.join(destination, 'game_config.json')));
           window.alert(config['game_name'] + '-' + config['version'] + ' 下載成功');
+          // Add log
+          window.addLog('UPDATE', {type: 'success', game: config['game_name'], version: config['version']});
           update_version_name();
         }
       });

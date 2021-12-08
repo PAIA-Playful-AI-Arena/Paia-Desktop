@@ -111,6 +111,17 @@ window.resetStore = function() {
   store.clear();
 };
 
+window.addLog = function(type, content) {
+  var log = {};
+  log.time = new Date().toISOString();
+  log.platform = process.platform;
+  log.type = type;
+  log.content = content;
+  logList = store.get('log');
+  logList.push(log);
+  store.set('log', logList);
+};
+
 window.getOauth2 = function() {
   var token = window.getToken();
   var oauth2Client = new google.auth.OAuth2();

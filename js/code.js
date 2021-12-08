@@ -21,6 +21,16 @@ var Code = {};
 Code.GAME = (new URLSearchParams(window.location.search)).get('game');
 
 /**
+ * The name of opened project.
+ */
+Code.PROJECT = '';
+
+/**
+ * The project is saved of not.
+ */
+Code.SAVED = true;
+
+/**
  * Lookup for names of supported languages.  Keys should be in ISO 639 format.
  */
 Code.LANGUAGE_NAME = {
@@ -429,6 +439,14 @@ Code.init = function() {
           {wheel: true}
       });
   
+  // Listen to change event and set not saved falg.
+  Code.workspace.addChangeListener((e) => {
+    if (!e.isUiEvent) {
+      Code.SAVED = false;
+      $('#not_saved').html('*');
+    }
+  });
+  
   // Overide prompt function because prompt is not implemented in Electron.
   Blockly.prompt = function(message, defaultValue, callback) {
     vex.dialog.prompt({
@@ -437,11 +455,6 @@ Code.init = function() {
       callback: callback
     });
   };
-
-  // Add to reserved word list: Local variables in execution environment (runJS)
-  // and the infinite loop detection function.
-  // Blockly.JavaScript.addReservedWords('code,timeouts,checkTimeout');
-  Code.loadExample('1. start');
   
   var example_dir = path.join(__dirname, 'xml', 'examples', Code.GAME.toLowerCase());
   fs.readdirSync(example_dir).forEach(file => {
@@ -451,7 +464,7 @@ Code.init = function() {
       element.setAttribute('class', 'dropdown-item');
       element.setAttribute('href', '#');
       element.setAttribute('id', name);
-      element.textContent = file
+      element.textContent = file;
       $('#examples').append(element);
       Code.bindClick(name,
           function() {Code.loadExample(name); Code.renderContent();});
@@ -490,19 +503,17 @@ Code.init = function() {
       function() {Code.showReadme(); Code.renderContent();});
   }
   Code.bindClick('run_mlgame',
-      function() {Code.run('#run-mlgame-dialog'); Code.renderContent();});
+      function() {$('#run-mlgame-dialog').modal('show'); Code.renderContent();});
   Code.bindClick('run_python',
       function() {Code.execute(); Code.renderContent();});
   Code.bindClick('discard',
       function() {Code.discard(); Code.renderContent();});
-  Code.bindClick('download_python',
-      function() {Code.downloadPython(); Code.renderContent();});
-  Code.bindClick('download_xml',
-      function() {Code.downloadXml(); Code.renderContent();});
-  Code.bindClick('open_path',
-      function() {Code.openPath(); Code.renderContent();});
-  Code.bindClick('open_xml',
-      function() {Code.selectFiles(); Code.renderContent();});
+  Code.bindClick('load_project',
+      function() {Code.loadProject(); Code.renderContent();});
+  Code.bindClick('save_project',
+      function() {Code.saveProject(); Code.renderContent();});
+  Code.bindClick('reveal_project',
+      function() {Code.revealProject(); Code.renderContent();});
   Code.bindClick('en',
       function() {Code.changeLanguage('en'); Code.renderContent();});
   Code.bindClick('zh-hant',
@@ -525,6 +536,9 @@ Code.init = function() {
   Blockly.svgResize(Code.workspace);
   onresize();
   Blockly.svgResize(Code.workspace);
+
+  // project
+  $('#project-dialog').modal('show');
 
   // Lazy-load the syntax-highlighting.
   window.setTimeout(Code.importPrettify, 1);
@@ -555,9 +569,6 @@ Code.initLanguage = function() {
   document.getElementById('tab_option').textContent = MSG['options'];
   document.getElementById('run_mlgame').textContent = MSG['runMLGame'];
   document.getElementById('run_python').textContent = MSG['runPython'];
-  document.getElementById('download_python').textContent = MSG['download'];
-  document.getElementById('open_xml').textContent = MSG['openXml'];
-  document.getElementById('download_xml').textContent = MSG['downloadXml'];
   document.getElementById('discard').textContent = MSG['discard'];
   document.getElementById('en').textContent = MSG['en'];
   document.getElementById('zh-hant').textContent = MSG['zh_hant'];
@@ -646,78 +657,20 @@ Code.loadExample = function(name) {
   }
 };
 
-Code.selectFiles = function() {
-  var element = document.createElement('input');
-  element.setAttribute('type', 'file');
-  element.setAttribute('accept', '.xml');
-  element.style.display = 'none';
-  element.addEventListener('change', Code.openXml, false);
-  document.body.appendChild(element);
-  element.click();
-  document.body.removeChild(element);
-};
-
-Code.openXml = function(e) {
-  var file = e.target.files[0];
-  if (!file) {
-    return;
-  }
+Code.openXml = function(xmlPath) {
   var count = Code.workspace.getAllBlocks(false).length;
   if (count == 0 || window.confirm(Blockly.Msg['DELETE_ALL_BLOCKS'].replace('%1', count))) {
     Code.workspace.clear();
     if (window.location.hash) {
       window.location.hash = '';
     }
+    Code.loadBlocks(window.readFile(xmlPath));
   }
-  var reader = new FileReader();
-  reader.onload = function(e) {
-    var xml = e.target.result;
-    Code.loadBlocks(xml);
-  }
-  reader.readAsText(file);
-};
-
-Code.downloadPython = function() {
-  var text = Blockly.Python.workspaceToCode(Code.workspace);
-  var url = document.getElementById('file_name').textContent + '.py';
-  var element = document.createElement('a');
-  element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
-  element.setAttribute('download', url);
-  element.style.display = 'none';
-  document.body.appendChild(element);
-  element.click();
-  document.body.removeChild(element);
-};
-
-Code.downloadXml = function() {
-  var xml = Blockly.Xml.workspaceToDom(Code.workspace);
-  var text = Blockly.Xml.domToPrettyText(xml);
-  var url = document.getElementById('file_name').textContent + '.xml';
-  var element = document.createElement('a');
-  element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
-  element.setAttribute('download', url);
-  element.style.display = 'none';
-  document.body.appendChild(element);
-  element.click();
-  document.body.removeChild(element);
-};
-
-Code.run = function(target) {
-  var element = document.createElement('a');
-  element.setAttribute('data-toggle', 'modal');
-  element.setAttribute('data-target', target);
-  element.style.display = 'none';
-  document.body.appendChild(element);
-  element.click();
-  document.body.removeChild(element);
 };
 
 Code.play = function() {
-  var python_text = Blockly.Python.workspaceToCode(Code.workspace);
-  var file_name = 'ml_play_' + new Date().getTime() + '.py';
-  var ml_path = path.join(__dirname, 'MLGame', 'games', Code.GAME, 'ml');
-  var file_path = path.join(ml_path, file_name);
-  window.writeFile(file_path, python_text);
+  Code.saveProject();
+  var project_path = path.join(__dirname, 'MLGame', 'games', Code.GAME, 'ml', Code.PROJECT);
   var fps = document.getElementById('game_fps').value;
   var args_elements = document.getElementById('game-args').getElementsByClassName('game-arg');
   var user_num = 1;
@@ -735,7 +688,7 @@ Code.play = function() {
   }
   var total_args = [];
   for (var i = 0; i < user_num; i++) {
-    total_args = total_args.concat(['-i', file_name])
+    total_args = total_args.concat(['-i', `${Code.PROJECT}/ml_play.py`])
   }
   total_args = total_args.concat(['-f', fps, Code.GAME]).concat(args);
   var options = {
@@ -747,24 +700,22 @@ Code.play = function() {
   $('#run-mlgame-dialog').modal('hide');
   document.getElementById('content_console').textContent = '> Python program running\n';
   $('#console-dialog').modal('show');
-  window.pythonRun(options, "MLGame.py", file_path, ml_path);
+  window.pythonRun(options, "MLGame.py", project_path);
 };
 
 Code.execute = function() {
-  var python_text = Blockly.Python.workspaceToCode(Code.workspace);
-  var file_name = 'ml_play_' + new Date().getTime() + '.py';
-  var ml_path = path.join(__dirname, 'MLGame', 'games', Code.GAME, 'ml');
-  var file_path = path.join(ml_path, file_name);
-  window.writeFile(file_path, python_text);
+  Code.saveProject();
+  var project_path = path.join(__dirname, 'MLGame', 'games', Code.GAME, 'ml', Code.PROJECT);
   var options = {
     mode: 'text',
     pythonPath: path.join(__dirname, 'python', 'dist', 'interpreter', 'interpreter'),
-    scriptPath: ml_path,
+    scriptPath: project_path,
     args: []
   };
   $('#run-python-dialog').modal('hide');
   document.getElementById('content_console').textContent = '> Python program running\n';
   $('#console-dialog').modal('show');
+  window.pythonRun(options, "ml_play.py", project_path);
   window.pythonRun(options, file_name, file_path, ml_path);
 };
 
@@ -806,10 +757,79 @@ Code.prevTutorials = function() {
   $('#readme-body').html(readme);
 };
 
-Code.openPath = function() {
-  window.openPath(path.join(__dirname, 'MLGame', 'games', Code.GAME, 'ml'))
+Code.loadProject = function() {
+  $('#project-dialog').data('bs.modal')._config.backdrop = true;
+  $('#project-dialog').modal('show');
 };
 
+Code.newProject = function() {
+  Code.PROJECT = $('#project-name').val();
+  document.getElementById('project_name').textContent = Code.PROJECT;
+  var dir = path.join(__dirname, 'MLGame', 'games', Code.GAME, 'ml', Code.PROJECT);
+  try {
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir);
+      // Add log
+      window.addLog('EDIT', {type: "new", project: dir});
+      Code.saveProject();
+      $('#project-dialog').modal('hide');
+    } else {
+      window.alert(`無法新建專案：${dir} 已存在`);
+    }
+  } catch(err) {
+    window.alert(err);
+  }
+};
+
+Code.openProject = function() {
+  var mlPath = path.join(__dirname, 'MLGame', 'games', Code.GAME, 'ml');
+  var dir = window.selectPath({
+    title: "開啟專案資料夾",
+    defaultPath: mlPath,
+    properties: ["openDirectory"]
+  });
+  if (dir === undefined) {
+    return;
+  } else {
+    dir = dir[0];
+  }
+  try {
+    var xmlPath = path.join(dir, 'ml_play.xml');
+    if (fs.existsSync(xmlPath)) {
+      Code.PROJECT = path.basename(dir);
+      document.getElementById('project_name').textContent = Code.PROJECT;
+      Code.openXml(xmlPath);
+      // Add log
+      window.addLog('EDIT', {type: "load", project: Code.PROJECT, game: Code.GAME});
+      Code.saveProject();
+      $('#project-dialog').modal('hide');
+    } else {
+      window.alert(`無法開啟專案：${xmlPath} 不存在`);
+    }
+  } catch(err) {
+    window.alert(err);
+  }
+};
+
+Code.saveProject = function() {
+  var dir = path.join(__dirname, 'MLGame', 'games', Code.GAME, 'ml', Code.PROJECT);
+  // save xml
+  var xml = Blockly.Xml.workspaceToDom(Code.workspace);
+  var xml_text = Blockly.Xml.domToPrettyText(xml);
+  window.writeFile(path.join(dir, 'ml_play.xml'), xml_text);
+  // save python
+  var python_text = Blockly.Python.workspaceToCode(Code.workspace);
+  window.writeFile(path.join(dir, 'ml_play.py'), python_text);
+  // set state to saved
+  Code.SAVED = true;
+  $('#not_saved').html('');
+  // Add log
+  window.addLog('EDIT', {type: "save", project: Code.PROJECT, game: Code.GAME});
+};
+
+Code.revealProject = function() {
+  window.openPath(path.join(__dirname, 'MLGame', 'games', Code.GAME, 'ml', Code.PROJECT));
+};
 // Load the Code demo's language strings.
 document.write('<script src="js/ui_msg/' + Code.LANG + '.js"></script>\n');
 // Load Blockly's language strings.

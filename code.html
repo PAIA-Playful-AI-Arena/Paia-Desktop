@@ -19,6 +19,28 @@
     <script src="js/code.js"></script>
   </head>
   <body>
+    <!-- Project dialog -->
+    <div class="modal fade" id="project-dialog" tabindex="-1" data-backdrop="static" data-keyboard="false" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="game-play-title">新建 / 載入專案</h5>
+          </div>
+          <form name="project" action="javascript:Code.newProject()">
+            <div class="modal-body my-2">
+              <div class="form-group">
+                <label for="">新建專案名稱</label>
+                <input type="text" class="form-control" id="project-name" placeholder="My awesome project" required>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="submit" class="btn btn-outline-primary">新建</button>
+              <button type="button" onclick="Code.openProject()" class="btn btn-outline-secondary">載入</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
     <!-- Game play dialog -->
     <div class="modal fade" id="run-mlgame-dialog" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
       <div class="modal-dialog">
@@ -88,7 +110,7 @@
         </li>
         <li class="nav-item ml-auto" role="presentation" id="tab_title"> 
             <a class="navbar-brand ml-auto" tabindex="-1" aria-disabled="true">
-              <span id='game_name'>...</span> - <span id='file_name'>ml_play</span>
+              <span id='game_name'>...</span> - <span id='project_name'>...</span><span id='not_saved'></span>
             </a>
         </li>
         <li class="nav-item dropdown ml-auto">
@@ -109,10 +131,9 @@
             <a class="dropdown-item" href="#" id="run_mlgame">玩遊戲</a>
             <a class="dropdown-item" href="#" id="run_python">執行程式</a>
             <div class="dropdown-divider"></div>
-            <a class="dropdown-item" href="#" id='open_xml'>開啟 XML 檔</a>
-            <a class="dropdown-item" href="#" id='download_xml'>儲存 XML 檔</a>
-            <a class="dropdown-item" href="#" id='download_python'>儲存 Python 檔</a>
-            <a class="dropdown-item" href="#" id='open_path'>開啟檔案存取路徑</a>
+            <a class="dropdown-item" href="#" id='load_project'>新建 / 載入專案</a>
+            <a class="dropdown-item" href="#" id='save_project'>儲存專案</a>
+            <a class="dropdown-item" href="#" id='reveal_project'>開啟專案資料夾</a>
             <div class="dropdown-divider"></div>
             <a class="dropdown-item" href="#" id="discard">移除所有積木</a>
             <a class="dropdown-item" href="index.html" id="discard">選擇遊戲</a>

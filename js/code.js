@@ -515,6 +515,8 @@ Code.init = function() {
       function() {Code.changeLanguage('en'); Code.renderContent();});
   Code.bindClick('zh-hant',
       function() {Code.changeLanguage('zh-hant'); Code.renderContent();});
+  // Code.bindClick('logout',
+  //     function() {Code.logout(); Code.renderContent();});
 
   for (var i = 0; i < Code.TABS_.length; i++) {
     var name = Code.TABS_[i];
@@ -528,6 +530,8 @@ Code.init = function() {
     }
     Code.changeCodingLanguage();
   });
+
+  // Code.getProfile();
 
   onresize();
   Blockly.svgResize(Code.workspace);
@@ -828,6 +832,26 @@ Code.saveProject = function() {
 Code.revealProject = function() {
   window.openPath(path.join(__dirname, 'MLGame', 'games', Code.GAME, 'ml', Code.PROJECT));
 };
+
+Code.getProfile = function() {
+  window.paiaAPI("GET", "me", null, (res) => {
+      if (res.nick_name.length > 0) {
+        $('#tab_user').text(res.nick_name);
+      } else {
+        $('#tab_user').text(`${res.first_name} ${res.last_name}`);
+      }
+    }, (jqXHR, exception) => {
+      window.loadPage('index.html');
+    }
+  );
+};
+
+Code.logout = function() {
+  window.clearToken();
+  window.resetStore();
+  window.loadPage('index.html');
+};
+
 // Load the Code demo's language strings.
 document.write('<script src="js/ui_msg/' + Code.LANG + '.js"></script>\n');
 // Load Blockly's language strings.

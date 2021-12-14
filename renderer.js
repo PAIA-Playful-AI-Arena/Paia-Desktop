@@ -42,7 +42,7 @@ const baseHeaders = {
   'Accept': 'application/json'
 };
 
-window.pythonRun = function(options, script, cwd) {
+window.pythonRun = function(options, script, file, cwd) {
   var old_cwd = process.cwd();
   process.chdir(cwd);
   let python = new PythonShell(script, options);
@@ -61,10 +61,13 @@ window.pythonRun = function(options, script, cwd) {
     document.getElementById('content_console').textContent += '> Python program finished\n';
     var e = document.getElementById('console-body');
     e.scrollTo(0, e.scrollHeight);
+    fs.unlinkSync(file);
     process.chdir(old_cwd);
   });
   python.on('error', function () {
     window.alert('Error: process exited with code ' + python.exitCode);
+    fs.unlinkSync(file);
+    process.chdir(old_cwd);
   });
 };
 

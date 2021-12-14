@@ -8,6 +8,8 @@ var MSG = {
   runTooltip: "於工作區中執行積木組所定義的程式。",
   badCode: "程式錯誤：\n%1",
   timeout: "超過最大執行數。",
+  play: "玩遊戲",
+  execute: "執行程式",
   discard: "捨棄所有積木",
   download: "儲存 Python 檔",
   runMLGame: "玩遊戲",

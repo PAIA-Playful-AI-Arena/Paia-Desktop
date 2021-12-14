@@ -26,9 +26,9 @@ Code.GAME = (new URLSearchParams(window.location.search)).get('game');
 Code.PROJECT = '';
 
 /**
- * The project is saved of not.
+ * The mode of running program.
  */
-Code.SAVED = true;
+Code.MODE = 'play'
 
 /**
  * Lookup for names of supported languages.  Keys should be in ISO 639 format.
@@ -436,11 +436,20 @@ Code.init = function() {
           {wheel: true}
       });
   
-  // Listen to change event and set not saved falg.
+  // Listen and check MLGame class block to change mode of executation.
   Code.workspace.addChangeListener((e) => {
     if (!e.isUiEvent) {
-      Code.SAVED = false;
       $('#not_saved').html('*');
+      var topBlocks = Code.workspace.getTopBlocks();
+      for (var i = 0; i < topBlocks.length; i++) {
+        if (topBlocks[i].type == 'mlplay_class' && topBlocks[i].isEnabled()) {
+          Code.MODE = 'play';
+          document.getElementById('run').textContent = MSG['play'];
+          return;
+        }
+        Code.MODE = 'execute';
+        document.getElementById('run').textContent = MSG['execute'];
+      }
     }
   });
   
@@ -499,10 +508,9 @@ Code.init = function() {
     Code.bindClick('show_readme',
       function() {Code.showReadme(); Code.renderContent();});
   }
-  Code.bindClick('run_mlgame',
-      function() {$('#run-mlgame-dialog').modal('show'); Code.renderContent();});
-  Code.bindClick('run_python',
-      function() {Code.execute(); Code.renderContent();});
+
+  Code.bindClick('run',
+      function() {Code.run(); Code.renderContent();});
   Code.bindClick('discard',
       function() {Code.discard(); Code.renderContent();});
   Code.bindClick('load_project',
@@ -576,8 +584,6 @@ Code.initLanguage = function() {
   document.getElementById('tab_example').textContent = MSG['examples'];
   document.getElementById('tab_lang').textContent = MSG['lang'];
   document.getElementById('tab_option').textContent = MSG['options'];
-  document.getElementById('run_mlgame').textContent = MSG['runMLGame'];
-  document.getElementById('run_python').textContent = MSG['runPython'];
   document.getElementById('discard').textContent = MSG['discard'];
   document.getElementById('en').textContent = MSG['en'];
   document.getElementById('zh-hant').textContent = MSG['zh_hant'];
@@ -761,9 +767,13 @@ Code.run = function() {
   }
 };
 
+/**
+ * Play the game according to the parameters. 
+ */
 Code.play = function() {
-  Code.saveProject();
   var project_path = path.join(__dirname, 'MLGame', 'games', Code.GAME, 'ml', Code.PROJECT);
+  var file_name = Code.saveTmpPython(project_path);
+  var file_path = path.join(project_path, file_name);
   var fps = document.getElementById('game_fps').value;
   var args_elements = document.getElementById('game-args').getElementsByClassName('game-arg');
   var user_num = 1;
@@ -781,7 +791,7 @@ Code.play = function() {
   }
   var total_args = [];
   for (var i = 0; i < user_num; i++) {
-    total_args = total_args.concat(['-i', `${Code.PROJECT}/ml_play.py`])
+    total_args = total_args.concat(['-i', `${Code.PROJECT}/${file_name}`])
   }
   total_args = total_args.concat(['-f', fps, Code.GAME]).concat(args);
   var options = {
@@ -793,14 +803,18 @@ Code.play = function() {
   $('#run-mlgame-dialog').modal('hide');
   document.getElementById('content_console').textContent = '> Python program running\n';
   $('#console-dialog').modal('show');
-  window.pythonRun(options, "MLGame.py", project_path);
+  window.pythonRun(options, "MLGame.py", file_path, project_path);
   // Add log
   window.addLog('RUN', {type: "play", game: Code.GAME});
 };
 
+/**
+ * Execute python program. 
+ */
 Code.execute = function() {
-  Code.saveProject();
   var project_path = path.join(__dirname, 'MLGame', 'games', Code.GAME, 'ml', Code.PROJECT);
+  var file_name = Code.saveTmpPython(project_path);
+  var file_path = path.join(project_path, file_name);
   var options = {
     mode: 'text',
     pythonPath: path.join(__dirname, 'python', 'dist', 'interpreter', 'interpreter'),
@@ -810,7 +824,7 @@ Code.execute = function() {
   $('#run-python-dialog').modal('hide');
   document.getElementById('content_console').textContent = '> Python program running\n';
   $('#console-dialog').modal('show');
-  window.pythonRun(options, "ml_play.py", project_path);
+  window.pythonRun(options, file_name, file_path, project_path);
   // Add log
   window.addLog('RUN', {type: "execute", game: Code.GAME});
 };

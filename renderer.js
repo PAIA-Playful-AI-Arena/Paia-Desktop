@@ -86,8 +86,34 @@ window.selectPath = function(options) {
   return dialog.showOpenDialogSync(options);
 };
 
+window.savePath = function(options) {
+  return dialog.showSaveDialogSync(options);
+};
+
 window.openPath = function(pathname) {
   shell.openPath(pathname);
+};
+
+window.copyDir = function(src, dest) {
+  try {
+    var destDir = path.join(dest, path.basename(src));
+    if (!fs.existsSync(destDir)) {
+      fs.mkdirSync(destDir);
+    }
+    if (fs.lstatSync(src).isDirectory()) {
+      var files = fs.readdirSync(src);
+      files.forEach((file) => {
+        var curSrc = path.join(src, file);
+        if (fs.lstatSync(curSrc).isDirectory()) {
+          window.copyDir(curSrc, destDir);
+        } else {
+          fs.copyFileSync(curSrc, path.join(destDir, file));
+        }
+      });
+    }
+  } catch(err) {
+    window.alert(err);
+  }
 };
 
 window.getAccessToken = function() {

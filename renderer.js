@@ -112,6 +112,7 @@ window.resetStore = function() {
 };
 
 window.addLog = function(type, content) {
+  return;
   var log = {};
   log.time = new Date().toISOString();
   log.platform = process.platform;

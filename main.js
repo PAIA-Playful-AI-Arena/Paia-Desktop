@@ -56,11 +56,7 @@ function createWindow () {
             openAboutWindow({
               icon_path: path.join(__dirname, 'media', 'paia-logo.png'),
               package_json_dir: __dirname,
-              win_options: {
-                parent: mainWindow,
-                modal: true
-              },
-              bug_report_url: 'https://github.com/jason53415/blockly-app/issues'
+              bug_report_url: 'https://github.com/PAIA-Playful-AI-Arena/Paia-Desktop/issues'
             });
           }
         }

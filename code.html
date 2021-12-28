@@ -30,7 +30,8 @@
             <div class="modal-body my-2">
               <div class="form-group">
                 <label for="">新建專案名稱</label>
-                <input type="text" class="form-control" id="project-name" placeholder="My awesome project" required>
+                <input type="text" class="form-control" id="project-name" placeholder="My awesome project"
+                pattern="[\w\- ]{1,64}" title="長度限制為 64，只能包含英文、數字、空格、「_」、「-」。" required>
               </div>
             </div>
             <div class="modal-footer">

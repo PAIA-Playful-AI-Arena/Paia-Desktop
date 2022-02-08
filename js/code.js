@@ -771,8 +771,6 @@ Code.discard = function() {
 Code.loadExample = function(name) {
   var xmlPath = path.join(__dirname, 'xml', 'examples', Code.GAME.toLowerCase(), name + '.xml');
   Code.loadXml(xmlPath);
-  // Add log
-  window.addLog('EDIT', {type: "example", name: name, project: Code.PROJECT, game: Code.GAME});
 };
 
 /**
@@ -833,6 +831,13 @@ Code.saveXml = function() {
     window.writeFile(xmlPath, xmlText);
     $('#file_name').html(path.basename(xmlPath));
     $('#not_saved').html('');
+    // Add log
+    window.addLog('store_xml', {
+      type: "file",
+      data: {
+        name: path.basename(xmlPath)
+      }
+    });
   }
 };
 
@@ -863,6 +868,13 @@ Code.savePython = function() {
   } else {
     var pythonText = Blockly.Python.workspaceToCode(Code.workspace);
     window.writeFile(pythonPath, pythonText);
+    // Add log
+    window.addLog('store_py', {
+      type: "file",
+      data: {
+        name: path.basename(pythonPath)
+      }
+    });
   }
 };
 
@@ -915,7 +927,14 @@ Code.play = function() {
   $('#console-dialog').modal('show');
   window.pythonRun(options, "MLGame.py", file_path, project_path);
   // Add log
-  window.addLog('RUN', {type: "play", game: Code.GAME});
+  window.addLog('play_game', {
+    type: "game",
+    data: {
+      name: Code.GAME,
+      id: 1,
+      params: params
+    }
+  });
 };
 
 /**
@@ -936,7 +955,14 @@ Code.execute = function() {
   $('#console-dialog').modal('show');
   window.pythonRun(options, file_name, file_path, project_path);
   // Add log
-  window.addLog('RUN', {type: "execute", game: Code.GAME});
+  window.addLog('execute_py', {
+    type: "game",
+    data: {
+      name: Code.GAME,
+      id: 1,
+      params: {}
+    }
+  });
 };
 
 Code.showReadme = function() {
@@ -997,11 +1023,26 @@ Code.newProject = function() {
       $('#project_name').html(Code.PROJECT);
       Code.loadExample('1. start')
       $('#file_name').html('1. start.xml');
-      // Add log
-      window.addLog('EDIT', {type: "new", project: dir});
       $('#project-dialog').modal('hide');
-    } else {
-      window.alert(`無法新建專案：${dir} 已存在`);
+    } else if (window.confirm(`${Code.PROJECT} 已存在，是否改為載入此專案？`)) {
+      $('#project_name').html(Code.PROJECT);
+      if(fs.existsSync(path.join(dir, 'ml_play.xml'))) {
+        Code.loadXml(path.join(dir, 'ml_play.xml'))
+        $('#file_name').html('ml_play.xml');
+      } else {
+        Code.loadExample('1. start')
+        $('#file_name').html('1. start.xml');
+      }
+      $('#project-dialog').modal('hide');
+      // Add log
+      window.addLog('import_project', {
+        type: "project",
+        data: {
+          name: Code.PROJECT,
+          game_name: Code.GAME,
+          game_id: 1
+        }
+      });
     }
   } catch(err) {
     window.alert(err);
@@ -1052,7 +1093,14 @@ Code.openProject = function() {
   }
   $('#project-dialog').modal('hide');
   // Add log
-  window.addLog('EDIT', {type: "load", project: Code.PROJECT, game: Code.GAME});
+  window.addLog('import_project', {
+    type: "project",
+    data: {
+      name: Code.PROJECT,
+      game_name: Code.GAME,
+      game_id: 1
+    }
+  });
 };
 
 /**
@@ -1081,6 +1129,15 @@ Code.exportProject = function() {
   if (!fs.existsSync(projectDir) || window.confirm(`${projectDir} 已經存在，您要覆蓋它嗎？`)) {
     var src = path.join(__dirname, 'MLGame', 'games', Code.GAME, 'ml', Code.PROJECT);
     window.copyDir(src, dest);
+    // Add log
+    window.addLog('export_project', {
+      type: "project",
+      data: {
+        name: Code.PROJECT,
+        game_name: Code.GAME,
+        game_id: 1
+      }
+    });
   }
 };
 

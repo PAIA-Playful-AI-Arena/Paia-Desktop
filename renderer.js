@@ -4,13 +4,14 @@
 // `nodeIntegration` is turned off. Use `preload.js` to
 // selectively enable features needed in the rendering
 // process.
-const { remote } = require('electron')
+const { remote } = require('electron');
 const { dialog, shell, app } = require('electron').remote;
 const { PythonShell } = require('python-shell');
 const path = require('path');
 const fs = require('fs');
 const { google } = require('googleapis');
 const Store = require('electron-store');
+const { v4: uuidv4 } = require('uuid');
 const result = require('dotenv').config({ path: path.join(__dirname, '.env') });
 if (result.error) {
   throw result.error
@@ -24,6 +25,10 @@ const schema = {
 		type: "string",
 		default: "no token"
 	},
+  id: {
+    type: "string",
+    default: "no id"
+  },
   log: {
     type: "array",
     items: {
@@ -142,16 +147,49 @@ window.resetStore = function() {
   store.clear();
 };
 
-window.addLog = function(type, content) {
-  return;
+window.addLog = function(action, obj) {
+  var id = store.get('id');
+  if (id == "no id") {
+    id = uuidv4();
+    store.set('id', id);
+  }
   var log = {};
-  log.time = new Date().toISOString();
-  log.platform = process.platform;
-  log.type = type;
-  log.content = content;
+  log.anonymous_id = id;
+  log.action = action;
+  log.paia_obj = obj;
+  log.created_at = new Date().toUTCString();
   logList = store.get('log');
   logList.push(log);
   store.set('log', logList);
+};
+
+window.sendLog = function() {
+  const logList = store.get('log');
+  if (logList.length == 0) {
+    return;
+  }
+  $.getJSON('https://api.ipify.org?format=jsonp&callback=?', function(data) {
+    const ip = data.ip;
+    for (const log of logList) {
+      log.ip = ip;
+    }
+    window.paiaAPI("POST", "log/anonymous_log", logList, true, 'DESKTOP_TOKEN',
+      (res) => {
+        store.reset('log');
+        console.log("Log sent.");
+      }, (jqXHR, exception) => {
+        var msg = '';
+        if (jqXHR.status === 0) {
+            msg = '連線錯誤，請確認網路';
+        } else if (exception === 'abort') {
+            msg = 'Ajax request aborted.';
+        } else {
+            msg = 'Uncaught Error.\n' + jqXHR.responseText;
+        }
+        console.log(msg);
+      }
+    );
+  });
 };
 
 window.getOauth2 = function() {
@@ -187,3 +225,5 @@ window.paiaAPI = function(method, url, data, async, auth, response, error) {
     error: error
   });
 };
+
+const intervalID = setInterval(window.sendLog, 60000);

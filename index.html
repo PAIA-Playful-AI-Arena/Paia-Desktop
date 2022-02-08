@@ -133,32 +133,25 @@
       $('#login-dialog').modal('show');
       return;
     } else {
-      window.paiaAPI("GET", "auth/token/verify", null, (res) => {
-        // Add log
-        window.addLog('LOGIN', {type: "access token"});
+      window.paiaAPI("GET", "auth/token/verify", null, false, (res) => {
         return;
         }, (jqXHR, exception) => {
           if (jqXHR.status == 401) {
             // Refresh
-            window.paiaAPI("POST", "auth/token/refresh", {
+            window.paiaAPI("POST", "auth/token/refresh", null, false, {
                 refresh: window.getRefreshToken()
               }, (res) => {
                 window.setToken(res.access, window.getRefreshToken());
-                // Add log
-                window.addLog('LOGIN', {type: "refresh token"});
               }, (jqXHR, exception) => {
                 window.clearToken();
                 $('#state-content').html("登入逾期，請重新登入");
                 $('#login-dialog').modal('show');
-                // Add log
-                window.addLog('LOGIN', {type: "fail"});
               }
             );
           } else {
             window.clearToken();
             $('#state-content').html("登入逾期，請重新登入");
             $('#login-dialog').modal('show');
-            window.addLog('LOGIN', {type: "fail"});
           }
         }
       );
@@ -174,12 +167,10 @@
         "password": password
       }
     };
-    window.paiaAPI("POST", "auth/token", data, (res) => {
+    window.paiaAPI("POST", "auth/token", data, false, (res) => {
         window.setToken(res.access, res.refresh);
         $('#state-content').html('登入成功');
         $('#login-dialog').modal('hide');
-        // Add log
-        window.addLog('LOGIN', {type: "password"});
       }, (jqXHR, exception) => {
         var msg = '';
         if (jqXHR.status === 0) {
@@ -258,19 +249,14 @@
         });
         if (err) {
           window.alert(err);
-          // Add log
-          window.addLog('UPDATE', {type: 'fail', game: path.basename(destination)});
         } else {
           var config = JSON.parse(window.readFile(path.join(destination, 'game_config.json')));
           window.alert(config['game_name'] + '-' + config['version'] + ' 下載成功');
-          // Add log
-          window.addLog('UPDATE', {type: 'success', game: config['game_name'], version: config['version']});
-          update_version_name();
         }
       });
     };
   };
   document.title += ` ${app.getVersion()}`; 
   update_version_name();
-  //token_login();
+  // token_login();
 </script>

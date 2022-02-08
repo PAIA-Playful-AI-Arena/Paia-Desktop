@@ -11,6 +11,10 @@ const path = require('path');
 const fs = require('fs');
 const { google } = require('googleapis');
 const Store = require('electron-store');
+const result = require('dotenv').config({ path: path.join(__dirname, '.env') });
+if (result.error) {
+  throw result.error
+}
 const schema = {
 	access: {
 		type: "string",
@@ -31,12 +35,10 @@ const schema = {
 const store = new Store({schema});
 const ElectronGoogleOAuth2 = require('@getstation/electron-google-oauth2').default;
 const myApiOauth = new ElectronGoogleOAuth2(
-  '514485686482-n8ies0d9kdk6o86tl9mndc8vu4tvv84p.apps.googleusercontent.com',
-  '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',
+  process.env.GOOGLE_OAUTH2_CLIENT_ID,
+  process.env.GOOGLE_OAUTH2_PASSWORD,
   [], { successRedirectURL: 'https://www.paia-arena.com/' }
 );
-const host = 'https://stage-backend.paia-arena.com';
-const api_version = 'v1';
 const baseHeaders = {
   'Content-Type': 'application/json',
   'Accept': 'application/json'
@@ -167,15 +169,18 @@ window.loadPage = function(page) {
   remote.getCurrentWindow().loadFile(page);
 };
 
-window.paiaAPI = function(method, url, data, response, error) {
+window.paiaAPI = function(method, url, data, async, auth, response, error) {
   var headers = baseHeaders;
-  if (window.getAccessToken().length > 0) {
+  if (auth == 'USER_TOKEN') {
     headers['Authorization'] = `Bearer ${window.getAccessToken()}`;
+  } else if (auth == 'DESKTOP_TOKEN') {
+    headers['Authorization'] = `Bearer ${process.env.PAIA_DESKTOP_TOKEN}`;
   }
   $.ajax({
-    url: `${host}/api/${api_version}/${url}`,
+    url: `${process.env.PAIA_API_HOST}/api/${process.env.PAIA_API_VERSION}/${url}`,
     headers: headers,
     method: method,
+    async: async,
     timeout: 0,
     data: JSON.stringify(data),
     success: response,

@@ -5,3 +5,4 @@ __pycache__/
 /python/dist/
 /python/*.spec
 /venv/
+.env

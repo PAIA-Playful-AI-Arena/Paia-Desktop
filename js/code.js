@@ -427,6 +427,9 @@ Code.init = function() {
     }
   }
 
+  // Initialize block msg
+  Code.initMlgameBlocks();
+
   // Construct the toolbox XML, replacing translated variable names.
   var toolboxText = window.readFile(path.join(__dirname, 'js', 'toolbox', `${Code.GAME}_${"desktop"}.xml`));
   toolboxText = toolboxText.replace(/(^|[^%]){(\w+)}/g,
@@ -653,6 +656,99 @@ Code.initGameArgs = function() {
     }
     $body.append($param);
   };
+};
+
+/**
+ * Use blockly.json to initialize options of MLGame blocks.
+ */
+Code.initMlgameBlocks = function() {
+  var configPath = path.join(__dirname, 'MLGame', 'games', Code.GAME, 'blockly.json');
+  if (fs.existsSync(configPath)) {
+    var gameOptions = JSON.parse(window.readFile(configPath));
+    if ("INIT_INFO" in gameOptions) {
+      var options = [];
+      gameOptions["INIT_INFO"].forEach((op, index) => {
+        var opName = `${Code.GAME.toUpperCase()}_INIT_INFO_${index+1}`;
+        options.push([`%{BKY_${opName}}`, op[0]]);
+        if (Code.LANG == 'en') {
+          Blockly.Msg[opName] = op[1];
+        } else if (Code.LANG == 'zh-hant') {
+          Blockly.Msg[opName] = op[2];
+        }
+      });
+      Blockly.Msg["MLPLAY_INIT_INFO_OPTIONS"] = options;
+    }
+
+    if ("PLAYER_STATUS" in gameOptions) {
+      var options = [];
+      gameOptions["PLAYER_STATUS"].forEach((op, index) => {
+        var opName = `${Code.GAME.toUpperCase()}_PLAYER_STATUS_${index+1}`;
+        options.push([`%{BKY_${opName}}`, op[0]]);
+        if (Code.LANG == 'en') {
+          Blockly.Msg[opName] = op[1];
+        } else if (Code.LANG == 'zh-hant') {
+          Blockly.Msg[opName] = op[2];
+        }
+      });
+      Blockly.Msg["MLPLAY_PLAYER_STATUS_OPTIONS"] = options;
+    }
+
+    if ("GAME_STATUS" in gameOptions) {
+      var options = [];
+      gameOptions["GAME_STATUS"].forEach((op, index) => {
+        var opName = `${Code.GAME.toUpperCase()}_GAME_STATUS_${index+1}`;
+        options.push([`%{BKY_${opName}}`, op[0]]);
+        if (Code.LANG == 'en') {
+          Blockly.Msg[opName] = op[1];
+        } else if (Code.LANG == 'zh-hant') {
+          Blockly.Msg[opName] = op[2];
+        }
+      });
+      Blockly.Msg["MLPLAY_GAME_STATUS_OPTIONS"] = options;
+    }
+
+    if ("SCENE_INFO" in gameOptions) {
+      var options = [];
+      gameOptions["SCENE_INFO"].forEach((op, index) => {
+        var opName = `${Code.GAME.toUpperCase()}_SCENE_INFO_${index+1}`;
+        options.push([`%{BKY_${opName}}`, op[0]]);
+        if (Code.LANG == 'en') {
+          Blockly.Msg[opName] = op[1];
+        } else if (Code.LANG == 'zh-hant') {
+          Blockly.Msg[opName] = op[2];
+        }
+      });
+      Blockly.Msg["MLPLAY_GET_INFO_OPTIONS"] = options;
+    }
+
+    if ("CONSTANT" in gameOptions) {
+      var options = [];
+      gameOptions["CONSTANT"].forEach((op, index) => {
+        var opName = `${Code.GAME.toUpperCase()}_CONSTANT_${index+1}`;
+        options.push([`%{BKY_${opName}}`, `${index+1}/${op[0]}`]);
+        if (Code.LANG == 'en') {
+          Blockly.Msg[opName] = op[1];
+        } else if (Code.LANG == 'zh-hant') {
+          Blockly.Msg[opName] = op[2];
+        }
+      });
+      Blockly.Msg["MLPLAY_GET_CONSTANT_OPTIONS"] = options;
+    }
+
+    if ("ACTION" in gameOptions) {
+      var options = [];
+      gameOptions["ACTION"].forEach((op, index) => {
+        var opName = `${Code.GAME.toUpperCase()}_ACTION_${index+1}`;
+        options.push([`%{BKY_${opName}}`, op[0]]);
+        if (Code.LANG == 'en') {
+          Blockly.Msg[opName] = op[1];
+        } else if (Code.LANG == 'zh-hant') {
+          Blockly.Msg[opName] = op[2];
+        }
+      });
+      Blockly.Msg["MLPLAY_RETURN_ACTION_OPTIONS"] = options;
+    }
+  }
 };
 
 /**

@@ -317,13 +317,9 @@ Code.renderContent = function() {
  * @param generator {!Blockly.Generator} The generator to use.
  */
 Code.attemptCodeGeneration = function(generator) {
-  var content = document.getElementById('content_' + Code.selected);
-  content.textContent = '';
   if (Code.checkAllGeneratorFunctionsDefined(generator)) {
     var code = generator.workspaceToCode(Code.workspace);
-    content.textContent = code;
-    // Remove the 'prettyprinted' class, so that Prettify will recalculate.
-    content.className = content.className.replace('prettyprinted', '');
+    Code.editor.setValue(code);
   }
 };
 
@@ -382,6 +378,22 @@ Code.init = function() {
   });
 
   Code.initLanguage();
+
+  Code.editor = CodeMirror.fromTextArea(document.getElementById('python_code'), {
+    mode: "python",
+    lineNumbers: true,
+    smartIndent: true,
+    indentUnit: 4,
+    indentWithTabs: false,
+    lineWrapping: true,
+    gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter", "CodeMirror-lint-markers"], 
+    foldGutter: true,
+    autofocus: false,
+    matchBrackets: true,
+    autoCloseBrackets: true,
+    styleActiveLine: true,
+    readOnly: true
+  });
 
   var rtl = Code.isRtl();
   var container = document.getElementById('tab_content');

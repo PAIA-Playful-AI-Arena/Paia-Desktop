@@ -525,6 +525,8 @@ Code.init = function() {
       function() {Code.run(); Code.renderContent();});
   Code.bindClick('discard',
       function() {Code.discard(); Code.renderContent();});
+  Code.bindClick('clean_trashcan',
+      function() {Code.workspace.trashcan.emptyContents(); Code.renderContent();});
   Code.bindClick('load_project',
       function() {Code.loadProject(); Code.renderContent();});
   Code.bindClick('reveal_project',

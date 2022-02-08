@@ -43,9 +43,9 @@ button:hover>img {
 button:active {
   border: 1px solid #888 !important;
 }
-button:hover {
+/* button:hover {
   box-shadow: 2px 2px 5px #888;
-}
+} */
 button.disabled:hover>img {
   opacity: 0.6;
 }
@@ -116,7 +116,7 @@ td {
 .content {
   visibility: hidden;
   margin: 0;
-  padding: 1ex;
+  /* padding: 1ex; */
   position: absolute;
   direction: ltr;
 }

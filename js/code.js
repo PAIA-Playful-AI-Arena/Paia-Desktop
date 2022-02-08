@@ -432,6 +432,21 @@ Code.init = function() {
 
   // Construct the toolbox XML, replacing translated variable names.
   var toolboxText = window.readFile(path.join(__dirname, 'js', 'toolbox', `${Code.GAME}_${"desktop"}.xml`));
+  window.paiaAPI("GET", `toolbox?game=${Code.GAME}&env=desktop`, {}, false, null,
+    (res) => {
+      toolboxText = res.data;
+    }, (jqXHR, exception) => {
+      var msg = '';
+      if (jqXHR.status === 0) {
+          msg = '連線錯誤，請確認網路';
+      } else if (exception === 'abort') {
+          msg = 'Ajax request aborted.';
+      } else {
+          msg = 'Uncaught Error.\n' + jqXHR.responseText;
+      }
+      window.alert(msg);
+    }
+  );
   toolboxText = toolboxText.replace(/(^|[^%]){(\w+)}/g,
       function(m, p1, p2) {return p1 + MSG[p2];});
   var toolboxXml = Blockly.Xml.textToDom(toolboxText);

@@ -21,6 +21,11 @@ var Code = {};
 Code.GAME = (new URLSearchParams(window.location.search)).get('game');
 
 /**
+ * The name of opened project.
+ */
+ Code.PROJECT = '';
+
+/**
  * Lookup for names of supported languages.  Keys should be in ISO 639 format.
  */
 Code.LANGUAGE_NAME = {
@@ -176,6 +181,7 @@ Code.init = function() {
     styleActiveLine: true
   });
 
+  // Change tab key to spaces
   Code.editor.setOption("extraKeys", {
     Tab: function(cm) {
       var spaces = Array(cm.getOption("indentUnit") + 1).join(" ");
@@ -183,7 +189,10 @@ Code.init = function() {
     }
   });
 
-  Code.loadExample('1. start');
+  // Set the mode if editor is changed.
+  Code.editor.on("change", (changeObj) => {
+    $('#not_saved').html('*');
+  });
 
   var example_dir = path.join(__dirname, 'python', 'examples', Code.GAME.toLowerCase());
   fs.readdirSync(example_dir).forEach(file => {
@@ -203,19 +212,29 @@ Code.init = function() {
   Code.bindClick('show_readme',
       function() {Code.showReadme();});
   Code.bindClick('run_mlgame',
-      function() {Code.run('#run-mlgame-dialog');});
+      function() {$('#run-mlgame-dialog').modal('show');});
   Code.bindClick('run_python',
       function() {Code.execute();});
-  Code.bindClick('download_python',
-      function() {Code.downloadPython();});
-  Code.bindClick('open_path',
-      function() {Code.openPath();});
+  Code.bindClick('load_project',
+      function() {Code.loadProject();});
+  Code.bindClick('reveal_project',
+      function() {Code.revealProject();});
+  Code.bindClick('export_project',
+      function() {Code.exportProject();});
+  Code.bindClick('save_python',
+      function() {Code.savePython();});
   Code.bindClick('open_python',
-      function() {Code.selectFiles();});
+      function() {Code.openPython();});
+  Code.bindClick('open_example_dir',
+      function() {window.openPath(path.join(__dirname, 'python', 'examples', Code.GAME.toLowerCase()));});
   Code.bindClick('en',
       function() {Code.changeLanguage('en');});
   Code.bindClick('zh-hant',
       function() {Code.changeLanguage('zh-hant');});
+
+  // project
+  $('#project-dialog').modal('show');
+
 };
 
 /**
@@ -228,7 +247,7 @@ Code.initLanguage = function() {
   document.getElementById('tab_option').textContent = MSG['options'];
   document.getElementById('run_mlgame').textContent = MSG['runMLGame'];
   document.getElementById('run_python').textContent = MSG['runPython'];
-  document.getElementById('download_python').textContent = MSG['download'];
+  document.getElementById('save_python').textContent = MSG['download'];
   document.getElementById('open_python').textContent = MSG['openPython'];
   document.getElementById('en').textContent = MSG['en'];
   document.getElementById('zh-hant').textContent = MSG['zh_hant'];
@@ -288,84 +307,114 @@ Code.initLanguage = function() {
 
 Code.loadExample = function(name) {
   try {
-    var python_path = path.join(__dirname, 'python', 'examples', Code.GAME.toLowerCase(), name + '.py');
-    var python_text = window.readFile(python_path);
-    Code.editor.setValue(python_text);
+    var pythonPath = path.join(__dirname, 'python', 'examples', Code.GAME.toLowerCase(), name + '.py');
+    Code.loadPython(pythonPath);
   } catch (e) {
     console.log(e);
     return;
   }
 };
 
-Code.selectFiles = function() {
-  var element = document.createElement('input');
-  element.setAttribute('type', 'file');
-  element.setAttribute('accept', '.py');
-  element.style.display = 'none';
-  element.addEventListener('change', Code.openPython, false);
-  document.body.appendChild(element);
-  element.click();
-  document.body.removeChild(element);
+/**
+ * Load python file to editor. 
+ */
+ Code.loadPython = function(pythonPath) {
+  try {
+    Code.editor.setValue(window.readFile(pythonPath));
+    $('#file_name').html(path.basename(pythonPath));
+  } catch (err) {
+    window.alert(err);
+  }
 };
 
-Code.openPython = function(e) {
-  var file = e.target.files[0];
-  if (!file) {
+/**
+ * Let user select the path to a python file and load it. 
+ */
+ Code.openPython = function() {
+  var pythonPath = window.selectPath({
+    title: "開啟 Python 檔",
+    defaultPath: path.join(__dirname, 'MLGame', 'games', Code.GAME, 'ml', Code.PROJECT),
+    filters: [
+      {name: 'Python', extensions: ['py']}
+    ],
+    properties: ["openFile"]
+  });
+  if (pythonPath === undefined) {
     return;
+  } else {
+    pythonPath = pythonPath[0];
   }
-  var reader = new FileReader();
-  reader.onload = function(e) {
-    Code.editor.setValue(e.target.result);
+  Code.loadPython(pythonPath);
+}
+
+/**
+ * Let user select the path to a python file and save to it. 
+ */
+ Code.savePython = function() {
+  var pythonPath = window.savePath({
+    title: "儲存 Python 檔",
+    defaultPath: path.join(__dirname, 'MLGame', 'games', Code.GAME, 'ml', Code.PROJECT, 'ml_play.py'),
+    filters: [
+        {name: 'Python', extensions: ['py']}
+    ]
+  });
+  if (pythonPath === undefined) {
+    return;
+  } else {
+    var pythonText = Code.editor.getValue();
+    window.writeFile(pythonPath, pythonText);
+    $('#not_saved').html('');
+    // Add log
+    window.addLog('store_py', {
+      type: "file",
+      data: {
+        name: path.basename(pythonPath)
+      }
+    });
   }
-  reader.readAsText(file);
 };
 
-Code.downloadPython = function() {
-  var text = Code.editor.getValue();
-  var url = document.getElementById('file_name').textContent + '.py';
-  var element = document.createElement('a');
-  element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
-  element.setAttribute('download', url);
-  element.style.display = 'none';
-  document.body.appendChild(element);
-  element.click();
-  document.body.removeChild(element);
-};
-
-Code.run = function(target) {
-  var element = document.createElement('a');
-  element.setAttribute('data-toggle', 'modal');
-  element.setAttribute('data-target', target);
-  element.style.display = 'none';
-  document.body.appendChild(element);
-  element.click();
-  document.body.removeChild(element);
-};
-
-Code.play = function() {
+/**
+ * Save temporary python file for execution. 
+ */
+ Code.saveTmpPython = function(dir) {
   var python_text = Code.editor.getValue();
   var file_name = 'ml_play_' + new Date().getTime() + '.py';
-  var ml_path = path.join(__dirname, 'MLGame', 'games', Code.GAME, 'ml');
-  var file_path = path.join(ml_path, file_name);
+  var file_path = path.join(dir, file_name);
   window.writeFile(file_path, python_text);
+  return file_name;
+};
+
+/**
+ * Play the game according to the parameters. 
+ */
+ Code.play = function() {
+  var project_path = path.join(__dirname, 'MLGame', 'games', Code.GAME, 'ml', Code.PROJECT);
+  var file_name = Code.saveTmpPython(project_path);
+  var file_path = path.join(project_path, file_name);
   var fps = document.getElementById('game_fps').value;
   var args_elements = document.getElementById('game-args').getElementsByClassName('game-arg');
   var user_num = 1;
   var args = [];
+  var params = {};
   for (var i = 0; i < args_elements.length; i++) {
     var e = args_elements[i];
     if (e.id == "user_num") {
       user_num = parseInt(e.value, 10);
+      params[e.id] = user_num;
     }
     if (e.tagName == "SELECT") {
-      args.push(e.options[e.selectedIndex].getAttribute("value"));
+      var value = e.options[e.selectedIndex].getAttribute("value")
+      args.push(value);
+      params[e.id] = value;
     } else {
       args.push(e.value);
+      params[e.id] = e.value;
     }
   }
   var total_args = [];
   for (var i = 0; i < user_num; i++) {
-    total_args = total_args.concat(['-i', file_name])
+    total_args = total_args.concat(['-i', `${Code.PROJECT}/${file_name}`])
   }
   total_args = total_args.concat(['-f', fps, Code.GAME]).concat(args);
   var options = {
@@ -377,25 +426,44 @@ Code.play = function() {
   $('#run-mlgame-dialog').modal('hide');
   document.getElementById('content_console').textContent = '> Python program running\n';
   $('#console-dialog').modal('show');
-  window.pythonRun(options, "MLGame.py", file_path, ml_path);
+  window.pythonRun(options, "MLGame.py", file_path, project_path);
+  // Add log
+  window.addLog('play_game', {
+    type: "game",
+    data: {
+      name: Code.GAME,
+      id: 1,
+      params: params
+    }
+  });
 };
 
+/**
+ * Execute python program. 
+ */
 Code.execute = function() {
-  var python_text = Code.editor.getValue();
-  var file_name = 'ml_play_' + new Date().getTime() + '.py';
-  var ml_path = path.join(__dirname, 'MLGame', 'games', Code.GAME, 'ml');
-  var file_path = path.join(ml_path, file_name);
-  window.writeFile(file_path, python_text);
+  var project_path = path.join(__dirname, 'MLGame', 'games', Code.GAME, 'ml', Code.PROJECT);
+  var file_name = Code.saveTmpPython(project_path);
+  var file_path = path.join(project_path, file_name);
   var options = {
     mode: 'text',
     pythonPath: path.join(__dirname, 'python', 'dist', 'interpreter', 'interpreter'),
-    scriptPath: ml_path,
+    scriptPath: project_path,
     args: []
   };
   $('#run-python-dialog').modal('hide');
   document.getElementById('content_console').textContent = '> Python program running\n';
   $('#console-dialog').modal('show');
-  window.pythonRun(options, file_name, file_path, ml_path);
+  window.pythonRun(options, file_name, file_path, project_path);
+  // Add log
+  window.addLog('execute_py', {
+    type: "game",
+    data: {
+      name: Code.GAME,
+      id: 1,
+      params: {}
+    }
+  });
 };
 
 Code.showReadme = function() {
@@ -408,8 +476,142 @@ Code.showReadme = function() {
   $('#readme-dialog').modal('show');
 };
 
-Code.openPath = function() {
-  window.openPath(path.join(__dirname, 'MLGame', 'games', Code.GAME, 'ml'))
+/**
+ * Show dialog for adding new project or load existing project. 
+ */
+ Code.loadProject = function() {
+  $('#project-dialog').data('bs.modal')._config.backdrop = true;
+  $('#project-dialog').modal('show');
+};
+
+/**
+ * Add new project. 
+ */
+Code.newProject = function() {
+  Code.PROJECT = $('#project-name').val();
+  var dir = path.join(__dirname, 'MLGame', 'games', Code.GAME, 'ml', Code.PROJECT);
+  try {
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir);
+      $('#project_name').html(Code.PROJECT);
+      Code.loadExample('1. start')
+      $('#file_name').html('1. start.py');
+      $('#project-dialog').modal('hide');
+    } else if (window.confirm(`${Code.PROJECT} 已存在，是否改為載入此專案？`)) {
+      $('#project_name').html(Code.PROJECT);
+      if(fs.existsSync(path.join(dir, 'ml_play.py'))) {
+        Code.editor.setValue(window.readFile(path.join(dir, 'ml_play.py')));
+        $('#file_name').html('ml_play.py');
+      } else {
+        Code.loadExample('1. start')
+        $('#file_name').html('1. start.py');
+      }
+      $('#project-dialog').modal('hide');
+      // Add log
+      window.addLog('import_project', {
+        type: "project",
+        data: {
+          name: Code.PROJECT,
+          game_name: Code.GAME,
+          game_id: 1
+        }
+      });
+    }
+  } catch(err) {
+    window.alert(err);
+  }
+};
+
+/**
+ * Load existing project.
+ */
+Code.openProject = function() {
+  var mlPath = path.join(__dirname, 'MLGame', 'games', Code.GAME, 'ml')
+  var dir = window.selectPath({
+    title: "開啟專案資料夾",
+    defaultPath: mlPath,
+    properties: ["openDirectory"]
+  });
+  if (dir === undefined) {
+    return;
+  } else {
+    dir = dir[0];
+  }
+  var projectDir = path.join(mlPath, path.basename(dir));
+  if (path.normalize(path.dirname(dir)) != path.normalize(mlPath)) {
+    if (window.confirm('將複製此專案至遊戲資料夾下，是否繼續？')) {
+      if (!fs.existsSync(projectDir)) {
+        try {
+          window.copyDir(dir, mlPath);
+        } catch(err) {
+          window.alert(err);
+          return;
+        }
+      } else {
+        window.alert(`無法複製專案：${projectDir} 已存在`);
+        return;
+      }
+    } else {
+      return;
+    }
+  }
+  Code.PROJECT = path.basename(dir);
+  $('#project_name').html(Code.PROJECT);
+  if(fs.existsSync(path.join(dir, 'ml_play.py'))) {
+    Code.editor.setValue(window.readFile(path.join(dir, 'ml_play.py')));
+    $('#file_name').html('ml_play.py');
+  } else {
+    Code.loadExample('1. start')
+    $('#file_name').html('1. start.py');
+  }
+  $('#project-dialog').modal('hide');
+  // Add log
+  window.addLog('import_project', {
+    type: "project",
+    data: {
+      name: Code.PROJECT,
+      game_name: Code.GAME,
+      game_id: 1
+    }
+  });
+};
+
+/**
+ * Reveal project directory.
+ */
+Code.revealProject = function() {
+  window.openPath(path.join(__dirname, 'MLGame', 'games', Code.GAME, 'ml', Code.PROJECT));
+};
+
+/**
+ * Export project directory.
+ */
+Code.exportProject = function() {
+  var desktop = path.join(require('os').homedir(), 'Desktop');
+  var dest = window.selectPath({
+    title: "匯出專案資料夾",
+    defaultPath: desktop,
+    properties: ["openDirectory"]
+  });
+  if (dest === undefined) {
+    return;
+  } else {
+    dest = dest[0];
+  }
+  var projectDir = path.join(dest, Code.PROJECT);
+  if (!fs.existsSync(projectDir) || window.confirm(`${projectDir} 已經存在，您要覆蓋它嗎？`)) {
+    var src = path.join(__dirname, 'MLGame', 'games', Code.GAME, 'ml', Code.PROJECT);
+    window.copyDir(src, dest);
+    // Add log
+    window.addLog('export_project', {
+      type: "project",
+      data: {
+        name: Code.PROJECT,
+        game_name: Code.GAME,
+        game_id: 1
+      }
+    });
+  }
 };
 
 // Load the Code demo's language strings.

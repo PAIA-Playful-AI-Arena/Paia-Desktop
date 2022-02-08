@@ -28,7 +28,7 @@ Code.PROJECT = '';
 /**
  * The mode of running program.
  */
-Code.MODE = 'play'
+Code.MODE = 'play';
 
 /**
  * Lookup for names of supported languages.  Keys should be in ISO 639 format.
@@ -459,11 +459,11 @@ Code.init = function() {
       for (var i = 0; i < topBlocks.length; i++) {
         if (topBlocks[i].type == 'mlplay_class' && topBlocks[i].isEnabled()) {
           Code.MODE = 'play';
-          document.getElementById('run').textContent = MSG['play'];
+          $('#run').html(MSG['play']);
           return;
         }
         Code.MODE = 'execute';
-        document.getElementById('run').textContent = MSG['execute'];
+        $('#run').html(MSG['execute']);
       }
     }
   });
@@ -476,17 +476,15 @@ Code.init = function() {
       callback: callback
     });
   };
+
+  // Overide the length of indent.
+  Blockly.Python.INDENT = "    ";
   
   var example_dir = path.join(__dirname, 'xml', 'examples', Code.GAME.toLowerCase());
   fs.readdirSync(example_dir).forEach(file => {
     if (file.endsWith('.xml')) {
       var name = file.slice(0, -4);
-      var element = document.createElement('a');
-      element.setAttribute('class', 'dropdown-item');
-      element.setAttribute('href', '#');
-      element.setAttribute('id', name);
-      element.textContent = file;
-      $('#examples').append(element);
+      $('#examples').append($(`<a class="dropdown-item" href="#" id="${name}">${file}</a>`));
       Code.bindClick(name,
           function() {Code.loadExample(name); Code.renderContent();});
     };

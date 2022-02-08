@@ -31,6 +31,11 @@ Code.PROJECT = '';
 Code.MODE = 'play';
 
 /**
+ * The mode of running program.
+ */
+ Code.LOGIN = false;
+
+/**
  * Lookup for names of supported languages.  Keys should be in ISO 639 format.
  */
 Code.LANGUAGE_NAME = {
@@ -543,6 +548,8 @@ Code.init = function() {
       function() {Code.discard(); Code.renderContent();});
   Code.bindClick('clean_trashcan',
       function() {Code.workspace.trashcan.emptyContents(); Code.renderContent();});
+  Code.bindClick('login_logout',
+      function() {Code.loginout(); Code.renderContent();});
   Code.bindClick('load_project',
       function() {Code.loadProject(); Code.renderContent();});
   Code.bindClick('reveal_project',
@@ -577,12 +584,13 @@ Code.init = function() {
     Code.changeCodingLanguage();
   });
 
-  // Code.getProfile();
+  onresize();
+  Blockly.svgResize(Code.workspace);
+  onresize();
+  Blockly.svgResize(Code.workspace);
 
-  onresize();
-  Blockly.svgResize(Code.workspace);
-  onresize();
-  Blockly.svgResize(Code.workspace);
+  // Try to Use saved token to login.
+  Code.token_login();
 
   // project
   $('#project-dialog').modal('show');
@@ -776,6 +784,147 @@ Code.discard = function() {
       window.location.hash = '';
     }
   }
+};
+
+/**
+ * Login or logout according to the state. 
+ */
+Code.loginout = function() {
+  if (Code.LOGIN) {
+    Code.logout();
+  } else {
+    $('#state-content').html('');
+    $('#login-dialog').modal('show');
+  }
+};
+
+Code.login = function() {
+  var email = $('#email').val();
+  var password = $('#password').val();
+  var data = {
+    "type": "general",
+    "account": {
+      "username": email,
+      "password": password
+    }
+  };
+  window.paiaAPI("POST", "auth/token", data, false, null, (res) => {
+      window.setToken(res.access, res.refresh);
+      $('#state-content').html('登入成功');
+      Code.afterLogin();
+    }, (jqXHR, exception) => {
+      var msg = '';
+      if (jqXHR.status === 0) {
+          msg = '連線錯誤，請確認網路';
+      } else if (jqXHR.status == 401) {
+          msg = '密碼驗證錯誤 [401]';
+      } else if (exception === 'abort') {
+          msg = 'Ajax request aborted.';
+      } else {
+          msg = 'Uncaught Error.\n' + jqXHR.responseText;
+      }
+      console.log(msg);
+    }
+  );
+};
+
+Code.google_login = function() {
+  $('#state-content').html('請於瀏覽器登入，成功後會自動返回');
+  try {
+    myApiOauth.openAuthWindowAndGetTokens()
+      .then(token => {
+        var data = {
+          type: "social",
+          account: {
+            provider: "google-desktop",
+            id_token: token.id_token
+          }
+        };
+        window.paiaAPI("POST", "auth/token", data, false, null, (res) => {
+            window.setToken(res.access, res.refresh);
+            Code.LOGIN = true;
+            Code.afterLogin();
+          }, (jqXHR, exception) => {
+            var msg = '';
+            if (jqXHR.status === 0) {
+                msg = '連線錯誤，請確認網路';
+            } else if (jqXHR.status == 401) {
+                msg = `${jqXHR.responseText} [401]`;
+            } else if (exception === 'abort') {
+                msg = 'Ajax request aborted.';
+            } else {
+                msg = 'Uncaught Error.\n' + jqXHR.responseText;
+            }
+            console.log(msg);
+          }
+        );
+      });
+  } catch(e) {
+    console.log(e);
+  }
+};
+
+Code.token_login = function() {
+  console.log(window.getAccessToken(), window.getRefreshToken())
+  if (window.getAccessToken() == "no token") {
+    return;
+  } else {
+    window.paiaAPI("GET", "auth/token/verify", null, false, 'USER_TOKEN',
+      (res) => {
+        Code.afterLogin();
+      }, (jqXHR, exception) => {
+        if (jqXHR.status == 401) {
+          var data = {
+            refresh: window.getRefreshToken()
+          };
+          window.paiaAPI("POST", "auth/token/refresh", data, false, null, (res) => {
+              window.setToken(res.access, window.getRefreshToken());
+            }, (jqXHR, exception) => {
+              window.clearToken();
+              console.log("登入逾期，請重新登入");
+            }
+          );
+        } else {
+          window.clearToken();
+          console.log("登入逾期，請重新登入");
+        }
+      }
+    );
+  };
+};
+
+/**
+ * Log out. 
+ */
+Code.logout = function() {
+  Code.LOGIN = false;
+  $('#login_logout').html('登入');
+  $('#tab_user').text('尚未登入');
+  document.querySelectorAll('.need-login').forEach(e => {
+    e.classList.add("disabled");
+  });
+  window.sendLog();
+  window.clearToken();
+  window.resetStore();
+};
+
+/**
+ * Update UI after login. 
+ */
+Code.afterLogin = function() {
+  Code.LOGIN = true;
+  $('#login_logout').html('登出');
+  document.querySelectorAll('.need-login').forEach(e => {
+    e.classList.remove("disabled");
+  });
+  window.paiaAPI("GET", "me", null, false, 'USER_TOKEN', (res) => {
+      $('#tab_user').text(`${res.first_name} ${res.last_name}`);
+    }, (jqXHR, exception) => {
+      console.log("取得使用者資料錯誤");
+      window.logout();
+    }
+  );
+  $('#login-dialog').modal('hide');
 };
 
 /**

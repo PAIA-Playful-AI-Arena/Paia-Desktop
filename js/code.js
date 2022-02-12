@@ -1080,15 +1080,20 @@ Code.play = function() {
   var args_elements = document.getElementById('game-args').getElementsByClassName('game-arg');
   var user_num = 1;
   var args = [];
+  var params = {};
   for (var i = 0; i < args_elements.length; i++) {
     var e = args_elements[i];
     if (e.id == "user_num") {
       user_num = parseInt(e.value, 10);
     }
+    args.push(`--${e.id}`);
     if (e.tagName == "SELECT") {
-      args.push(e.options[e.selectedIndex].getAttribute("value"));
+      var value = e.options[e.selectedIndex].getAttribute("value");
+      args.push(value);
+      params[e.id] = value;
     } else {
       args.push(e.value);
+      params[e.id] = e.value;
     }
   }
   var total_args = [];

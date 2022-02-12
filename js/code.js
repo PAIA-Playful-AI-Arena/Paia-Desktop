@@ -505,15 +505,8 @@ Code.init = function() {
   // Overide the length of indent.
   Blockly.Python.INDENT = "    ";
   
-  var example_dir = path.join(__dirname, 'xml', 'examples', Code.GAME.toLowerCase());
-  fs.readdirSync(example_dir).forEach(file => {
-    if (file.endsWith('.xml')) {
-      var name = file.slice(0, -4);
-      $('#examples').append($(`<a class="dropdown-item" href="#" id="${name}">${file}</a>`));
-      Code.bindClick(name,
-          function() {Code.loadExample(name); Code.renderContent();});
-    };
-  });
+  // Update example dropdown menu
+  Code.updateExampleList();
 
   if ('BlocklyStorage' in window) {
     // Hook a save function onto unload.
@@ -557,6 +550,8 @@ Code.init = function() {
       function() {Code.loginout(); Code.renderContent();});
   Code.bindClick('show_filesets',
       function() {Code.showFilesets(); Code.renderContent();});
+  Code.bindClick('download_example',
+      function() {$("#download-filset-dialog").modal('show'); Code.renderContent();});
   Code.bindClick('load_project',
       function() {Code.loadProject(); Code.renderContent();});
   Code.bindClick('reveal_project',
@@ -777,6 +772,22 @@ Code.initMlgameBlocks = function() {
       Blockly.Msg["MLPLAY_RETURN_ACTION_OPTIONS"] = options;
     }
   }
+};
+
+/**
+ * Update example dropdown list.
+ */
+Code.updateExampleList = function() {
+  var example_dir = path.join(__dirname, 'xml', 'examples', Code.GAME.toLowerCase());
+  $('#examples').empty();
+  fs.readdirSync(example_dir).forEach(file => {
+    if (file.endsWith('.xml')) {
+      var name = file.slice(0, -4);
+      $('#examples').append($(`<a class="dropdown-item" href="#" id="${name}">${file}</a>`));
+      Code.bindClick(name,
+          function() {Code.loadExample(name); Code.renderContent();});
+    };
+  });
 };
 
 /**

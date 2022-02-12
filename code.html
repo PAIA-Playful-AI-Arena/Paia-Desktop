@@ -183,6 +183,36 @@
         </div>
       </div>
     </div>
+    <!-- Fileset download dialog -->
+    <div class="modal fade" id="download-filset-dialog" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">下載範例程式集</h5>
+          </div>
+          <form name="download-filset" action="javascript:Code.downloadFileset()">
+            <div class="modal-body my-2">
+              <div class="form-group">
+                <label for="">程式集代碼</label>
+                <input type="text" class="form-control" id="fileset-download-token" required>
+              </div>
+              <div class="form-group">
+                <label for="">儲存位置</label>
+                <select class="form-control" id="fileset-download-position">
+                  <option value="example-folder">範例程式資料夾（會更新至範例程式選單）</option>
+                  <option value="selected-folder">自行選擇</option>
+                </select>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">取消</button>
+              <button type="submit" class="btn btn-outline-primary">下載</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
     <div class="container-fluid" id="blockly_container">
       <ul class="nav nav-tabs"  role="tablist">
         <li class="nav-item" role="presentation">
@@ -215,7 +245,11 @@
         </li>
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" id="tab_example" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">範例程式</a>
-          <div class="dropdown-menu dropdown-menu-right" id="examples"></div>
+          <div class="dropdown-menu dropdown-menu-right">
+            <a class="dropdown-item" href="#" id="download_example">下載範例程式集</a>
+            <div class="dropdown-divider"></div>
+            <div id="examples"></div>
+          </div>
         </li>
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" id="tab_lang" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">語言</a>

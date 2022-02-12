@@ -35,6 +35,11 @@ Code.MODE = 'play';
  */
  Code.LOGIN = false;
 
+ /**
+ * The mode of running program.
+ */
+Code.FILESET_ID = null;
+
 /**
  * Lookup for names of supported languages.  Keys should be in ISO 639 format.
  */
@@ -550,6 +555,8 @@ Code.init = function() {
       function() {Code.workspace.trashcan.emptyContents(); Code.renderContent();});
   Code.bindClick('login_logout',
       function() {Code.loginout(); Code.renderContent();});
+  Code.bindClick('show_filesets',
+      function() {Code.showFilesets(); Code.renderContent();});
   Code.bindClick('load_project',
       function() {Code.loadProject(); Code.renderContent();});
   Code.bindClick('reveal_project',
@@ -1303,23 +1310,236 @@ Code.exportProject = function() {
   }
 };
 
-Code.getProfile = function() {
-  window.paiaAPI("GET", "me", null, (res) => {
-      if (res.nick_name.length > 0) {
-        $('#tab_user').text(res.nick_name);
+Code.copyClipboard = function(token, id) {
+  const { clipboard } = require('electron');
+  clipboard.writeText(token);
+  $(id).empty();
+  $(id).append('<i class="bi bi-clipboard-check"></i>');
+};
+
+Code.updateFileset = function(index) {
+  Code.FILESET_ID = index;
+  $("#filset-dialog").modal("hide");
+  $("#upload-filset-dialog").modal('show');
+};
+
+Code.uploadFileset = function() {
+  var data = {
+    name: $("#filset-name").val(),
+    description: $("#filset-description").val(),
+    game: Code.GAME
+  }
+  var method = "POST";
+  var apiPath = "fileset";
+  if (Code.FILESET_ID >= 0) {
+    method = "PATCH";
+    apiPath += `/${Code.FILESET_ID}`;
+  }
+  window.paiaAPI(method, apiPath, data, false, 'USER_TOKEN',
+    (res) => {
+      if (res.status == "success") {
+        if (Code.FILESET_ID >= 0) {
+          window.alert(`檔案集更新成功`);
+        } else {
+          window.alert(`檔案集新增成功，下載代碼：${res.data}`);
+        }
+        $("#upload-filset-dialog").modal('hide');
       } else {
-        $('#tab_user').text(`${res.first_name} ${res.last_name}`);
+        window.alert(`範例程式上傳失敗：${res.detail}`);
       }
     }, (jqXHR, exception) => {
-      window.loadPage('index.html');
+      var msg = '';
+      if (jqXHR.status === 0) {
+          msg = '連線錯誤，請確認網路';
+      } else if (jqXHR.status == 401) {
+          msg = '驗證錯誤 [401]';
+      } else if (exception === 'abort') {
+          msg = 'Ajax request aborted.';
+      } else {
+          msg = 'Uncaught Error.\n' + jqXHR.responseText;
+      }
+      window.alert(msg);
     }
   );
 };
 
-Code.logout = function() {
-  window.clearToken();
-  window.resetStore();
-  window.loadPage('index.html');
+Code.showFilesets = function() {
+  $("#fileset-list").empty();
+  window.paiaAPI("GET", "fileset", null, false, 'USER_TOKEN', (res) => {
+      res.data.forEach((e) => {
+        var $item = $('<div class="card" style="width: 100%;"></div>');
+        var $header = $(`<div class="card-header" id="accordion-${e.id}"></div>`);
+        $header.append(`<h2><button class="btn btn-focus-box-shadow btn-block text-left" type="button" data-toggle="collapse" data-target="#collapse-${e.id}" aria-expanded="true" aria-controls="collapse-${e.id}"><span>${e.game} - ${e.name}</span><span class="float-right">更新時間：${e.updated_at.substring(0, 19)}</span></button></h2>`);
+        $item.append($header);
+        var $body = $(`<div id="collapse-${e.id}" class="collapse" aria-labelledby="accordion-${e.id}" data-parent="#fileset-list"></div>`);
+        var $card_body = $(`<div class="card-body"></div>`);
+        var $card_nav = $(`<div class="d-flex mb-3"></div>`)
+        $card_nav.append(`<span class="ml-1">下載代碼：${e.token}</span>`);
+        $card_nav.append(`<a onclick="Code.copyClipboard('${e.token}', '#clipboard-${e.id}');" id="clipboard-${e.id}" class="ml-3 btn btn-sm btn-secondary"><i class="bi bi-clipboard"></i></a>`);
+        $card_nav.append(`<a onclick="Code.updateFilesetFile(${e.id});" class="ml-auto btn btn-sm btn-success float-right">新增檔案</a>`);
+        $card_nav.append(`<a onclick="Code.updateFileset(${e.id});" class="ml-1 btn btn-sm btn-info float-right">更新檔案集</a>`);
+        $card_nav.append(`<a onclick="Code.deleteFileset(${e.id});" class="ml-1 btn btn-sm btn-danger float-right">刪除檔案集</a>`);
+        $card_body.append($card_nav);
+        var $file_list = $('<ul class="list-group"><ul>');
+        window.paiaAPI("GET", `fileset/${e.id}`, null, false, 'USER_TOKEN', (res) => {
+            res.data.files.forEach((f) => {
+              var $file = $(`<li class="list-group-item d-flex justify-content-between align-items-center">${f.file_name}</li>`);
+              $file.append($(`<a onclick="Code.deleteFilesetFile(${e.id}, '${f.file_name}');" class="ml-auto btn btn-sm btn-danger float-right">刪除檔案</a>`));
+              $file_list.append($file);
+            });
+          }, (jqXHR, exception) => {
+            var msg = '';
+            if (jqXHR.status === 0) {
+                msg = '連線錯誤，請確認網路';
+            } else if (jqXHR.status == 401) {
+                msg = `${jqXHR.responseText} [401]`;
+            } else if (exception === 'abort') {
+                msg = 'Ajax request aborted.';
+            } else {
+                msg = 'Uncaught Error.\n' + jqXHR.responseText;
+            }
+            console.log("取得檔案錯誤");
+            console.log(msg);
+          }
+        );
+        $card_body.append($file_list);
+        $body.append($card_body);
+        $item.append($body);
+        $("#fileset-list").append($item);
+      })
+    }, (jqXHR, exception) => {
+      console.log("取得檔案集錯誤");
+    }
+  );
+  $("#filset-dialog").modal('show');
+};
+
+Code.updateFilesetFile = function(index) {
+  var filePath = window.selectPath({
+    title: "上傳檔案",
+    defaultPath: path.join(__dirname, 'MLGame', 'games', Code.GAME, 'ml', Code.PROJECT),
+    properties: ["openFile"]
+  });
+  if (filePath === undefined) {
+    return;
+  }
+  var error = 0;
+  filePath.forEach((f) => {
+    var data = new FormData();
+    var name = path.basename(f);
+    var file = new File(window.readFileBytes(f), name);
+    data.append("files", file, name);
+    window.paiaAPI("PUT", `fileset/${index}/file`, data, false, 'USER_TOKEN', (res) => {
+        console.log(`${path.basename(f)} 上傳成功`);
+      }, (jqXHR, exception) => {
+        var msg = '';
+        if (jqXHR.status === 0) {
+            msg = '連線錯誤，請確認網路';
+        } else if (jqXHR.status == 401) {
+            msg = `${jqXHR.responseText} [401]`;
+        } else if (exception === 'abort') {
+            msg = 'Ajax request aborted.';
+        } else {
+            msg = 'Uncaught Error.\n' + jqXHR.responseText;
+        }
+        console.log(`${path.basename(f)} 上傳失敗`);
+        console.log(msg);
+        error += 1;
+      }
+    );
+  })
+  if (error > 0) {
+    window.alert(`${filePath.length} 個檔案上傳完成，其中 ${error} 個發生錯誤`);
+  } else {
+    window.alert(`${filePath.length} 個檔案上傳完成`);
+  }
+  $("#download-filset-dialog").modal('hide');
+};
+
+Code.downloadFileset = function() {
+  var download_dir = path.join(__dirname, 'xml', 'examples', Code.GAME.toLowerCase());
+  if($("#fileset-download-position").val() == "selected-folder") {
+    download_dir = window.selectPath({
+      title: "下載檔案集",
+      defaultPath: path.join(require('os').homedir(), 'Desktop'),
+      properties: ["openDirectory"]
+    })
+    if (download_dir === undefined) {
+      return;
+    } else {
+      download_dir = download_dir[0];
+    }
+  }
+  var error = 0;
+  var count = 0;
+  window.paiaAPI("GET", `shared_fileset?token=${$("#fileset-download-token").val()}`, null, false, 'DESKTOP_TOKEN', (res) => {
+      count = res.data.files.length;
+      res.data.files.forEach((e) => {
+        var file = fs.createWriteStream(path.join(download_dir, `${res.data.name}-${e.file_name}`));
+        require('https').get(e.file_url, (response) => {
+          response.pipe(file);
+        }).on('error', (e) => {
+          console.log(e);
+          error += 1;
+        });
+      });
+    }, (jqXHR, exception) => {
+      console.log("取得檔案集錯誤");
+    }
+  );
+  if (error > 0) {
+    window.alert(`${count} 個檔案下載完成，其中 ${error} 個發生錯誤`);
+  } else {
+    window.alert(`${count} 個檔案下載完成`);
+  }
+  $("#download-filset-dialog").modal('hide');
+};
+
+Code.deleteFileset = function(index) {
+  if (window.confirm("確定要刪除此檔案集嗎？")) {
+    window.paiaAPI("DELETE", `fileset/${index}`, null, false, 'USER_TOKEN', (res) => {
+        $("#filset-dialog").modal('hide');
+        window.alert(`成功刪除檔案集`);
+      }, (jqXHR, exception) => {
+        var msg = '';
+        if (jqXHR.status === 0) {
+            msg = '連線錯誤，請確認網路';
+        } else if (jqXHR.status == 401) {
+            msg = `${jqXHR.responseText} [401]`;
+        } else if (exception === 'abort') {
+            msg = 'Ajax request aborted.';
+        } else {
+            msg = 'Uncaught Error.\n' + jqXHR.responseText;
+        }
+        window.alert(`刪除失敗：${msg}`);
+      }
+    );
+  }
+};
+
+Code.deleteFilesetFile = function(index, filename) {
+  if (window.confirm(`確定要刪除 ${filename} 嗎？`)) {
+    var data = {
+      filename: filename
+    }
+    window.paiaAPI("DELETE", `fileset/${index}/file`, data, false, 'USER_TOKEN', (res) => {
+        $("#filset-dialog").modal('hide');
+        window.alert(`成功刪除檔案`);
+      }, (jqXHR, exception) => {
+        var msg = '';
+        if (jqXHR.status === 0) {
+            msg = '連線錯誤，請確認網路';
+        } else if (jqXHR.status == 401) {
+            msg = `${jqXHR.responseText} [401]`;
+        } else if (exception === 'abort') {
+            msg = 'Ajax request aborted.';
+        } else {
+            msg = 'Uncaught Error.\n' + jqXHR.responseText;
+        }
+        window.alert(`刪除失敗：${msg}`);
+      }
+    );
+  }
 };
 
 // Load the Code demo's language strings.

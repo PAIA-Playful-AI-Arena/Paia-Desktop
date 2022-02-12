@@ -44,10 +44,6 @@ const myApiOauth = new ElectronGoogleOAuth2(
   process.env.GOOGLE_OAUTH2_PASSWORD,
   [], { successRedirectURL: 'https://www.paia-arena.com/' }
 );
-const baseHeaders = {
-  'Content-Type': 'application/json',
-  'Accept': 'application/json'
-};
 
 window.pythonRun = function(options, script, file, cwd) {
   var old_cwd = process.cwd();
@@ -87,6 +83,13 @@ window.writeFile = function(file, data) {
 
 window.readFile = function(file) {
   return fs.readFileSync(file, 'utf8', (err, data) => {
+    if (err) window.alert(err);
+    return data;
+  });
+};
+
+window.readFileBytes = function(file) {
+  return fs.readFileSync(file, (err, data) => {
     if (err) window.alert(err);
     return data;
   });
@@ -208,22 +211,37 @@ window.loadPage = function(page) {
 };
 
 window.paiaAPI = function(method, url, data, async, auth, response, error) {
-  var headers = baseHeaders;
+  var headers = {};
   if (auth == 'USER_TOKEN') {
     headers['Authorization'] = `Bearer ${window.getAccessToken()}`;
   } else if (auth == 'DESKTOP_TOKEN') {
     headers['Authorization'] = `Bearer ${process.env.PAIA_DESKTOP_TOKEN}`;
   }
-  $.ajax({
-    url: `${process.env.PAIA_API_HOST}/api/${process.env.PAIA_API_VERSION}/${url}`,
-    headers: headers,
-    method: method,
-    async: async,
-    timeout: 0,
-    data: JSON.stringify(data),
-    success: response,
-    error: error
-  });
+  if (Object.prototype.toString.call(data) !== "[object FormData]") {
+    $.ajax({
+      url: `${process.env.PAIA_API_HOST}/api/${process.env.PAIA_API_VERSION}/${url}`,
+      headers: headers,
+      method: method,
+      async: async,
+      timeout: 0,
+      data: JSON.stringify(data),
+      success: response,
+      error: error
+    });
+  } else {
+    $.ajax({
+      url: `${process.env.PAIA_API_HOST}/api/${process.env.PAIA_API_VERSION}/${url}`,
+      headers: headers,
+      method: method,
+      async: async,
+      timeout: 0,
+      processData: false,
+      contentType: false,
+      data: data,
+      success: response,
+      error: error
+    });
+  }
 };
 
 const intervalID = setInterval(window.sendLog, 60000);

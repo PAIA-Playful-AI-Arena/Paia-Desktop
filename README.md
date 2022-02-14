@@ -8,14 +8,14 @@ Pre-built installers of latest release can be downloaded from the links below.
 
 #### Windows 64-bit
 
-[![](https://img.shields.io/badge/EXE%20Installer-v2.0.0-red)](https://github.com/PAIA-Playful-AI-Arena/Paia-Desktop/releases/download/v2.0.0/PAIA-Desktop-2.0.0.Setup.exe) [![](https://img.shields.io/badge/ZIP%20Portable-v2.0.0-red)](https://github.com/PAIA-Playful-AI-Arena/Paia-Desktop/releases/download/v2.0.0/PAIA-Desktop-win32-x64-2.0.0.zip)
+[![](https://img.shields.io/badge/EXE%20Installer-v2.0.1-red)](https://github.com/PAIA-Playful-AI-Arena/Paia-Desktop/releases/download/v2.0.1/PAIA-Desktop-2.0.1.Setup.exe) [![](https://img.shields.io/badge/ZIP%20Portable-v2.0.1-red)](https://github.com/PAIA-Playful-AI-Arena/Paia-Desktop/releases/download/v2.0.1/PAIA-Desktop-win32-x64-2.0.1.zip)
 #### macOS 64-bit
 
-[![](https://img.shields.io/badge/DMG%20Installer-v2.0.0-blue)](https://github.com/PAIA-Playful-AI-Arena/Paia-Desktop/releases/download/v2.0.0/PAIA-Desktop-2.0.0.dmg) [![](https://img.shields.io/badge/ZIP%20Portable-v2.0.0-blue)](https://github.com/PAIA-Playful-AI-Arena/Paia-Desktop/releases/download/v2.0.0/PAIA-Desktop-darwin-x64-2.0.0.zip)
+[![](https://img.shields.io/badge/DMG%20Installer-v2.0.1-blue)](https://github.com/PAIA-Playful-AI-Arena/Paia-Desktop/releases/download/v2.0.1/PAIA-Desktop-2.0.1.dmg) [![](https://img.shields.io/badge/ZIP%20Portable-v2.0.1-blue)](https://github.com/PAIA-Playful-AI-Arena/Paia-Desktop/releases/download/v2.0.1/PAIA-Desktop-darwin-x64-2.0.1.zip)
 
 #### Linux 64-bit
 
-[![](https://img.shields.io/badge/DEB%20Installer-v2.0.0-green)](https://github.com/PAIA-Playful-AI-Arena/Paia-Desktop/releases/download/v2.0.0/PAIA-Desktop-2.0.0.deb) [![](https://img.shields.io/badge/RPM%20Installer-v2.0.0-green)](https://github.com/PAIA-Playful-AI-Arena/Paia-Desktop/releases/download/v2.0.0/PAIA-Desktop-2.0.0.rpm) 
+[![](https://img.shields.io/badge/DEB%20Installer-v2.0.1-green)](https://github.com/PAIA-Playful-AI-Arena/Paia-Desktop/releases/download/v2.0.1/PAIA-Desktop-2.0.1.deb) [![](https://img.shields.io/badge/RPM%20Installer-v2.0.1-green)](https://github.com/PAIA-Playful-AI-Arena/Paia-Desktop/releases/download/v2.0.1/PAIA-Desktop-2.0.1.rpm) 
 
 ## Building
 

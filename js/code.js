@@ -448,7 +448,7 @@ Code.init = function() {
     }, (jqXHR, exception) => {
       var msg = '';
       if (jqXHR.status === 0) {
-          msg = '連線錯誤，請確認網路';
+          msg = '請確認網路連線，以取得最新的遊戲資訊';
       } else if (exception === 'abort') {
           msg = 'Ajax request aborted.';
       } else {
@@ -546,12 +546,12 @@ Code.init = function() {
       function() {Code.discard(); Code.renderContent();});
   Code.bindClick('clean_trashcan',
       function() {Code.workspace.trashcan.emptyContents(); Code.renderContent();});
-  Code.bindClick('login_logout',
-      function() {Code.loginout(); Code.renderContent();});
-  Code.bindClick('show_filesets',
-      function() {Code.showFilesets(); Code.renderContent();});
-  Code.bindClick('download_example',
-      function() {$("#download-filset-dialog").modal('show'); Code.renderContent();});
+  // Code.bindClick('login_logout',
+  //     function() {Code.loginout(); Code.renderContent();});
+  // Code.bindClick('show_filesets',
+  //     function() {Code.showFilesets(); Code.renderContent();});
+  // Code.bindClick('download_example',
+  //     function() {$("#download-filset-dialog").modal('show'); Code.renderContent();});
   Code.bindClick('load_project',
       function() {Code.loadProject(); Code.renderContent();});
   Code.bindClick('reveal_project',
@@ -592,7 +592,7 @@ Code.init = function() {
   Blockly.svgResize(Code.workspace);
 
   // Try to Use saved token to login.
-  Code.token_login();
+  // Code.token_login();
 
   // project
   $('#project-dialog').modal('show');

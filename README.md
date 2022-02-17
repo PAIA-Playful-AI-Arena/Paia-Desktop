@@ -18,8 +18,9 @@ Pre-built installers of latest release can be downloaded from the links below.
 [![](https://img.shields.io/badge/DEB%20Installer-v2.0.1-green)](https://github.com/PAIA-Playful-AI-Arena/Paia-Desktop/releases/download/v2.0.1/PAIA-Desktop-2.0.1.deb) [![](https://img.shields.io/badge/RPM%20Installer-v2.0.1-green)](https://github.com/PAIA-Playful-AI-Arena/Paia-Desktop/releases/download/v2.0.1/PAIA-Desktop-2.0.1.rpm) 
 
 
-## Install FAQ
+## FAQ
 Q:在Ｗin10安裝完畢，無法使用 manual.xml 來操控遊戲物件?
+
 A:可以參考此篇文章解決問題。
 https://program-the-world.notion.site/PAIA-Desktop-2-0-0-e053f2440c994dcc98d77123bbc9b232
 - 問題成因：專案中使用的鍵盤函式庫，在 2022/1月底被微軟的防毒軟體視為惡意程式，因此我們尚未尋找到替代模組可以使用，本團隊預計三月中會修正此問題，再更新至專案中。

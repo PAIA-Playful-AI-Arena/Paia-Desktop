@@ -1,0 +1,330 @@
+<xml xmlns="https://developers.google.com/blockly/xml">
+  <variables>
+    <variable id="bZF*G~d.@0t%P5b4kn6Y">模型輸入</variable>
+    <variable id="M~9;7/J#9?^%}*,b54!P">模型輸出</variable>
+    <variable id="DG@*IB3[oDadjIT~Con+">i</variable>
+    <variable id="8$eDePw^D_FR12K5uZM2">題目</variable>
+    <variable id=";)wb[FYrY41+9YxciN_~">訓練輸入</variable>
+    <variable id="wx,l3ufY?ZIJd()G,nfs">測試輸入</variable>
+    <variable id="IZ@tFx1uU%(`|d/CFCqQ">訓練輸出</variable>
+    <variable id="csp/?Vmg5dHT5ce4Uov2">測試輸出</variable>
+    <variable id="ke3~%KA+=lNKhxN)^L1n">模型</variable>
+    <variable id="OHSF#?oN/A4*l@g`ujoh">答案</variable>
+    <variable id="T|S^@/2[xLY@Sue1-oe-">訓練預測輸出</variable>
+    <variable id="|V=ksvjTJ)wWCiHrto[)">測試預測輸出</variable>
+  </variables>
+  <block type="variables_set" id="W)mo|oY|FdT!+$qINp6u" x="138" y="62">
+    <field name="VAR" id="bZF*G~d.@0t%P5b4kn6Y">模型輸入</field>
+    <value name="VALUE">
+      <block type="lists_create_with" id="]i!h!Ni@]UEP5yY]Oc`~">
+        <mutation items="0"></mutation>
+      </block>
+    </value>
+    <next>
+      <block type="variables_set" id="$VnFN+#=9VaQUvaIP!p2">
+        <field name="VAR" id="M~9;7/J#9?^%}*,b54!P">模型輸出</field>
+        <value name="VALUE">
+          <block type="lists_create_with" id="Vn9!NAz=lV45a5G_`E5y">
+            <mutation items="0"></mutation>
+          </block>
+        </value>
+        <next>
+          <block type="controls_for" id="5%fnyv!INWj@lW]YPszg">
+            <field name="VAR" id="DG@*IB3[oDadjIT~Con+">i</field>
+            <value name="FROM">
+              <shadow type="math_number" id=";;hj!muF487so``r;,vG">
+                <field name="NUM">1</field>
+              </shadow>
+            </value>
+            <value name="TO">
+              <shadow type="math_number" id="ok.w}SrVN-B,OiAD*B.3">
+                <field name="NUM">5</field>
+              </shadow>
+            </value>
+            <value name="BY">
+              <shadow type="math_number" id="YxzYwl_6az)yet=Tzcdk">
+                <field name="NUM">1</field>
+              </shadow>
+            </value>
+            <statement name="DO">
+              <block type="file_load" id="}oR_ADe!yK=3+Bq8rD=$">
+                <value name="FILENAME">
+                  <shadow type="text" id="jlk)8~(MBF=h+[utlAu;">
+                    <field name="TEXT">檔案名稱</field>
+                  </shadow>
+                  <block type="text_join" id="UqIpI@(bJv2mv%Ocw@S_">
+                    <mutation items="3"></mutation>
+                    <value name="ADD0">
+                      <block type="text" id=":~O}DxS|K)NA9uZGqv#b">
+                        <field name="TEXT">收集的資料-</field>
+                      </block>
+                    </value>
+                    <value name="ADD1">
+                      <block type="variables_get" id="R-U]|kL1):]N-8j-:u`|">
+                        <field name="VAR" id="DG@*IB3[oDadjIT~Con+">i</field>
+                      </block>
+                    </value>
+                    <value name="ADD2">
+                      <block type="text" id="|=nFjpLT8r|j|QL_ps-B">
+                        <field name="TEXT">-模型輸入</field>
+                      </block>
+                    </value>
+                  </block>
+                </value>
+                <value name="OBJECT">
+                  <block type="variables_get" id="$[HrKPiuVks=t;h8nO[X">
+                    <field name="VAR" id="8$eDePw^D_FR12K5uZM2">題目</field>
+                  </block>
+                </value>
+                <next>
+                  <block type="lists_extend" id="rfZEG3^i?]Rl1YmgXVXI">
+                    <field name="VAR" id="bZF*G~d.@0t%P5b4kn6Y">模型輸入</field>
+                    <value name="LIST">
+                      <block type="variables_get" id="*-mE~Mw$;=V337WR/Q#w">
+                        <field name="VAR" id="8$eDePw^D_FR12K5uZM2">題目</field>
+                      </block>
+                    </value>
+                    <next>
+                      <block type="file_load" id="Fg@=Du;q;,Md3*j4yo=z">
+                        <value name="FILENAME">
+                          <shadow type="text">
+                            <field name="TEXT">檔案名稱</field>
+                          </shadow>
+                          <block type="text_join" id="}jy3v|bcys%XgG^Wf%k,">
+                            <mutation items="3"></mutation>
+                            <value name="ADD0">
+                              <block type="text" id="usVlH21m4l`J*#=2oDX{">
+                                <field name="TEXT">收集的資料-</field>
+                              </block>
+                            </value>
+                            <value name="ADD1">
+                              <block type="variables_get" id="}*=K~{Le=!Ra32U,Kzdu">
+                                <field name="VAR" id="DG@*IB3[oDadjIT~Con+">i</field>
+                              </block>
+                            </value>
+                            <value name="ADD2">
+                              <block type="text" id="f!X-,|xVbpZ{XoW4C(S!">
+                                <field name="TEXT">-模型輸出</field>
+                              </block>
+                            </value>
+                          </block>
+                        </value>
+                        <value name="OBJECT">
+                          <block type="variables_get" id="fA@dqW:vyMDINqpCWCkC">
+                            <field name="VAR" id="OHSF#?oN/A4*l@g`ujoh">答案</field>
+                          </block>
+                        </value>
+                        <next>
+                          <block type="lists_extend" id="tI=cFmTS5`)x;$zzA/!=">
+                            <field name="VAR" id="M~9;7/J#9?^%}*,b54!P">模型輸出</field>
+                            <value name="LIST">
+                              <block type="variables_get" id="R_JuQg!J3[/rMdGbv{S]">
+                                <field name="VAR" id="OHSF#?oN/A4*l@g`ujoh">答案</field>
+                              </block>
+                            </value>
+                          </block>
+                        </next>
+                      </block>
+                    </next>
+                  </block>
+                </next>
+              </block>
+            </statement>
+            <next>
+              <block type="model_train_test_split" id="y^![)e(?WbjwXY//^dn_">
+                <field name="SHUFFLE">True</field>
+                <value name="X">
+                  <block type="variables_get" id="Map{uYn(iJd~/Vy@M%?j">
+                    <field name="VAR" id="bZF*G~d.@0t%P5b4kn6Y">模型輸入</field>
+                  </block>
+                </value>
+                <value name="Y">
+                  <block type="variables_get" id="#wy{F15UEKG%{jtu8I0h">
+                    <field name="VAR" id="M~9;7/J#9?^%}*,b54!P">模型輸出</field>
+                  </block>
+                </value>
+                <value name="TEST_SIZE">
+                  <shadow type="math_number" id="?|W~MJ7:a?X4a#uZzBbs">
+                    <field name="NUM">0.2</field>
+                  </shadow>
+                </value>
+                <value name="TRAIN_DATA">
+                  <block type="variables_get" id="~(S(_yhMwNIzt73-j6B+">
+                    <field name="VAR" id=";)wb[FYrY41+9YxciN_~">訓練輸入</field>
+                  </block>
+                </value>
+                <value name="TEST_DATA">
+                  <block type="variables_get" id="DG0wesc0b{Iu$M`*tg{+">
+                    <field name="VAR" id="wx,l3ufY?ZIJd()G,nfs">測試輸入</field>
+                  </block>
+                </value>
+                <value name="TRAIN_TARGET">
+                  <block type="variables_get" id="EYxb5{{b[3`Lt8J,08U}">
+                    <field name="VAR" id="IZ@tFx1uU%(`|d/CFCqQ">訓練輸出</field>
+                  </block>
+                </value>
+                <value name="TEST_TARGET">
+                  <block type="variables_get" id="my//Qc.6#~Chb:,h`?,,">
+                    <field name="VAR" id="csp/?Vmg5dHT5ce4Uov2">測試輸出</field>
+                  </block>
+                </value>
+                <next>
+                  <block type="variables_set" id="a,*w+v*K~`0nF|K+*4=/">
+                    <field name="VAR" id="ke3~%KA+=lNKhxN)^L1n">模型</field>
+                    <comment pinned="false" h="80" w="160">訓練AI模型，請修改適當的數據</comment>
+                    <value name="VALUE">
+                      <block type="model_create_classification" id="R~1]+,K~LduMrHG#(i3_">
+                        <field name="MODEL">KNeighborsClassifier</field>
+                        <field name="PARAM_K">5</field>
+                        <field name="PARAM_WEIGHTS">uniform</field>
+                        <field name="PARAM_ALGORITHM">auto</field>
+                      </block>
+                    </value>
+                    <next>
+                      <block type="model_train" id="AXT#dQd=FVEorAgW[5_j">
+                        <comment pinned="false" h="80" w="160">訓練模型</comment>
+                        <value name="X">
+                          <block type="variables_get" id="dIgr1h=BAkws9R==7{}`">
+                            <field name="VAR" id=";)wb[FYrY41+9YxciN_~">訓練輸入</field>
+                          </block>
+                        </value>
+                        <value name="Y">
+                          <block type="variables_get" id="H+H$pwSv1c#A9SJ*EPny">
+                            <field name="VAR" id="IZ@tFx1uU%(`|d/CFCqQ">訓練輸出</field>
+                          </block>
+                        </value>
+                        <value name="MODEL">
+                          <block type="variables_get" id="9xLm*HP#}pSh@QltJ^/I">
+                            <field name="VAR" id="ke3~%KA+=lNKhxN)^L1n">模型</field>
+                          </block>
+                        </value>
+                        <next>
+                          <block type="file_save" id="9pr:mo2FopXUujtL(]Er">
+                            <comment pinned="false" h="80" w="160">將訓練完成的模型存成model.pickle</comment>
+                            <value name="OBJECT">
+                              <block type="variables_get" id="GeU%[fk$WRHymp.2khi/">
+                                <field name="VAR" id="ke3~%KA+=lNKhxN)^L1n">模型</field>
+                              </block>
+                            </value>
+                            <value name="FILENAME">
+                              <block type="text" id=")n#.i:^n8(U+=Z6M*cU-">
+                                <field name="TEXT">模型_訓練產生的</field>
+                              </block>
+                            </value>
+                            <next>
+                              <block type="variables_set" id="P*E.*h=HAu#n3D_S$}^H">
+                                <field name="VAR" id="T|S^@/2[xLY@Sue1-oe-">訓練預測輸出</field>
+                                <value name="VALUE">
+                                  <block type="model_predict" id=";S#DvH+u:9O-**kojIu=">
+                                    <value name="MODEL">
+                                      <block type="variables_get" id="W6sps7ad=s9@=?Qjo}$/">
+                                        <field name="VAR" id="ke3~%KA+=lNKhxN)^L1n">模型</field>
+                                      </block>
+                                    </value>
+                                    <value name="X">
+                                      <block type="variables_get" id="6I@#(Eoxshf%A$0xW#l`">
+                                        <field name="VAR" id=";)wb[FYrY41+9YxciN_~">訓練輸入</field>
+                                      </block>
+                                    </value>
+                                  </block>
+                                </value>
+                                <next>
+                                  <block type="text_print" id="ey+qtW4ovfF}puE1/9Ri">
+                                    <value name="TEXT">
+                                      <shadow type="text" id="0k$A97b:U=2Z;AbF}0`[">
+                                        <field name="TEXT">abc</field>
+                                      </shadow>
+                                      <block type="text_join" id="f`-$|$|E6?^8n{h#7!9V">
+                                        <mutation items="2"></mutation>
+                                        <value name="ADD0">
+                                          <block type="text" id="d=L``;WAzbnbFo%$12zH">
+                                            <field name="TEXT">訓練結果(準確率)=</field>
+                                          </block>
+                                        </value>
+                                        <value name="ADD1">
+                                          <block type="model_evaluate_classification" id="NQj.N/T5hZWC+`z0v/w+">
+                                            <value name="TRUE">
+                                              <block type="variables_get" id="}fm3tpgNr~c_mCHXrDya">
+                                                <field name="VAR" id="IZ@tFx1uU%(`|d/CFCqQ">訓練輸出</field>
+                                              </block>
+                                            </value>
+                                            <value name="PRED">
+                                              <block type="variables_get" id="w#,M)4.~faf*e2|_c~/y">
+                                                <field name="VAR" id="T|S^@/2[xLY@Sue1-oe-">訓練預測輸出</field>
+                                              </block>
+                                            </value>
+                                          </block>
+                                        </value>
+                                      </block>
+                                    </value>
+                                    <next>
+                                      <block type="variables_set" id="@=GdNpFb6:b,+:h%PJH[">
+                                        <field name="VAR" id="|V=ksvjTJ)wWCiHrto[)">測試預測輸出</field>
+                                        <value name="VALUE">
+                                          <block type="model_predict" id="PH$k~Y4gLDPyAuP7R7bh">
+                                            <value name="MODEL">
+                                              <block type="variables_get" id="y*%-MjD;amu4qI{49L+f">
+                                                <field name="VAR" id="ke3~%KA+=lNKhxN)^L1n">模型</field>
+                                              </block>
+                                            </value>
+                                            <value name="X">
+                                              <block type="variables_get" id="btq$rQ$@(##bo0PVB5IV">
+                                                <field name="VAR" id="wx,l3ufY?ZIJd()G,nfs">測試輸入</field>
+                                              </block>
+                                            </value>
+                                          </block>
+                                        </value>
+                                        <next>
+                                          <block type="text_print" id=",KT:o_hzH.~AqrcOQp;F">
+                                            <value name="TEXT">
+                                              <shadow type="text" id="d*:Kz3NT{foAQ_W%!Zi{">
+                                                <field name="TEXT">abc</field>
+                                              </shadow>
+                                              <block type="text_join" id="Z:IE7lyR!|GWTUOjn?R|">
+                                                <mutation items="2"></mutation>
+                                                <value name="ADD0">
+                                                  <block type="text" id="fXRste]V7eTNb6|hcMfl">
+                                                    <field name="TEXT">預測結果(準確率)=</field>
+                                                  </block>
+                                                </value>
+                                                <value name="ADD1">
+                                                  <block type="model_evaluate_classification" id="/IQ?w;#e)9jD]+0iaipK">
+                                                    <value name="TRUE">
+                                                      <block type="variables_get" id="9CdGpT}b`K:+SjRB`R8E">
+                                                        <field name="VAR" id="csp/?Vmg5dHT5ce4Uov2">測試輸出</field>
+                                                      </block>
+                                                    </value>
+                                                    <value name="PRED">
+                                                      <block type="variables_get" id="++*KCCwIuoz^1275(w/s">
+                                                        <field name="VAR" id="|V=ksvjTJ)wWCiHrto[)">測試預測輸出</field>
+                                                      </block>
+                                                    </value>
+                                                  </block>
+                                                </value>
+                                              </block>
+                                            </value>
+                                          </block>
+                                        </next>
+                                      </block>
+                                    </next>
+                                  </block>
+                                </next>
+                              </block>
+                            </next>
+                          </block>
+                        </next>
+                      </block>
+                    </next>
+                  </block>
+                </next>
+              </block>
+            </next>
+          </block>
+        </next>
+      </block>
+    </next>
+  </block>
+  <block type="math_number" id="E2QBU7Py65c+UF)Im_UX" x="838" y="538">
+    <field name="NUM">3</field>
+  </block>
+</xml>

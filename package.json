@@ -37,6 +37,7 @@
     "codemirror": "^5.61.1",
     "dotenv": "^14.2.0",
     "download-git-repo": "^3.0.2",
+    "electron-context-menu": "^3.1.2",
     "electron-installer-dmg": "^3.0.0",
     "electron-squirrel-startup": "^1.0.0",
     "electron-store": "^6.0.1",

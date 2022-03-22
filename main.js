@@ -2,6 +2,11 @@
 const {app, BrowserWindow, shell, Menu, ipcMain} = require('electron')
 const path = require('path')
 const openAboutWindow = require('about-window').default
+const contextMenu = require('electron-context-menu')
+
+contextMenu({
+  showCopyImage: false
+});
 
 function createWindow () {
   // Create the browser window.
@@ -81,7 +86,9 @@ function createWindow () {
 }
 
 // Make sure not launching multiple times during install on Windows.
-if (require('electron-squirrel-startup')) return app.quit();
+if (require('electron-squirrel-startup')) {
+  app.quit();
+}
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.

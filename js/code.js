@@ -26,6 +26,11 @@ Code.GAME = (new URLSearchParams(window.location.search)).get('game');
 Code.PROJECT = '';
 
 /**
+ * The file system watcher of opened project.
+ */
+Code.PROJECT_WATCHER = null;
+
+/**
  * The mode of running program.
  */
 Code.MODE = 'play';
@@ -33,12 +38,27 @@ Code.MODE = 'play';
 /**
  * The mode of running program.
  */
- Code.LOGIN = false;
+Code.LOGIN = false;
 
  /**
  * The mode of running program.
  */
 Code.FILESET_ID = null;
+
+/**
+ * The fileset data found by token.
+ */
+Code.FILESET_FOUND = null;
+
+ /**
+ * The list of all opened files.
+ */
+Code.OPENED_XMLS = {};
+
+ /**
+ * The name of currently focused XML.
+ */
+Code.FOCUSED_XML = "";
 
 /**
  * Lookup for names of supported languages.  Keys should be in ISO 639 format.
@@ -97,30 +117,8 @@ Code.isRtl = function() {
  * @param {string} defaultXml Text representation of default blocks.
  */
 Code.loadBlocks = function(defaultXml) {
-  try {
-    var loadOnce = window.sessionStorage.loadOnceBlocks;
-  } catch(e) {
-    // Firefox sometimes throws a SecurityError when accessing sessionStorage.
-    // Restarting Firefox fixes this, so it looks like a bug.
-    var loadOnce = null;
-  }
-  if ('BlocklyStorage' in window && window.location.hash.length > 1) {
-    // An href with #key trigers an AJAX call to retrieve saved blocks.
-    BlocklyStorage.retrieveXml(window.location.hash.substring(1));
-  } else if (loadOnce) {
-    // Language switching stores the blocks during the reload.
-    delete window.sessionStorage.loadOnceBlocks;
-    var xml = Blockly.Xml.textToDom(loadOnce);
-    Blockly.Xml.domToWorkspace(xml, Code.workspace);
-  } else if (defaultXml) {
-    // Load the editor with default starting blocks.
-    var xml = Blockly.Xml.textToDom(defaultXml);
-    Blockly.Xml.domToWorkspace(xml, Code.workspace);
-  } else if ('BlocklyStorage' in window) {
-    // Restore saved blocks in a separate thread so that subsequent
-    // initialization is not affected from a failed load.
-    window.setTimeout(BlocklyStorage.restoreBlocks, 0);
-  }
+  var xml = Blockly.Xml.textToDom(defaultXml);
+  Blockly.Xml.domToWorkspace(xml, Code.workspace);
 };
 
 /**
@@ -148,15 +146,6 @@ Code.changeLanguage = function(lang) {
   window.location = window.location.protocol + '//' +
       window.location.host + window.location.pathname + search;
 };
-
-/**
- * Changes the output language by clicking the tab matching
- * the selected language in the codeMenu.
- */
-Code.changeCodingLanguage = function() {
-  var codeMenu = document.getElementById('code_menu');
-  Code.tabClick(codeMenu.options[codeMenu.selectedIndex].value);
-}
 
 /**
  * Bind a function to a button's click event.
@@ -215,111 +204,21 @@ Code.LANG = Code.getLang();
  * List of tab names.
  * @private
  */
-// Code.TABS_ = ['blocks', 'javascript', 'php', 'python', 'dart', 'lua', 'xml'];
-Code.TABS_ = ['blocks', 'python', 'xml'];
+Code.TABS_ = ['blocks', 'python'];
 
 /**
  * List of tab names with casing, for display in the UI.
  * @private
  */
 Code.TABS_DISPLAY_ = [
-  'Blocks', 'Python', 'xml'
+  'Blocks', 'Python'
 ];
-
-Code.selected = 'blocks';
-
-/**
- * Switch the visible pane when a tab is clicked.
- * @param {string} clickedName Name of tab clicked.
- */
-Code.tabClick = function(clickedName) {
-  // If the XML tab was open, save and render the content.
-  if (document.getElementById('tab_xml').classList.contains('tabon')) {
-    var xmlTextarea = document.getElementById('content_xml');
-    var xmlText = xmlTextarea.value;
-    var xmlDom = null;
-    try {
-      xmlDom = Blockly.Xml.textToDom(xmlText);
-    } catch (e) {
-      var q =
-          window.confirm(MSG['badXml'].replace('%1', e));
-      if (!q) {
-        // Leave the user on the XML tab.
-        return;
-      }
-    }
-    if (xmlDom) {
-      Code.workspace.clear();
-      Blockly.Xml.domToWorkspace(xmlDom, Code.workspace);
-    }
-  }
-
-  if (document.getElementById('tab_blocks').classList.contains('tabon')) {
-    Code.workspace.setVisible(false);
-  }
-  // Deselect all tabs and hide all panes.
-  for (var i = 0; i < Code.TABS_.length; i++) {
-    var name = Code.TABS_[i];
-    var tab = document.getElementById('tab_' + name);
-    tab.classList.add('taboff');
-    tab.classList.remove('tabon');
-    document.getElementById('content_' + name).style.visibility = 'hidden';
-  }
-
-  // Select the active tab.
-  Code.selected = clickedName;
-  var selectedTab = document.getElementById('tab_' + clickedName);
-  selectedTab.classList.remove('taboff');
-  selectedTab.classList.add('tabon');
-  // Show the selected pane.
-  document.getElementById('content_' + clickedName).style.visibility =
-      'visible';
-  Code.renderContent();
-  // The code menu tab is on if the blocks tab is off.
-  var codeMenuTab = document.getElementById('tab_code');
-  if (clickedName == 'blocks') {
-    Code.workspace.setVisible(true);
-    codeMenuTab.className = 'taboff';
-  } else {
-    codeMenuTab.className = 'tabon';
-  }
-  // Sync the menu's value with the clicked tab value if needed.
-  var codeMenu = document.getElementById('code_menu');
-  for (var i = 0; i < codeMenu.options.length; i++) {
-    if (codeMenu.options[i].value == clickedName) {
-      codeMenu.selectedIndex = i;
-      break;
-    }
-  }
-  Blockly.svgResize(Code.workspace);
-};
 
 /**
  * Populate the currently selected pane with content generated from the blocks.
  */
 Code.renderContent = function() {
-  var content = document.getElementById('content_' + Code.selected);
-  // Initialize the pane.
-  if (content.id == 'content_xml') {
-    var xmlTextarea = document.getElementById('content_xml');
-    var xmlDom = Blockly.Xml.workspaceToDom(Code.workspace);
-    var xmlText = Blockly.Xml.domToPrettyText(xmlDom);
-    xmlTextarea.value = xmlText;
-    xmlTextarea.focus();
-  } else if (content.id == 'content_javascript') {
-    Code.attemptCodeGeneration(Blockly.JavaScript);
-  } else if (content.id == 'content_python') {
-    Code.attemptCodeGeneration(Blockly.Python);
-  } else if (content.id == 'content_php') {
-    Code.attemptCodeGeneration(Blockly.PHP);
-  } else if (content.id == 'content_dart') {
-    Code.attemptCodeGeneration(Blockly.Dart);
-  } else if (content.id == 'content_lua') {
-    Code.attemptCodeGeneration(Blockly.Lua);
-  }
-  if (typeof PR == 'object') {
-    PR.prettyPrint();
-  }
+  Code.attemptCodeGeneration(Blockly.Python);
 };
 
 /**
@@ -387,8 +286,15 @@ Code.init = function() {
     });
   });
 
+  // Make opened xml tabs scrollable.
+  $("#opened_xml").on("mousewheel", function(event) {
+    var curPos = $("#opened_xml").scrollLeft();
+    $("#opened_xml").scrollLeft(curPos - event.originalEvent.wheelDelta / 5);
+  })
+
   Code.initLanguage();
 
+  // Initialize python editor.
   Code.editor = CodeMirror.fromTextArea(document.getElementById('python_code'), {
     mode: "python",
     lineNumbers: true,
@@ -405,9 +311,9 @@ Code.init = function() {
     readOnly: true
   });
 
-  var rtl = Code.isRtl();
-  var container = document.getElementById('tab_content');
+  // Set callback function when window is resized.
   var onresize = function(e) {
+    var container = document.getElementById('tab_content');
     var bBox = Code.getBBox_(container);
     for (var i = 0; i < Code.TABS_.length; i++) {
       var el = document.getElementById('content_' + Code.TABS_[i]);
@@ -442,24 +348,24 @@ Code.init = function() {
 
   // Construct the toolbox XML, replacing translated variable names.
   var toolboxText = window.readFile(path.join(__dirname, 'js', 'toolbox', `${Code.GAME}_${"desktop"}.xml`));
-  window.paiaAPI("GET", `toolbox?game=${Code.GAME}&env=desktop`, {}, false, null,
-    (res) => {
-      toolboxText = res.data;
-    }, (jqXHR, exception) => {
-      var msg = '';
-      if (jqXHR.status === 0) {
-          msg = '請確認網路連線，以取得最新的遊戲資訊';
-      } else if (exception === 'abort') {
-          msg = 'Ajax request aborted.';
-      } else {
-          msg = 'Uncaught Error.\n' + jqXHR.responseText;
-      }
-      window.alert(msg);
+  window.paiaAPI("GET", `toolbox?game=${Code.GAME}&env=desktop`, {}, false, null, (res) => {
+    toolboxText = res.data;
+  }, (jqXHR, exception) => {
+    var msg = '';
+    if (jqXHR.status === 0) {
+        msg = '請確認網路連線，以取得最新的遊戲資訊';
+    } else if (exception === 'abort') {
+        msg = 'Ajax request aborted.';
+    } else {
+        msg = 'Uncaught Error.\n' + jqXHR.responseText;
     }
-  );
+    window.alert(msg);
+  });
   toolboxText = toolboxText.replace(/(^|[^%]){(\w+)}/g,
       function(m, p1, p2) {return p1 + MSG[p2];});
   var toolboxXml = Blockly.Xml.textToDom(toolboxText);
+  
+  // Initialize blockly workspace.
   Code.workspace = Blockly.inject('content_blocks',
       {grid:
           {spacing: 25,
@@ -467,7 +373,7 @@ Code.init = function() {
            colour: '#FFF',
            snap: true},
        media: 'media/',
-       rtl: rtl,
+       rtl: Code.isRtl(),
        toolbox: toolboxXml,
        zoom:
           {controls: true,
@@ -476,19 +382,33 @@ Code.init = function() {
           {wheel: true}
       });
   
-  // Listen and check MLGame class block to change mode of executation.
+  // Set callback function when workspace is changed.
   Code.workspace.addChangeListener((e) => {
     if (!e.isUiEvent) {
-      $('#not_saved').html('*');
+      if (Code.FOCUSED_XML != "") {
+        Code.OPENED_XMLS[Code.FOCUSED_XML].$link.find('.not-saved').html('*');
+        Code.OPENED_XMLS[Code.FOCUSED_XML].xml = Blockly.Xml.workspaceToDom(Code.workspace);
+      }
+      if (e.type == "finished_loading") {
+        if (Code.OPENED_XMLS[Code.FOCUSED_XML].trashcan === undefined || Code.OPENED_XMLS[Code.FOCUSED_XML].trashcan.length == 0) {
+          Code.workspace.trashcan.emptyContents();
+        } else {
+          Code.workspace.trashcan.contents_ = Code.OPENED_XMLS[Code.FOCUSED_XML].trashcan.slice();
+        }
+      }
       var topBlocks = Code.workspace.getTopBlocks();
+      Code.MODE = 'execute';
+      $('#run').html(MSG['execute']);
       for (var i = 0; i < topBlocks.length; i++) {
         if (topBlocks[i].type == 'mlplay_class' && topBlocks[i].isEnabled()) {
           Code.MODE = 'play';
           $('#run').html(MSG['play']);
           return;
         }
-        Code.MODE = 'execute';
-        $('#run').html(MSG['execute']);
+      }
+    } else {
+      if (Code.FOCUSED_XML != "") {
+        Code.OPENED_XMLS[Code.FOCUSED_XML].settings = {x: Code.workspace.scrollX, y: Code.workspace.scrollY, scale: Code.workspace.scale};
       }
     }
   });
@@ -505,16 +425,19 @@ Code.init = function() {
   // Overide the length of indent.
   Blockly.Python.INDENT = "    ";
   
-  // Update example dropdown menu
-  Code.updateExampleList();
+  // Update library dropdown menu
+  var libraryDir = path.join(__dirname, 'library', Code.GAME.toLowerCase());
+  fs.watch(libraryDir, (eventType, filename) => {
+    Code.updateLibraryList();
+  });
+  Code.updateLibraryList();
 
   if ('BlocklyStorage' in window) {
     // Hook a save function onto unload.
     BlocklyStorage.backupOnUnload(Code.workspace);
   }
 
-  Code.tabClick(Code.selected);
-
+  // Replace the README of easy_game with tutorials.
   if (Code.GAME == 'easy_game') {
     $('#show_readme').html('教學');
     $('#readme-title').html('Tutorials');
@@ -546,12 +469,12 @@ Code.init = function() {
       function() {Code.discard(); Code.renderContent();});
   Code.bindClick('clean_trashcan',
       function() {Code.workspace.trashcan.emptyContents(); Code.renderContent();});
-  // Code.bindClick('login_logout',
-  //     function() {Code.loginout(); Code.renderContent();});
-  // Code.bindClick('show_filesets',
-  //     function() {Code.showFilesets(); Code.renderContent();});
-  // Code.bindClick('download_example',
-  //     function() {$("#download-filset-dialog").modal('show'); Code.renderContent();});
+  Code.bindClick('show_python',
+      function() {Code.showPython(); Code.renderContent();});
+  Code.bindClick('login_logout',
+      function() {Code.loginout(); Code.renderContent();});
+  Code.bindClick('show_filesets',
+      function() {Code.showFilesets(); Code.renderContent();});
   Code.bindClick('load_project',
       function() {Code.loadProject(); Code.renderContent();});
   Code.bindClick('reveal_project',
@@ -570,21 +493,6 @@ Code.init = function() {
       function() {Code.changeLanguage('en'); Code.renderContent();});
   Code.bindClick('zh-hant',
       function() {Code.changeLanguage('zh-hant'); Code.renderContent();});
-  // Code.bindClick('logout',
-  //     function() {Code.logout(); Code.renderContent();});
-
-  for (var i = 0; i < Code.TABS_.length; i++) {
-    var name = Code.TABS_[i];
-    Code.bindClick('tab_' + name,
-        function(name_) {return function() {Code.tabClick(name_);};}(name));
-  }
-  Code.bindClick('tab_code', function(e) {
-    if (e.target !== document.getElementById('tab_code')) {
-      // Prevent clicks on child codeMenu from triggering a tab click.
-      return;
-    }
-    Code.changeCodingLanguage();
-  });
 
   onresize();
   Blockly.svgResize(Code.workspace);
@@ -592,9 +500,9 @@ Code.init = function() {
   Blockly.svgResize(Code.workspace);
 
   // Try to Use saved token to login.
-  // Code.token_login();
+  Code.token_login();
 
-  // project
+  // Show project dialog
   $('#project-dialog').modal('show');
 
   // Lazy-load the syntax-highlighting.
@@ -610,20 +518,8 @@ Code.initLanguage = function() {
   document.dir = rtl ? 'rtl' : 'ltr';
   document.head.parentElement.setAttribute('lang', Code.LANG);
 
-  // Populate the coding language selection menu.
-  var codeMenu = document.getElementById('code_menu');
-  codeMenu.options.length = 0;
-  for (var i = 1; i < Code.TABS_.length; i++) {
-    codeMenu.options.add(new Option(Code.TABS_DISPLAY_[i], Code.TABS_[i]));
-  }
-  codeMenu.addEventListener('change', Code.changeCodingLanguage);
-
   // Inject language strings.
   document.getElementById('game_name').textContent = Code.GAME;
-  document.getElementById('tab_blocks').textContent = MSG['blocks'];
-  document.getElementById('tab_example').textContent = MSG['examples'];
-  document.getElementById('tab_lang').textContent = MSG['lang'];
-  document.getElementById('tab_option').textContent = MSG['options'];
   document.getElementById('discard').textContent = MSG['discard'];
   document.getElementById('en').textContent = MSG['en'];
   document.getElementById('zh-hant').textContent = MSG['zh_hant'];
@@ -775,18 +671,44 @@ Code.initMlgameBlocks = function() {
 };
 
 /**
- * Update example dropdown list.
+ * Update library dropdown list.
  */
-Code.updateExampleList = function() {
-  var example_dir = path.join(__dirname, 'xml', 'examples', Code.GAME.toLowerCase());
-  $('#examples').empty();
-  fs.readdirSync(example_dir).forEach(file => {
-    if (file.endsWith('.xml')) {
-      var name = file.slice(0, -4);
-      $('#examples').append($(`<a class="dropdown-item" href="#" id="${name}">${file}</a>`));
-      Code.bindClick(name,
-          function() {Code.loadExample(name); Code.renderContent();});
-    };
+ Code.updateLibraryList = function() {
+  $('#library').empty();
+  var libraryDir = path.join(__dirname, 'library', Code.GAME.toLowerCase());
+  var index = 0;
+  fs.readdirSync(libraryDir, { withFileTypes: true }).forEach(dirent => {
+    if (dirent.isDirectory()) {
+      var filesetDir = path.join(libraryDir, dirent.name);
+      $('#library').append($(`<a href="#library-${index}" data-toggle="collapse" aria-expanded="false" class="group mt-2" title="${filesetDir}"><i class="bi bi-caret-right-fill pointer mr-1"></i>${dirent.name}</a>`))
+      var $list = $(`<ul class="collapse list-unstyled" id="library-${index}"></ul>`)
+      $('#library').append($list);
+      index++;
+      fs.readdirSync(filesetDir).forEach(file => {
+        if (file.endsWith(".xml")) {
+          var filePath = path.join(filesetDir, file);
+          $list.append($(`<li class="ml-3 mt-1"><a href="#" id="${filePath}" title="${filePath}">${file}</a></li>`));
+          Code.bindClick(filePath,
+            function() {Code.loadXml(filePath); Code.renderContent();});
+        }
+      });
+    }
+  });
+};
+
+/**
+ * Update project files dropdown list.
+ */
+ Code.updateProjectList = function() {
+  $('#project-files').empty();
+  var projectDir = path.join(__dirname, 'MLGame', 'games', Code.GAME, 'ml', Code.PROJECT);
+  fs.readdirSync(projectDir).forEach(file => {
+    if (file.endsWith(".xml")) {
+      var filePath = path.join(projectDir, file);
+      $('#project-files').append($(`<li class="ml-3 mt-1"><a href="#" id="${filePath}" title="${filePath}">${file}</a></li>`));
+      Code.bindClick(filePath,
+        function() {Code.loadXml(filePath); Code.renderContent();});
+    }
   });
 };
 
@@ -827,23 +749,22 @@ Code.login = function() {
     }
   };
   window.paiaAPI("POST", "auth/token", data, false, null, (res) => {
-      window.setToken(res.access, res.refresh);
-      $('#state-content').html('登入成功');
-      Code.afterLogin();
-    }, (jqXHR, exception) => {
-      var msg = '';
-      if (jqXHR.status === 0) {
-          msg = '連線錯誤，請確認網路';
-      } else if (jqXHR.status == 401) {
-          msg = '密碼驗證錯誤 [401]';
-      } else if (exception === 'abort') {
-          msg = 'Ajax request aborted.';
-      } else {
-          msg = 'Uncaught Error.\n' + jqXHR.responseText;
-      }
-      console.log(msg);
+    window.setToken(res.access, res.refresh);
+    $('#state-content').html('登入成功');
+    Code.afterLogin();
+  }, (jqXHR, exception) => {
+    var msg = '';
+    if (jqXHR.status === 0) {
+        msg = '連線錯誤，請確認網路';
+    } else if (jqXHR.status == 401) {
+        msg = '密碼驗證錯誤 [401]';
+    } else if (exception === 'abort') {
+        msg = 'Ajax request aborted.';
+    } else {
+        msg = 'Uncaught Error.\n' + jqXHR.responseText;
     }
-  );
+    console.log(msg);
+  });
 };
 
 Code.google_login = function() {
@@ -859,23 +780,22 @@ Code.google_login = function() {
           }
         };
         window.paiaAPI("POST", "auth/token", data, false, null, (res) => {
-            window.setToken(res.access, res.refresh);
-            Code.LOGIN = true;
-            Code.afterLogin();
-          }, (jqXHR, exception) => {
-            var msg = '';
-            if (jqXHR.status === 0) {
-                msg = '連線錯誤，請確認網路';
-            } else if (jqXHR.status == 401) {
-                msg = `${jqXHR.responseText} [401]`;
-            } else if (exception === 'abort') {
-                msg = 'Ajax request aborted.';
-            } else {
-                msg = 'Uncaught Error.\n' + jqXHR.responseText;
-            }
-            console.log(msg);
+          window.setToken(res.access, res.refresh);
+          Code.LOGIN = true;
+          Code.afterLogin();
+        }, (jqXHR, exception) => {
+          var msg = '';
+          if (jqXHR.status === 0) {
+              msg = '連線錯誤，請確認網路';
+          } else if (jqXHR.status == 401) {
+              msg = `${jqXHR.responseText} [401]`;
+          } else if (exception === 'abort') {
+              msg = 'Ajax request aborted.';
+          } else {
+              msg = 'Uncaught Error.\n' + jqXHR.responseText;
           }
-        );
+          console.log(msg);
+        });
       });
   } catch(e) {
     console.log(e);
@@ -887,27 +807,25 @@ Code.token_login = function() {
   if (window.getAccessToken() == "no token") {
     return;
   } else {
-    window.paiaAPI("GET", "auth/token/verify", null, false, 'USER_TOKEN',
-      (res) => {
-        Code.afterLogin();
-      }, (jqXHR, exception) => {
-        if (jqXHR.status == 401) {
-          var data = {
-            refresh: window.getRefreshToken()
-          };
-          window.paiaAPI("POST", "auth/token/refresh", data, false, null, (res) => {
-              window.setToken(res.access, window.getRefreshToken());
-            }, (jqXHR, exception) => {
-              window.clearToken();
-              console.log("登入逾期，請重新登入");
-            }
-          );
-        } else {
-          window.clearToken();
-          console.log("登入逾期，請重新登入");
-        }
+    window.paiaAPI("GET", "auth/token/verify", null, false, 'USER_TOKEN', (res) => {
+      Code.afterLogin();
+    }, (jqXHR, exception) => {
+      if (jqXHR.status == 401) {
+        var data = {
+          refresh: window.getRefreshToken()
+        };
+        window.paiaAPI("POST", "auth/token/refresh", data, false, null, (res) => {
+            window.setToken(res.access, window.getRefreshToken());
+          }, (jqXHR, exception) => {
+            window.clearToken();
+            console.log("登入逾期，請重新登入");
+          }
+        );
+      } else {
+        window.clearToken();
+        console.log("登入逾期，請重新登入");
       }
-    );
+    });
   };
 };
 
@@ -936,12 +854,11 @@ Code.afterLogin = function() {
     e.classList.remove("disabled");
   });
   window.paiaAPI("GET", "me", null, false, 'USER_TOKEN', (res) => {
-      $('#tab_user').text(`${res.first_name} ${res.last_name}`);
-    }, (jqXHR, exception) => {
-      console.log("取得使用者資料錯誤");
-      window.logout();
-    }
-  );
+    $('#tab_user').text(`${res.first_name} ${res.last_name}`);
+  }, (jqXHR, exception) => {
+    console.log("取得使用者資料錯誤");
+    window.logout();
+  });
   $('#login-dialog').modal('hide');
 };
 
@@ -977,19 +894,79 @@ Code.openXml = function() {
  * Load xml file to workscpace. 
  */
 Code.loadXml = function(xmlPath) {
-  var count = Code.workspace.getAllBlocks(false).length;
-  if (count == 0 || window.confirm(Blockly.Msg['DELETE_ALL_BLOCKS'].replace('%1', count))) {
-    Code.workspace.clear();
-    if (window.location.hash) {
-      window.location.hash = '';
-    }
-    try {
-      Code.loadBlocks(window.readFile(xmlPath));
-      $('#file_name').html(path.basename(xmlPath));
-    } catch (err) {
-      window.alert(err);
+  var name = path.basename(xmlPath);
+  var index = 1;
+  if (Code.FOCUSED_XML != "") {
+    Code.OPENED_XMLS[Code.FOCUSED_XML].trashcan = Code.workspace.trashcan.contents_.slice();
+  }
+  while (name in Code.OPENED_XMLS) {
+    if (Code.OPENED_XMLS[name].$link.prop('title') == xmlPath) {
+      Code.workspace.clear();
+      Blockly.Xml.domToWorkspace(Code.OPENED_XMLS[name].xml, Code.workspace);
+      Code.workspace.setScale(Code.OPENED_XMLS[name].settings.scale);
+      Code.workspace.scroll(Code.OPENED_XMLS[name].settings.x, Code.OPENED_XMLS[name].settings.y);
+      $("#opened_xml a").removeClass("active");
+      Code.OPENED_XMLS[name].$link.addClass("active");
+      $("#opened_xml").animate({ scrollLeft: $("#opened_xml").scrollLeft() + Code.OPENED_XMLS[name].$item.position().left - $("#opened_xml").width()});
+      Code.FOCUSED_XML = name;
+      Code.workspace.setVisible(true);
+      $("#content_blocks").css("visibility", "visible");
+      $("#content_python").css("visibility", "hidden");
+      return;
+    } else {
+      name = `${path.basename(xmlPath)} (${index})`;
+      index++;
     }
   }
+  try {
+    var xmlText = window.readFile(xmlPath);
+    var xml = Blockly.Xml.textToDom(xmlText);
+    Code.workspace.clear();
+    Blockly.Xml.domToWorkspace(xml, Code.workspace);
+    Code.OPENED_XMLS[name] = {};
+    Code.OPENED_XMLS[name].path = xmlPath;
+    Code.OPENED_XMLS[name].xml = xml;
+    Code.OPENED_XMLS[name].settings = {x: Code.workspace.scrollX, y: Code.workspace.scrollY, scale: Code.workspace.scale};
+    var $item = $('<li class="nav-item"></li>');
+    var $link = $(`<a class="nav-link pr-4" href="#" id="tab-${xmlPath}" title="${xmlPath}">${name}<span class="not-saved"></span>&ensp;</a>`);
+    var $close = $(`<button class="p-0 border-0 bg-white tab-close" onclick="Code.closeXml('${name}')"><i class="bi bi-x"></i></button>`);
+    $item.append($link);
+    $item.append($close);
+    $("#opened_xml").append($item);
+    Code.bindClick(`tab-${xmlPath}`,
+    function() {Code.loadXml(xmlPath); Code.renderContent();});
+    $("#opened_xml a").removeClass("active");
+    $link.addClass("active");
+    $("#opened_xml").animate({ scrollLeft: $("#opened_xml").scrollLeft() + $item.position().left - $("#opened_xml").width()});
+    Code.OPENED_XMLS[name].$item = $item;
+    Code.OPENED_XMLS[name].$link = $link;
+    Code.FOCUSED_XML = name;
+    Code.workspace.setVisible(true);
+    $("#content_blocks").css("visibility", "visible");
+    $("#content_python").css("visibility", "hidden");
+  } catch (err) {
+    window.alert(err);
+  }
+};
+
+/**
+ * Close xml file and try to load another opened xml. 
+ */
+Code.closeXml = function(name) {
+  if (Code.OPENED_XMLS[name].$link.hasClass('active')) {
+    var $links = $("#opened_xml .nav-link");
+    var index = $links.index(Code.OPENED_XMLS[name].$link);
+    if (index - 1 >= 0) {
+      $links[index - 1].click();
+    } else if (index + 1 < $links.length) {
+      $links[index + 1].click();
+    } else {
+      Code.workspace.clear();
+      Code.FOCUSED_XML = "";
+    }
+  }
+  Code.OPENED_XMLS[name].$item.remove();
+  delete Code.OPENED_XMLS[name];
 };
 
 /**
@@ -1009,8 +986,7 @@ Code.saveXml = function() {
     var xml = Blockly.Xml.workspaceToDom(Code.workspace);
     var xmlText = Blockly.Xml.domToPrettyText(xml);
     window.writeFile(xmlPath, xmlText);
-    $('#file_name').html(path.basename(xmlPath));
-    $('#not_saved').html('');
+    Code.OPENED_XMLS[Code.FOCUSED_XML].$link.find('.not-saved').html('');
     // Add log
     window.addLog('store_xml', {
       type: "file",
@@ -1019,6 +995,13 @@ Code.saveXml = function() {
       }
     });
   }
+};
+
+// Show python editor.
+Code.showPython = function() {
+  $("#content_python").css("visibility", "visible");
+  $("#content_blocks").css("visibility", "hidden");
+  Code.workspace.setVisible(false);
 };
 
 /**
@@ -1232,6 +1215,14 @@ Code.newProject = function() {
   } catch(err) {
     window.alert(err);
   }
+  $("#project-link").attr("title", dir);
+  if (Code.PROJECT_WATCHER !== null) {
+    Code.PROJECT_WATCHER.close();
+  }
+  Code.PROJECT_WATCHER = fs.watch(dir, (eventType, filename) => {
+    Code.updateProjectList();
+  });
+  Code.updateProjectList();
 };
 
 /**
@@ -1286,6 +1277,14 @@ Code.openProject = function() {
       game_id: 1
     }
   });
+  $("#project-link").attr("title", dir);
+  if (Code.PROJECT_WATCHER !== null) {
+    Code.PROJECT_WATCHER.close();
+  }
+  Code.PROJECT_WATCHER = fs.watch(dir, (eventType, filename) => {
+    Code.updateProjectList();
+  });
+  Code.updateProjectList();
 };
 
 /**
@@ -1326,6 +1325,9 @@ Code.exportProject = function() {
   }
 };
 
+/**
+ * Copy fileset token to clipboard.
+ */
 Code.copyClipboard = function(token, id) {
   const { clipboard } = require('electron');
   clipboard.writeText(token);
@@ -1333,12 +1335,18 @@ Code.copyClipboard = function(token, id) {
   $(id).append('<i class="bi bi-clipboard-check"></i>');
 };
 
+/**
+ * Update fileset
+ */
 Code.updateFileset = function(index) {
   Code.FILESET_ID = index;
   $("#filset-dialog").modal("hide");
   $("#upload-filset-dialog").modal('show');
 };
 
+/**
+ * Upload a fileset.
+ */
 Code.uploadFileset = function() {
   var data = {
     name: $("#filset-name").val(),
@@ -1351,85 +1359,88 @@ Code.uploadFileset = function() {
     method = "PATCH";
     apiPath += `/${Code.FILESET_ID}`;
   }
-  window.paiaAPI(method, apiPath, data, false, 'USER_TOKEN',
-    (res) => {
-      if (res.status == "success") {
-        if (Code.FILESET_ID >= 0) {
-          window.alert(`檔案集更新成功`);
-        } else {
-          window.alert(`檔案集新增成功，下載代碼：${res.data}`);
-        }
-        $("#upload-filset-dialog").modal('hide');
+  window.paiaAPI(method, apiPath, data, false, 'USER_TOKEN', (res) => {
+    if (res.status == "success") {
+      if (Code.FILESET_ID >= 0) {
+        window.alert(`檔案集更新成功`);
       } else {
-        window.alert(`範例程式上傳失敗：${res.detail}`);
+        window.alert(`檔案集新增成功，下載代碼：${res.data}`);
       }
-    }, (jqXHR, exception) => {
-      var msg = '';
-      if (jqXHR.status === 0) {
-          msg = '連線錯誤，請確認網路';
-      } else if (jqXHR.status == 401) {
-          msg = '驗證錯誤 [401]';
-      } else if (exception === 'abort') {
-          msg = 'Ajax request aborted.';
-      } else {
-          msg = 'Uncaught Error.\n' + jqXHR.responseText;
-      }
-      window.alert(msg);
+      $("#upload-filset-dialog").modal('hide');
+    } else {
+      window.alert(`範例程式上傳失敗：${res.detail}`);
     }
-  );
+  }, (jqXHR, exception) => {
+    var msg = '';
+    if (jqXHR.status === 0) {
+        msg = '連線錯誤，請確認網路';
+    } else if (jqXHR.status == 401) {
+        msg = '驗證錯誤 [401]';
+    } else if (exception === 'abort') {
+        msg = 'Ajax request aborted.';
+    } else {
+        msg = 'Uncaught Error.\n' + jqXHR.responseText;
+    }
+    window.alert(msg);
+  });
 };
 
+/**
+ * Show all filesets in a dialog.
+ */
 Code.showFilesets = function() {
   $("#fileset-list").empty();
   window.paiaAPI("GET", "fileset", null, false, 'USER_TOKEN', (res) => {
-      res.data.forEach((e) => {
-        var $item = $('<div class="card" style="width: 100%;"></div>');
-        var $header = $(`<div class="card-header" id="accordion-${e.id}"></div>`);
-        $header.append(`<h2><button class="btn btn-focus-box-shadow btn-block text-left" type="button" data-toggle="collapse" data-target="#collapse-${e.id}" aria-expanded="true" aria-controls="collapse-${e.id}"><span>${e.game} - ${e.name}</span><span class="float-right">更新時間：${e.updated_at.substring(0, 19)}</span></button></h2>`);
-        $item.append($header);
-        var $body = $(`<div id="collapse-${e.id}" class="collapse" aria-labelledby="accordion-${e.id}" data-parent="#fileset-list"></div>`);
-        var $card_body = $(`<div class="card-body"></div>`);
-        var $card_nav = $(`<div class="d-flex mb-3"></div>`)
-        $card_nav.append(`<span class="ml-1">下載代碼：${e.token}</span>`);
-        $card_nav.append(`<a onclick="Code.copyClipboard('${e.token}', '#clipboard-${e.id}');" id="clipboard-${e.id}" class="ml-3 btn btn-sm btn-secondary"><i class="bi bi-clipboard"></i></a>`);
-        $card_nav.append(`<a onclick="Code.updateFilesetFile(${e.id});" class="ml-auto btn btn-sm btn-success float-right">新增檔案</a>`);
-        $card_nav.append(`<a onclick="Code.updateFileset(${e.id});" class="ml-1 btn btn-sm btn-info float-right">更新檔案集</a>`);
-        $card_nav.append(`<a onclick="Code.deleteFileset(${e.id});" class="ml-1 btn btn-sm btn-danger float-right">刪除檔案集</a>`);
-        $card_body.append($card_nav);
-        var $file_list = $('<ul class="list-group"><ul>');
-        window.paiaAPI("GET", `fileset/${e.id}`, null, false, 'USER_TOKEN', (res) => {
-            res.data.files.forEach((f) => {
-              var $file = $(`<li class="list-group-item d-flex justify-content-between align-items-center">${f.file_name}</li>`);
-              $file.append($(`<a onclick="Code.deleteFilesetFile(${e.id}, '${f.file_name}');" class="ml-auto btn btn-sm btn-danger float-right">刪除檔案</a>`));
-              $file_list.append($file);
-            });
-          }, (jqXHR, exception) => {
-            var msg = '';
-            if (jqXHR.status === 0) {
-                msg = '連線錯誤，請確認網路';
-            } else if (jqXHR.status == 401) {
-                msg = `${jqXHR.responseText} [401]`;
-            } else if (exception === 'abort') {
-                msg = 'Ajax request aborted.';
-            } else {
-                msg = 'Uncaught Error.\n' + jqXHR.responseText;
-            }
-            console.log("取得檔案錯誤");
-            console.log(msg);
+    res.data.forEach((e) => {
+      var $item = $('<div class="card" style="width: 100%;"></div>');
+      var $header = $(`<div class="card-header" id="accordion-${e.id}"></div>`);
+      $header.append(`<h2><button class="btn btn-focus-box-shadow btn-block text-left" type="button" data-toggle="collapse" data-target="#collapse-${e.id}" aria-expanded="true" aria-controls="collapse-${e.id}"><span>${e.game} - ${e.name}</span><span class="float-right">更新時間：${e.updated_at.substring(0, 19)}</span></button></h2>`);
+      $item.append($header);
+      var $body = $(`<div id="collapse-${e.id}" class="collapse" aria-labelledby="accordion-${e.id}" data-parent="#fileset-list"></div>`);
+      var $card_body = $(`<div class="card-body"></div>`);
+      var $card_nav = $(`<div class="d-flex mb-3"></div>`)
+      $card_nav.append(`<span class="ml-1">下載代碼：${e.token}</span>`);
+      $card_nav.append(`<a onclick="Code.copyClipboard('${e.token}', '#clipboard-${e.id}');" id="clipboard-${e.id}" class="ml-3 btn btn-sm btn-secondary"><i class="bi bi-clipboard"></i></a>`);
+      $card_nav.append(`<a onclick="Code.updateFilesetFile(${e.id});" class="ml-auto btn btn-sm btn-success float-right">新增檔案</a>`);
+      $card_nav.append(`<a onclick="Code.updateFileset(${e.id});" class="ml-1 btn btn-sm btn-info float-right">更新檔案集</a>`);
+      $card_nav.append(`<a onclick="Code.deleteFileset(${e.id});" class="ml-1 btn btn-sm btn-danger float-right">刪除檔案集</a>`);
+      $card_body.append($card_nav);
+      var $file_list = $('<ul class="list-group"><ul>');
+      window.paiaAPI("GET", `fileset/${e.id}`, null, false, 'USER_TOKEN', (res) => {
+          res.data.files.forEach((f) => {
+            var $file = $(`<li class="list-group-item d-flex justify-content-between align-items-center">${f.file_name}</li>`);
+            $file.append($(`<a onclick="Code.deleteFilesetFile(${e.id}, '${f.file_name}');" class="ml-auto btn btn-sm btn-danger float-right">刪除檔案</a>`));
+            $file_list.append($file);
+          });
+        }, (jqXHR, exception) => {
+          var msg = '';
+          if (jqXHR.status === 0) {
+              msg = '連線錯誤，請確認網路';
+          } else if (jqXHR.status == 401) {
+              msg = `${jqXHR.responseText} [401]`;
+          } else if (exception === 'abort') {
+              msg = 'Ajax request aborted.';
+          } else {
+              msg = 'Uncaught Error.\n' + jqXHR.responseText;
           }
-        );
-        $card_body.append($file_list);
-        $body.append($card_body);
-        $item.append($body);
-        $("#fileset-list").append($item);
-      })
-    }, (jqXHR, exception) => {
-      console.log("取得檔案集錯誤");
-    }
-  );
+          console.log("取得檔案錯誤");
+          console.log(msg);
+        }
+      );
+      $card_body.append($file_list);
+      $body.append($card_body);
+      $item.append($body);
+      $("#fileset-list").append($item);
+    })
+  }, (jqXHR, exception) => {
+    console.log("取得檔案集錯誤");
+  });
   $("#filset-dialog").modal('show');
 };
 
+/**
+ * Upload files to fileset.
+ */
 Code.updateFilesetFile = function(index) {
   var filePath = window.selectPath({
     title: "上傳檔案",
@@ -1439,6 +1450,7 @@ Code.updateFilesetFile = function(index) {
   if (filePath === undefined) {
     return;
   }
+  $("#filset-dialog").modal('hide');
   var error = 0;
   filePath.forEach((f) => {
     var data = new FormData();
@@ -1446,23 +1458,23 @@ Code.updateFilesetFile = function(index) {
     var file = new File([window.readFile(f)], name);
     data.append("files", file, name);
     window.paiaAPI("PUT", `fileset/${index}/file`, data, false, 'USER_TOKEN', (res) => {
-        console.log(`${path.basename(f)} 上傳成功`);
-      }, (jqXHR, exception) => {
-        var msg = '';
-        if (jqXHR.status === 0) {
-            msg = '連線錯誤，請確認網路';
-        } else if (jqXHR.status == 401) {
-            msg = `${jqXHR.responseText} [401]`;
-        } else if (exception === 'abort') {
-            msg = 'Ajax request aborted.';
-        } else {
-            msg = 'Uncaught Error.\n' + jqXHR.responseText;
-        }
-        console.log(`${path.basename(f)} 上傳失敗`);
-        console.log(msg);
-        error += 1;
+      $("#filset-dialog").modal('hide');
+      Code.showFilesets();
+    }, (jqXHR, exception) => {
+      var msg = '';
+      if (jqXHR.status === 0) {
+          msg = '連線錯誤，請確認網路';
+      } else if (jqXHR.status == 401) {
+          msg = `${jqXHR.responseText} [401]`;
+      } else if (exception === 'abort') {
+          msg = 'Ajax request aborted.';
+      } else {
+          msg = 'Uncaught Error.\n' + jqXHR.responseText;
       }
-    );
+      console.log(`${path.basename(f)} 上傳失敗`);
+      console.log(msg);
+      error += 1;
+    });
   })
   if (error > 0) {
     window.alert(`${filePath.length} 個檔案上傳完成，其中 ${error} 個發生錯誤`);
@@ -1472,89 +1484,108 @@ Code.updateFilesetFile = function(index) {
   $("#download-filset-dialog").modal('hide');
 };
 
-Code.downloadFileset = function() {
-  var download_dir = path.join(__dirname, 'xml', 'examples', Code.GAME.toLowerCase());
-  if($("#fileset-download-position").val() == "selected-folder") {
-    download_dir = window.selectPath({
-      title: "下載檔案集",
-      defaultPath: path.join(require('os').homedir(), 'Desktop'),
-      properties: ["openDirectory"]
-    })
-    if (download_dir === undefined) {
-      return;
-    } else {
-      download_dir = download_dir[0];
-    }
-  }
-  var error = 0;
-  var count = 0;
+/**
+ * Use token to find fileset.
+ */
+Code.findFileset = function() {
   window.paiaAPI("GET", `shared_fileset?token=${$("#fileset-download-token").val()}`, null, false, 'DESKTOP_TOKEN', (res) => {
-      count = res.data.files.length;
-      res.data.files.forEach((e) => {
-        var file = fs.createWriteStream(path.join(download_dir, `${res.data.name}-${e.file_name}`));
-        require('https').get(e.file_url, (response) => {
-          response.pipe(file);
-        }).on('error', (e) => {
-          console.log(e);
-          error += 1;
-        });
-      });
-    }, (jqXHR, exception) => {
-      console.log("取得檔案集錯誤");
+    if (res.status == "success") {
+      Code.FILESET_FOUND = res.data;
+      $("#fileset-author").html(res.data.author);  
+      $("#fileset-name").html(res.data.name);  
+      $("#fileset-updated-at").html(res.data.updated_at.substring(0, 19));  
+      $("#fileset-data").collapse('show');
+    } else {
+      Code.FILESET_FOUND = null;
+      $("#fileset-data").collapse('hide');
+      window.alert(`${res.detail}`);
     }
-  );
-  if (error > 0) {
-    window.alert(`${count} 個檔案下載完成，其中 ${error} 個發生錯誤`);
-  } else {
-    window.alert(`${count} 個檔案下載完成`);
-  }
-  $("#download-filset-dialog").modal('hide');
+  }, (jqXHR, exception) => {
+    Code.FILESET_FOUND = null;
+    console.log("取得檔案集錯誤");
+  });
 };
 
+/**
+ * Download fileset.
+ */
+Code.downloadFileset = function() {
+  var dir = path.join(__dirname, 'library', Code.GAME.toLowerCase(), `${Code.FILESET_FOUND.name}@${Code.FILESET_FOUND.token}`);
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir);
+  } else if (!window.confirm(`${dir} 已存在，是否要覆蓋此程式集？`)) {
+    return;
+  }
+  Code.FILESET_FOUND.files.forEach((e) => {
+    var file = fs.createWriteStream(path.join(dir, e.file_name));
+    require('https').get(e.file_url, (response) => {
+      response.on('data', (d) => {
+        file.write(d);
+      });
+    }).on('error', (error) => {
+      window.alert(`${e.file_name} 下載錯誤： ${error}`);
+    });
+  });
+};
+
+/**
+ * Delete fileset.
+ */
 Code.deleteFileset = function(index) {
   if (window.confirm("確定要刪除此檔案集嗎？")) {
+    $("#filset-dialog").modal('hide');
     window.paiaAPI("DELETE", `fileset/${index}`, null, false, 'USER_TOKEN', (res) => {
-        $("#filset-dialog").modal('hide');
+      if (res.status == "success") {
         window.alert(`成功刪除檔案集`);
-      }, (jqXHR, exception) => {
-        var msg = '';
-        if (jqXHR.status === 0) {
-            msg = '連線錯誤，請確認網路';
-        } else if (jqXHR.status == 401) {
-            msg = `${jqXHR.responseText} [401]`;
-        } else if (exception === 'abort') {
-            msg = 'Ajax request aborted.';
-        } else {
-            msg = 'Uncaught Error.\n' + jqXHR.responseText;
-        }
-        window.alert(`刪除失敗：${msg}`);
+      } else {
+        window.alert(`${res.detail}`);
       }
-    );
+      Code.showFilesets();
+    }, (jqXHR, exception) => {
+      var msg = '';
+      if (jqXHR.status === 0) {
+          msg = '連線錯誤，請確認網路';
+      } else if (jqXHR.status == 401) {
+          msg = `${jqXHR.responseText} [401]`;
+      } else if (exception === 'abort') {
+          msg = 'Ajax request aborted.';
+      } else {
+          msg = 'Uncaught Error.\n' + jqXHR.responseText;
+      }
+      window.alert(`刪除失敗：${msg}`);
+    });
   }
 };
 
+/**
+ * Download a file from fileset.
+ */
 Code.deleteFilesetFile = function(index, filename) {
   if (window.confirm(`確定要刪除 ${filename} 嗎？`)) {
+    $("#filset-dialog").modal('hide');
     var data = {
       filename: filename
     }
     window.paiaAPI("DELETE", `fileset/${index}/file`, data, false, 'USER_TOKEN', (res) => {
-        $("#filset-dialog").modal('hide');
+      if (res.status == "success") {
         window.alert(`成功刪除檔案`);
-      }, (jqXHR, exception) => {
-        var msg = '';
-        if (jqXHR.status === 0) {
-            msg = '連線錯誤，請確認網路';
-        } else if (jqXHR.status == 401) {
-            msg = `${jqXHR.responseText} [401]`;
-        } else if (exception === 'abort') {
-            msg = 'Ajax request aborted.';
-        } else {
-            msg = 'Uncaught Error.\n' + jqXHR.responseText;
-        }
-        window.alert(`刪除失敗：${msg}`);
+      } else {
+        window.alert(`${res.detail}`);
       }
-    );
+      Code.showFilesets();
+    }, (jqXHR, exception) => {
+      var msg = '';
+      if (jqXHR.status === 0) {
+          msg = '連線錯誤，請確認網路';
+      } else if (jqXHR.status == 401) {
+          msg = `${jqXHR.responseText} [401]`;
+      } else if (exception === 'abort') {
+          msg = 'Ajax request aborted.';
+      } else {
+          msg = 'Uncaught Error.\n' + jqXHR.responseText;
+      }
+      window.alert(`刪除失敗：${msg}`);
+    });
   }
 };
 

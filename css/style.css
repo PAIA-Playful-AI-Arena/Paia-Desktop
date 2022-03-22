@@ -4,12 +4,128 @@ html, body {
 
 body {
   background-color: #fff;
-  padding-top: 10px;
   margin: 0;
+  overflow-x: overlay;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1; 
+}
+ 
+::-webkit-scrollbar-thumb {
+  background: #888; 
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555; 
+}
+
+.wrapper {
+  display: flex;
+}
+
+#sidebar {
+  min-width: 250px;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  z-index: 999;
+  background: #333;
+  color: #fff;
+  overflow-y: scroll;
+}
+
+#blockly-container {
+  padding-top: 10px;
+  min-width: 800px;
 }
 
 .farSide {
   text-align: right;
+}
+
+.group[aria-expanded="true"] .pointer::before {
+  transform: rotate(90deg);
+}
+
+#sidebar a {
+  max-width: 200px;
+  display: block;
+  color: #fff;
+  white-space: nowrap;
+  text-decoration: none;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#sidebar span {
+  max-width: 200px;
+  display: inline-block;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  vertical-align: top;
+}
+
+#sidebar input, #sidebar span {
+  background: #333;
+  color: #fff;
+}
+
+#opened_xml{
+  overflow-x: overlay;
+  overflow-y: hidden;
+  max-width: calc(100% - (400px));
+  flex-wrap: nowrap;
+}
+
+#opened_xml .nav-link {
+  color: #555;
+}
+
+#opened_xml .nav-link.active {
+  color: #000;
+}
+
+.row::-webkit-scrollbar {
+  height: 3px;
+}
+
+.row::-webkit-scrollbar-track {
+  background: rgba(221, 221, 221, 0.5); 
+}
+
+.row::-webkit-scrollbar-thumb {
+  background: rgba(136, 136, 136, 0.5); 
+}
+
+.row::-webkit-scrollbar-thumb:hover {
+  background: rgba(85, 85, 85, 0.5); 
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+}
+
+.nav-link {
+  white-space: nowrap;
+}
+
+.tab-close {
+  color: #888;
+  height: 50%;
+  margin-left: -25px;
+  margin-right: 9px;
+}
+
+.tab-close:hover {
+  color: #000;
 }
 
 html[dir="RTL"] .farSide {
@@ -21,7 +137,6 @@ button {
   padding: 10px;
   border-radius: 4px;
   border: 1px solid #ddd;
-  font-size: large;
   background-color: #eee;
   color: #000;
 }
@@ -40,12 +155,6 @@ button>img {
 button:hover>img {
   opacity: 1;
 }
-button:active {
-  border: 1px solid #888 !important;
-}
-/* button:hover {
-  box-shadow: 2px 2px 5px #888;
-} */
 button.disabled:hover>img {
   opacity: 0.6;
 }
@@ -96,10 +205,7 @@ td.tabmax {
 html[dir=rtl] td.tabmax {
   text-align: left;
 }
-#tab_xml {
-  display: none;
-}
-#tab_code {
+#tab_blocks, #tab_python {
   display: none;
 }
 
@@ -167,8 +273,9 @@ pre.content {
 
 .tab-content {
   height: calc(100vh - (70px));
-  width: calc(100vw - (30px));
+  width: 100%;
 }
+
 .modal-dialog {
   width: calc(100vw - (100px));
   max-width: 800px;

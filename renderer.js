@@ -89,13 +89,6 @@ window.readFile = function(file) {
   });
 };
 
-window.readFileBytes = function(file) {
-  return fs.readFileSync(file, (err, data) => {
-    if (err) window.alert(err);
-    return data;
-  });
-};
-
 window.selectPath = function(options) {
   return dialog.showOpenDialogSync(options);
 };
@@ -219,6 +212,8 @@ window.paiaAPI = function(method, url, data, async, auth, response, error) {
     headers['Authorization'] = `Bearer ${process.env.PAIA_DESKTOP_TOKEN}`;
   }
   if (Object.prototype.toString.call(data) !== "[object FormData]") {
+    headers['Content-Type'] = 'application/json';
+    headers['Accept'] = 'application/json';
     $.ajax({
       url: `${process.env.PAIA_API_HOST}/api/${process.env.PAIA_API_VERSION}/${url}`,
       headers: headers,

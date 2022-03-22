@@ -1443,7 +1443,7 @@ Code.updateFilesetFile = function(index) {
   filePath.forEach((f) => {
     var data = new FormData();
     var name = path.basename(f);
-    var file = new File(window.readFileBytes(f), name);
+    var file = new File([window.readFile(f)], name);
     data.append("files", file, name);
     window.paiaAPI("PUT", `fileset/${index}/file`, data, false, 'USER_TOKEN', (res) => {
         console.log(`${path.basename(f)} 上傳成功`);

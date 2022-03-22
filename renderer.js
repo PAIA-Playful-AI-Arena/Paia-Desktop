@@ -11,6 +11,7 @@ const path = require('path');
 const fs = require('fs');
 const { google } = require('googleapis');
 const Store = require('electron-store');
+const dateformat = require('dateformat');
 const { v4: uuidv4 } = require('uuid');
 const result = require('dotenv').config({ path: path.join(__dirname, '.env') });
 if (result.error) {
@@ -160,7 +161,7 @@ window.addLog = function(action, obj) {
   log.anonymous_id = id;
   log.action = action;
   log.paia_obj = obj;
-  log.created_at = new Date().toUTCString();
+  log.created_at = dateformat(new Date(), "yyyy-mm-dd HH:MM:sso");
   logList = store.get('log');
   logList.push(log);
   store.set('log', logList);

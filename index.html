@@ -232,7 +232,7 @@
     });
   };
   function git_download(url, destination, button) {
-    if (window.confirm('下載前會清除此遊戲資料夾下的所有檔案，確定執行？')) {
+    if (window.confirm('下載後會覆蓋此遊戲資料夾下的所有檔案，確定執行？')) {
       button.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> 下載 / 更新';
       document.querySelectorAll('a.btn').forEach(e => {
         e.classList.add("disabled");
@@ -240,7 +240,6 @@
       var path = require('path');
       var fs = require('fs');
       destination = path.join(__dirname, destination);
-      fs.rmdirSync(destination, { recursive: true });
       var download = require('download-git-repo');
       download(url, destination, function (err) {
         button.innerHTML = '<i class="bi bi-download"></i> 下載 / 更新';
@@ -250,6 +249,7 @@
         if (err) {
           window.alert(err);
         } else {
+          update_version_name();
           var config = JSON.parse(window.readFile(path.join(destination, 'game_config.json')));
           window.alert(config['game_name'] + '-' + config['version'] + ' 下載成功');
         }

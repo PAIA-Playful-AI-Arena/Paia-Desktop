@@ -1398,6 +1398,7 @@ Code.uploadFileset = function() {
         window.alert(`檔案集新增成功，下載代碼：${res.data}`);
       }
       $("#upload-filset-dialog").modal('hide');
+      Code.showFilesets();
     } else {
       window.alert(`範例程式上傳失敗：${res.detail}`);
     }
@@ -1476,12 +1477,11 @@ Code.updateFilesetFile = function(index) {
   var filePath = window.selectPath({
     title: "上傳檔案",
     defaultPath: path.join(__dirname, 'MLGame', 'games', Code.GAME, 'ml', Code.PROJECT),
-    properties: ["openFile"]
+    properties: ["openFile", "multiSelections"]
   });
   if (filePath === undefined) {
     return;
   }
-  $("#filset-dialog").modal('hide');
   var error = 0;
   filePath.forEach((f) => {
     var data = new FormData();
@@ -1489,7 +1489,6 @@ Code.updateFilesetFile = function(index) {
     var file = new File([window.readFile(f)], name);
     data.append("files", file, name);
     window.paiaAPI("PUT", `fileset/${index}/file`, data, false, 'USER_TOKEN', (res) => {
-      $("#filset-dialog").modal('hide');
       Code.showFilesets();
     }, (jqXHR, exception) => {
       var msg = '';
@@ -1547,14 +1546,32 @@ Code.downloadFileset = function() {
   } else if (!window.confirm(`${dir} 已存在，是否要覆蓋此程式集？`)) {
     return;
   }
+  $("#saved_filesets").html(`程式庫 <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`);
+  var total = Code.FILESET_FOUND.files.length;
+  var finish = 0;
+  var error = 0;
   Code.FILESET_FOUND.files.forEach((e) => {
     var file = fs.createWriteStream(path.join(dir, e.file_name));
     require('https').get(e.file_url, (response) => {
       response.on('data', (d) => {
         file.write(d);
+        finish++;
+        if (finish + error == total) {
+          if (error == 0) {
+            window.alert(`${Code.FILESET_FOUND.name} 檔案集下載完成`);
+          } else {
+            window.alert(`${Code.FILESET_FOUND.name} 檔案集下載完成，${error} 個檔案發生錯誤`);
+          }
+          $("#saved_filesets").html(`程式庫`);
+        }
       });
-    }).on('error', (error) => {
-      window.alert(`${e.file_name} 下載錯誤： ${error}`);
+    }).on('error', (e) => {
+      error++;
+      if (finish + error == total) {
+        window.alert(`${Code.FILESET_FOUND.name} 檔案集下載完成，${error} 個檔案發生錯誤`);
+        $("#saved_filesets").html(`程式庫`);
+      }
+      console.error(e);
     });
   });
 };
@@ -1564,7 +1581,6 @@ Code.downloadFileset = function() {
  */
 Code.deleteFileset = function(index) {
   if (window.confirm("確定要刪除此檔案集嗎？")) {
-    $("#filset-dialog").modal('hide');
     window.paiaAPI("DELETE", `fileset/${index}`, null, false, 'USER_TOKEN', (res) => {
       if (res.status == "success") {
         window.alert(`成功刪除檔案集`);
@@ -1593,7 +1609,6 @@ Code.deleteFileset = function(index) {
  */
 Code.deleteFilesetFile = function(index, filename) {
   if (window.confirm(`確定要刪除 ${filename} 嗎？`)) {
-    $("#filset-dialog").modal('hide');
     var data = {
       filename: filename
     }

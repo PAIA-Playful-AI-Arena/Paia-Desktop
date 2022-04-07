@@ -192,7 +192,7 @@
         <div class="dropdown-divider"></div>
         <ul class="list-unstyled my-3">
           <div class="row mx-0 justify-content-between">
-            <h6 class="mb-0">程式庫</h6>
+            <h6 class="mb-0" id="saved_filesets">程式庫</h6>
             <div class="dropdown position-static">
               <a href="#" data-toggle="dropdown" data-boundary="viewport" id="fileset-options"><i class="bi bi-three-dots"></i></a>
               <div class="dropdown-menu" aria-labelledby="fileset-options">
@@ -225,7 +225,7 @@
           </li>
         </ul>
         <div class="dropdown-divider"></div>
-        <ul class="list-unstyled my-3">
+        <ul class="list-unstyled my-3" id="fileset_download_div">
           <h6>下載特定專案</h6>
           <form name="download-filset" action="javascript:Code.findFileset()">
             <div class="form-group py-1">
@@ -247,7 +247,7 @@
         </ul>
       </nav>
       <div class="container-fluid" id="blockly-container">
-        <ul class="nav nav-tabs" role="tablist">
+        <ul class="nav nav-tabs" role="tablist" id="tab_list">
           <div class="row mx-0" id="opened_xml"></div>
           <button class="btn btn-primary h-75 mr-1 ml-auto" id="show_python">Python</button>
           <li class="nav-item dropdown">

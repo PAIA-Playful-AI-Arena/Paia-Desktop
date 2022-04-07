@@ -55,6 +55,11 @@ Code.FILESET_FOUND = null;
  */
 Code.OPENED_XMLS = {};
 
+/**
+ * The mapping from paths to displayed names.
+ */
+Code.PATH_MAP = {};
+
  /**
  * The name of currently focused XML.
  */
@@ -257,6 +262,12 @@ Code.checkAllGeneratorFunctionsDefined = function(generator) {
   return valid;
 };
 
+Code.setNavWidth = function() {
+  var width = $("#tab_list").width() - $("#show_python").width() - $("#tab_user").width() - $("#tab_lang").width() - $("#tab_option").width() - 150;
+  $("#opened_xml").css("max-width", `${width}px`);
+  $("#right-shadow").css("left", `${width - 100}px`);
+};
+
 /**
  * Initialize Blockly.  Called on page load.
  */
@@ -326,6 +337,7 @@ Code.init = function() {
       el.style.width = bBox.width + 'px';
       el.style.width = (2 * bBox.width - el.offsetWidth) + 'px';
     }
+    Code.setNavWidth();
   };
   window.addEventListener('resize', onresize, false);
 
@@ -839,6 +851,7 @@ Code.logout = function() {
   document.querySelectorAll('.need-login').forEach(e => {
     e.classList.add("disabled");
   });
+  Code.setNavWidth();
   window.sendLog();
   window.clearToken();
   window.resetStore();
@@ -859,6 +872,7 @@ Code.afterLogin = function() {
     console.log("取得使用者資料錯誤");
     window.logout();
   });
+  Code.setNavWidth();
   $('#login-dialog').modal('hide');
 };
 
@@ -894,65 +908,75 @@ Code.openXml = function() {
  * Load xml file to workscpace. 
  */
 Code.loadXml = function(xmlPath) {
-  var name = path.basename(xmlPath);
-  var index = 1;
+  // Save trashcan state before open another xml.
   if (Code.FOCUSED_XML != "") {
     Code.OPENED_XMLS[Code.FOCUSED_XML].trashcan = Code.workspace.trashcan.contents_.slice();
   }
-  while (name in Code.OPENED_XMLS) {
-    if (Code.OPENED_XMLS[name].$link.prop('title') == xmlPath) {
-      Code.workspace.clear();
-      Blockly.Xml.domToWorkspace(Code.OPENED_XMLS[name].xml, Code.workspace);
-      Code.workspace.setScale(Code.OPENED_XMLS[name].settings.scale);
-      Code.workspace.scroll(Code.OPENED_XMLS[name].settings.x, Code.OPENED_XMLS[name].settings.y);
-      $("#opened_xml a").removeClass("active");
-      Code.OPENED_XMLS[name].$link.addClass("active");
-      $("#opened_xml").animate({ scrollLeft: $("#opened_xml").scrollLeft() + Code.OPENED_XMLS[name].$item.position().left - $("#opened_xml").width()});
-      Code.FOCUSED_XML = name;
-      Code.workspace.setVisible(true);
-      $("#content_blocks").css("visibility", "visible");
-      $("#content_python").css("visibility", "hidden");
-      return;
-    } else {
-      name = `${path.basename(xmlPath)} (${index})`;
-      index++;
-    }
-  }
-  try {
-    var xmlText = window.readFile(xmlPath);
-    var xml = Blockly.Xml.textToDom(xmlText);
+  var name = path.basename(xmlPath);
+  if (xmlPath in Code.PATH_MAP) {
+    name = Code.PATH_MAP[xmlPath];
     Code.workspace.clear();
-    Blockly.Xml.domToWorkspace(xml, Code.workspace);
-    Code.OPENED_XMLS[name] = {};
-    Code.OPENED_XMLS[name].path = xmlPath;
-    Code.OPENED_XMLS[name].xml = xml;
-    Code.OPENED_XMLS[name].settings = {x: Code.workspace.scrollX, y: Code.workspace.scrollY, scale: Code.workspace.scale};
-    var $item = $('<li class="nav-item"></li>');
-    var $link = $(`<a class="nav-link pr-4" href="#" id="tab-${xmlPath}" title="${xmlPath}">${name}<span class="not-saved"></span>&ensp;</a>`);
-    var $close = $(`<button class="p-0 border-0 bg-white tab-close" onclick="Code.closeXml('${name}')"><i class="bi bi-x"></i></button>`);
-    $item.append($link);
-    $item.append($close);
-    $("#opened_xml").append($item);
-    Code.bindClick(`tab-${xmlPath}`,
-    function() {Code.loadXml(xmlPath); Code.renderContent();});
+    Blockly.Xml.domToWorkspace(Code.OPENED_XMLS[name].xml, Code.workspace);
+    Code.workspace.setScale(Code.OPENED_XMLS[name].settings.scale);
+    Code.workspace.scroll(Code.OPENED_XMLS[name].settings.x, Code.OPENED_XMLS[name].settings.y);
     $("#opened_xml a").removeClass("active");
-    $link.addClass("active");
-    $("#opened_xml").animate({ scrollLeft: $("#opened_xml").scrollLeft() + $item.position().left - $("#opened_xml").width()});
-    Code.OPENED_XMLS[name].$item = $item;
-    Code.OPENED_XMLS[name].$link = $link;
+    Code.OPENED_XMLS[name].$link.addClass("active");
+    var tabPos = $("#opened_xml").scrollLeft() + Code.OPENED_XMLS[name].$item.position().left;
+    var scrollTarget = ($("#opened_xml").width() - Code.OPENED_XMLS[name].$item.width()) / 2;
+    $("#opened_xml").animate({ scrollLeft: tabPos - scrollTarget });
     Code.FOCUSED_XML = name;
     Code.workspace.setVisible(true);
     $("#content_blocks").css("visibility", "visible");
     $("#content_python").css("visibility", "hidden");
-  } catch (err) {
-    window.alert(err);
+    return;
+  } else {
+    var index = 1;
+    while (name in Code.OPENED_XMLS) {
+      name = `${path.basename(xmlPath)} (${index})`;
+      index++;
+    }
+    try {
+      var xmlText = window.readFile(xmlPath);
+      var xml = Blockly.Xml.textToDom(xmlText);
+      Code.workspace.clear();
+      Blockly.Xml.domToWorkspace(xml, Code.workspace);
+      Code.PATH_MAP[xmlPath] = name;
+      Code.OPENED_XMLS[name] = {};
+      Code.OPENED_XMLS[name].path = xmlPath;
+      Code.OPENED_XMLS[name].xml = xml;
+      Code.OPENED_XMLS[name].settings = {x: Code.workspace.scrollX, y: Code.workspace.scrollY, scale: Code.workspace.scale};
+      var $item = $('<li class="nav-item"></li>');
+      var $link = $(`<a class="nav-link pr-4" href="#" id="tab-${xmlPath}" title="${xmlPath}">${name}<span class="not-saved"></span>&ensp;</a>`);
+      var $close = $(`<button class="p-0 border-0 bg-white tab-close" id="close-${xmlPath}"><i class="bi bi-x"></i></button>`);
+      $item.append($link);
+      $item.append($close);
+      $("#opened_xml").append($item);
+      Code.bindClick(`tab-${xmlPath}`,
+        function() {Code.loadXml(xmlPath); Code.renderContent();});
+      Code.bindClick(`close-${xmlPath}`,
+        function() {Code.closeXml(xmlPath); Code.renderContent();});
+      $("#opened_xml a").removeClass("active");
+      $link.addClass("active");
+      var tabPos = $("#opened_xml").scrollLeft() + $item.position().left;
+      var scrollTarget = ($("#opened_xml").width() - $item.width()) / 2;
+      $("#opened_xml").animate({ scrollLeft: tabPos - scrollTarget });
+      Code.OPENED_XMLS[name].$item = $item;
+      Code.OPENED_XMLS[name].$link = $link;
+      Code.FOCUSED_XML = name;
+      Code.workspace.setVisible(true);
+      $("#content_blocks").css("visibility", "visible");
+      $("#content_python").css("visibility", "hidden");
+    } catch (err) {
+      window.alert(err);
+    }
   }
 };
 
 /**
  * Close xml file and try to load another opened xml. 
  */
-Code.closeXml = function(name) {
+Code.closeXml = function(xmlPath) {
+  var name = Code.PATH_MAP[xmlPath];
   if (Code.OPENED_XMLS[name].$link.hasClass('active')) {
     var $links = $("#opened_xml .nav-link");
     var index = $links.index(Code.OPENED_XMLS[name].$link);
@@ -967,6 +991,7 @@ Code.closeXml = function(name) {
   }
   Code.OPENED_XMLS[name].$item.remove();
   delete Code.OPENED_XMLS[name];
+  delete Code.PATH_MAP[xmlPath];
 };
 
 /**

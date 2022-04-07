@@ -521,7 +521,13 @@ Code.init = function() {
   Code.token_login();
 
   // Show project dialog
-  $('#project-dialog').modal('show');
+  if (Code.GAME == 'easy_game' && !fs.existsSync(path.join(__dirname, 'MLGame', 'games', Code.GAME, 'ml', 'new').replace('app.asar', 'app.asar.unpacked'))) {
+    $('#project-name').val('new');
+    Code.newProject();
+    $('#readme-dialog').modal('show');
+  } else {
+    $('#project-dialog').modal('show');
+  }
 
   // Lazy-load the syntax-highlighting.
   window.setTimeout(Code.importPrettify, 1);

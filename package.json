@@ -71,7 +71,10 @@
           "/python/build",
           "/python/interpreter.spec",
           "/python/interpreter.py"
-        ]
+        ],
+        "asar": {
+          "unpackDir": "{MLGame,library,python}"
+        }
       },
       "makers": [
         {

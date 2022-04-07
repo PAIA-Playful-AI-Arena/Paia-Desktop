@@ -275,6 +275,12 @@ Code.init = function() {
   // Add version to the title.
   document.title += ` ${app.getVersion()}`;
   
+  // Hide fileset download part when competition mode is true.
+  if (window.isCompetitionMode()) {
+    console.log(window.isCompetitionMode());
+    $("#fileset_download_div").css("display", "none");
+  }
+  
   // Load dialog body for selecting game arguments.
   Code.initGameArgs();
 

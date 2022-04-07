@@ -259,4 +259,8 @@ window.paiaAPI = function(method, url, data, async, auth, response, error) {
   }
 };
 
+window.isCompetitionMode = function() {
+  return process.env.COMPETITION_MODE == "true";
+};
+
 const intervalID = setInterval(window.sendLog, 60000);

@@ -170,22 +170,41 @@ window.sendLog = function() {
     for (const log of logList) {
       log.ip = ip;
     }
-    window.paiaAPI("POST", "log/anonymous_log", logList, true, 'DESKTOP_TOKEN',
-      (res) => {
-        store.reset('log');
-        console.log("Log sent.");
-      }, (jqXHR, exception) => {
-        var msg = '';
-        if (jqXHR.status === 0) {
-            msg = '連線錯誤，請確認網路';
-        } else if (exception === 'abort') {
-            msg = 'Ajax request aborted.';
-        } else {
-            msg = 'Uncaught Error.\n' + jqXHR.responseText;
+    if (window.getAccessToken() != "no token") {
+      window.paiaAPI("POST", "log/named_log", logList, true, 'USER_TOKEN',
+        (res) => {
+          store.reset('log');
+          console.log("Named log sent.");
+        }, (jqXHR, exception) => {
+          var msg = '';
+          if (jqXHR.status === 0) {
+              msg = '連線錯誤，請確認網路';
+          } else if (exception === 'abort') {
+              msg = 'Ajax request aborted.';
+          } else {
+              msg = 'Uncaught Error.\n' + jqXHR.responseText;
+          }
+          console.log(msg);
         }
-        console.log(msg);
-      }
-    );
+      );
+    } else {
+      window.paiaAPI("POST", "log/anonymous_log", logList, true, 'DESKTOP_TOKEN',
+        (res) => {
+          store.reset('log');
+          console.log("Anonymous log sent.");
+        }, (jqXHR, exception) => {
+          var msg = '';
+          if (jqXHR.status === 0) {
+              msg = '連線錯誤，請確認網路';
+          } else if (exception === 'abort') {
+              msg = 'Ajax request aborted.';
+          } else {
+              msg = 'Uncaught Error.\n' + jqXHR.responseText;
+          }
+          console.log(msg);
+        }
+      );
+    }
   });
 };
 

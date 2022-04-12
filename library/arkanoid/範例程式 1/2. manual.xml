@@ -183,7 +183,7 @@
                     <value name="IF0">
                       <block type="mlplay_is_key_pressed" id="cK^g@QHF}z~0k{a]^k*h">
                         <field name="TYPE">arrow</field>
-                        <field name="KEY">right</field>
+                        <field name="KEY">RIGHT</field>
                       </block>
                     </value>
                     <statement name="DO0">
@@ -243,7 +243,7 @@
                     <value name="IF1">
                       <block type="mlplay_is_key_pressed" id="hW#yyIQ}GThaa3o,j6P-">
                         <field name="TYPE">arrow</field>
-                        <field name="KEY">left</field>
+                        <field name="KEY">LEFT</field>
                       </block>
                     </value>
                     <statement name="DO1">

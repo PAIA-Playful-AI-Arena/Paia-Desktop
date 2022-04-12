@@ -85,7 +85,7 @@
                 <value name="IF0">
                   <block type="mlplay_is_key_pressed" id="?ln(g~_p!{ci0naPm|({">
                     <field name="TYPE">alpha</field>
-                    <field name="KEY">A</field>
+                    <field name="KEY">a</field>
                   </block>
                 </value>
                 <statement name="DO0">
@@ -106,7 +106,7 @@
                 <value name="IF1">
                   <block type="mlplay_is_key_pressed" id="qHGGwz{x}.Rvq{D}ocG6">
                     <field name="TYPE">alpha</field>
-                    <field name="KEY">D</field>
+                    <field name="KEY">d</field>
                   </block>
                 </value>
                 <statement name="DO1">

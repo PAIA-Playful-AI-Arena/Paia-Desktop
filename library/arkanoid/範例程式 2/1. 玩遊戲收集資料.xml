@@ -803,7 +803,7 @@
         <value name="IF0">
           <block type="mlplay_is_key_pressed" id="X().Ho}34^3*(zGSsC!W">
             <field name="TYPE">arrow</field>
-            <field name="KEY">left</field>
+            <field name="KEY">LEFT</field>
           </block>
         </value>
         <statement name="DO0">
@@ -819,7 +819,7 @@
         <value name="IF1">
           <block type="mlplay_is_key_pressed" id="w^K%/9*e{;;BGp*;hu$_">
             <field name="TYPE">arrow</field>
-            <field name="KEY">right</field>
+            <field name="KEY">RIGHT</field>
           </block>
         </value>
         <statement name="DO1">

@@ -213,13 +213,13 @@
                     <value name="A">
                       <block type="mlplay_is_key_pressed" id="]A-p7qPy]^EhCuAAfXd_">
                         <field name="TYPE">arrow</field>
-                        <field name="KEY">up</field>
+                        <field name="KEY">UP</field>
                       </block>
                     </value>
                     <value name="B">
                       <block type="mlplay_is_key_pressed" id="Ze.qMKuPne}#gjlzYqru">
                         <field name="TYPE">alpha</field>
-                        <field name="KEY">W</field>
+                        <field name="KEY">w</field>
                       </block>
                     </value>
                   </block>
@@ -276,13 +276,13 @@
                     <value name="A">
                       <block type="mlplay_is_key_pressed" id="qy0nZ^iSdjMofr|5/TyN">
                         <field name="TYPE">arrow</field>
-                        <field name="KEY">down</field>
+                        <field name="KEY">DOWN</field>
                       </block>
                     </value>
                     <value name="B">
                       <block type="mlplay_is_key_pressed" id="iP{QNudQ!VCc:Q2B@r^:">
                         <field name="TYPE">alpha</field>
-                        <field name="KEY">S</field>
+                        <field name="KEY">s</field>
                       </block>
                     </value>
                   </block>
@@ -339,13 +339,13 @@
                     <value name="A">
                       <block type="mlplay_is_key_pressed" id="0$xH4CI7V6eAvVG4}GA]">
                         <field name="TYPE">arrow</field>
-                        <field name="KEY">right</field>
+                        <field name="KEY">RIGHT</field>
                       </block>
                     </value>
                     <value name="B">
                       <block type="mlplay_is_key_pressed" id="=O;)BAg[Oh0j.o@OQWHU">
                         <field name="TYPE">alpha</field>
-                        <field name="KEY">D</field>
+                        <field name="KEY">d</field>
                       </block>
                     </value>
                   </block>
@@ -402,13 +402,13 @@
                     <value name="A">
                       <block type="mlplay_is_key_pressed" id="+IHm`%ZnXcI@;e|U`=]Z">
                         <field name="TYPE">arrow</field>
-                        <field name="KEY">left</field>
+                        <field name="KEY">LEFT</field>
                       </block>
                     </value>
                     <value name="B">
                       <block type="mlplay_is_key_pressed" id="b!/$qKGEwOd/_Ih@)PW_">
                         <field name="TYPE">alpha</field>
-                        <field name="KEY">A</field>
+                        <field name="KEY">a</field>
                       </block>
                     </value>
                   </block>

@@ -747,7 +747,7 @@
         <value name="IF0">
           <block type="mlplay_is_key_pressed" id="?Pb$z)qPP@k0,A2#UA*L">
             <field name="TYPE">arrow</field>
-            <field name="KEY">right</field>
+            <field name="KEY">RIGHT</field>
           </block>
         </value>
         <statement name="DO0">
@@ -763,7 +763,7 @@
         <value name="IF1">
           <block type="mlplay_is_key_pressed" id="}gWMqcuhu%tO+B2:)seq">
             <field name="TYPE">arrow</field>
-            <field name="KEY">left</field>
+            <field name="KEY">LEFT</field>
           </block>
         </value>
         <statement name="DO1">
@@ -779,7 +779,7 @@
         <value name="IF2">
           <block type="mlplay_is_key_pressed" id="#7$Ua;#oL$F=ub[E#Cr*">
             <field name="TYPE">arrow</field>
-            <field name="KEY">up</field>
+            <field name="KEY">UP</field>
           </block>
         </value>
         <statement name="DO2">
@@ -795,7 +795,7 @@
         <value name="IF3">
           <block type="mlplay_is_key_pressed" id=".Ks7,-G)A$,cc+TGXeTw">
             <field name="TYPE">arrow</field>
-            <field name="KEY">down</field>
+            <field name="KEY">DOWN</field>
           </block>
         </value>
         <statement name="DO3">

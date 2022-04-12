@@ -3,24 +3,24 @@
     <variable id="!{gH@A-2*K;*am[(iTop">檔案編號</variable>
     <variable id="q~`NgC9jm)%Iw^f_U^{n">數值</variable>
     <variable id="y#UQHn]$HAy.^rnjGz*5">已存檔次數</variable>
+    <variable id="GLYqo_4k[I4N!bjZ4))p">分子</variable>
+    <variable id="m{mzG85-gV;/Z{S@4#4.">分母</variable>
     <variable id="mX.@VTO;I[?~kNnhN?79">遊戲狀態</variable>
     <variable id="%n[ZfEKQWJo~7i{5PO4b">幀數</variable>
     <variable id="?N6ezs8fQT-FbC17JH#e">模型輸入</variable>
-    <variable id="#`FI;UE9OezOp2B1AhI6">球的x座標</variable>
+    <variable id=".Md17CsZqX1:sfsl=)$J">玩家編號</variable>
     <variable id="n7d!XKW)ROET]AXb:EU1">檔案起始編號</variable>
     <variable id="TD8O.^=SMG/u]SkA08gS">遊戲次數</variable>
     <variable id="eU@7{)Q`p)`xy}0:D$)]">模型輸出</variable>
-    <variable id="y)5Q(.(EPLjteC.5$5C!">球的y座標</variable>
+    <variable id="uKl-vF6jy!aFB2{hBkxH">玩家的x座標</variable>
     <variable id="bpTwV]}d7{y;:c9$u$){">資料收集次數</variable>
     <variable id="ZVHZ!Cc4nX_G1;+%HDxq">過關不存檔次數</variable>
-    <variable id="F54J.b1x.{UnQV;h)SGs">平台的x座標</variable>
-    <variable id="QL=`+WzT6MyA{Fq^W_l0">平台行動</variable>
+    <variable id="HFy*o)Y4{k{R;(G?[bD3">玩家的y座標</variable>
+    <variable id="QL=`+WzT6MyA{Fq^W_l0">玩家行動</variable>
     <variable id="O%0ffUq|%9lTTX[362k^">過關次數</variable>
-    <variable id="^e/mFFdqf7HO=T-QVgdF">模型輸出_移動命令_二維</variable>
-    <variable id="kXny^hn]=Xk9tcsn@uqS">球落點</variable>
+    <variable id="^e/mFFdqf7HO=T-QVgdF">模型輸出_玩家行動_二維</variable>
     <variable id="n(Ds+,f]J8{y;h;[o8Qj">存檔最小幀數</variable>
     <variable id="zX}W4o7dS1S;8,0A[VtG">存檔最大幀數</variable>
-    <variable id="cQ),mG`DL!mYJXuH8{GX">已經發球</variable>
   </variables>
   <block type="procedures_defnoreturn" id="rHljCZgnX~qDbZ]TKUF," x="-1212" y="387">
     <field name="NAME">收集資料</field>
@@ -31,21 +31,16 @@
         <field name="WHERE">LAST</field>
         <value name="TO">
           <block type="lists_create_with" id="(QL:fF0P.U)T1u*^?x(B">
-            <mutation items="3"></mutation>
+            <mutation items="2"></mutation>
             <comment pinned="false" h="95" w="189">模型輸入(特徵資料)，不一定只有這五種，還可以自行增加喔!</comment>
             <value name="ADD0">
               <block type="variables_get" id="ZVXMj:7Ig[:$]?|9o(qD">
-                <field name="VAR" id="#`FI;UE9OezOp2B1AhI6">球的x座標</field>
+                <field name="VAR" id="uKl-vF6jy!aFB2{hBkxH">玩家的x座標</field>
               </block>
             </value>
             <value name="ADD1">
               <block type="variables_get" id="B5$jbu+kzsE7SKhYh?fb">
-                <field name="VAR" id="y)5Q(.(EPLjteC.5$5C!">球的y座標</field>
-              </block>
-            </value>
-            <value name="ADD2">
-              <block type="variables_get" id="?@:`03]#9{)q2zWqF$@F">
-                <field name="VAR" id="F54J.b1x.{UnQV;h)SGs">平台的x座標</field>
+                <field name="VAR" id="HFy*o)Y4{k{R;(G?[bD3">玩家的y座標</field>
               </block>
             </value>
           </block>
@@ -59,9 +54,10 @@
           <block type="lists_insertIndex" id="}*B|-UwN6)u;^#Q6{5G1">
             <mutation at="false"></mutation>
             <field name="WHERE">LAST</field>
+            <comment pinned="false" h="76" w="234">模型輸出(目標資料)，不限定這樣子，還可以自行改變喔!</comment>
             <value name="TO">
               <block type="variables_get" id="FD(_`xGa)mw-@5LoVZ}d">
-                <field name="VAR" id="QL=`+WzT6MyA{Fq^W_l0">平台行動</field>
+                <field name="VAR" id="QL=`+WzT6MyA{Fq^W_l0">玩家行動</field>
               </block>
             </value>
             <value name="LIST">
@@ -76,17 +72,17 @@
                 <value name="TO">
                   <block type="lists_create_with" id="GeA%%SdL%Y#i},;!wI,E">
                     <mutation items="1"></mutation>
-                    <comment pinned="false" h="99" w="185">模型輸出(目標資料)，不一定是這樣子，還可以自行改變喔!</comment>
+                    <comment pinned="false" h="99" w="185">模型輸出(目標資料)，不限定這兩種，還可以自行改變喔!</comment>
                     <value name="ADD0">
                       <block type="variables_get" id="(jw~d~:-}h0wU]^0A7Gt">
-                        <field name="VAR" id="QL=`+WzT6MyA{Fq^W_l0">平台行動</field>
+                        <field name="VAR" id="QL=`+WzT6MyA{Fq^W_l0">玩家行動</field>
                       </block>
                     </value>
                   </block>
                 </value>
                 <value name="LIST">
                   <block type="variables_get" id="OYv%cwsz*MfOR[x_GGx9">
-                    <field name="VAR" id="^e/mFFdqf7HO=T-QVgdF">模型輸出_移動命令_二維</field>
+                    <field name="VAR" id="^e/mFFdqf7HO=T-QVgdF">模型輸出_玩家行動_二維</field>
                   </block>
                 </value>
               </block>
@@ -191,118 +187,128 @@
                   </block>
                 </value>
                 <statement name="DO0">
-                  <block type="controls_if" id="!ks#a0/gCo/k{SQsu=wd">
-                    <mutation else="1"></mutation>
-                    <value name="IF0">
-                      <block type="variables_get" id="Q1Q{+iV1[MrM}F0UNBM1">
-                        <field name="VAR" id="cQ),mG`DL!mYJXuH8{GX">已經發球</field>
+                  <block type="variables_set" id="Df`p2l0rO,pC+lu2Hj;g">
+                    <field name="VAR" id=".Md17CsZqX1:sfsl=)$J">玩家編號</field>
+                    <value name="VALUE">
+                      <block type="mlplay_get_info" id="%;Yg1-[lWl`[JR]@4x.)">
+                        <field name="FIELD">scene_info['id']</field>
                       </block>
                     </value>
-                    <statement name="DO0">
-                      <block type="variables_set" id="VQ#/,k3%5,Z7#e/+L:Rt">
-                        <field name="VAR" id="#`FI;UE9OezOp2B1AhI6">球的x座標</field>
+                    <next>
+                      <block type="variables_set" id="mg(px[eWsYaAy..]xgo:">
+                        <field name="VAR" id="uKl-vF6jy!aFB2{hBkxH">玩家的x座標</field>
                         <value name="VALUE">
-                          <block type="mlplay_get_info" id="OK),zY4sTZh0Ia.kRbO[">
-                            <field name="FIELD">scene_info['ball'][0]</field>
+                          <block type="mlplay_get_info" id="+2eF+;8LY7_[yq=6kpVg">
+                            <field name="FIELD">scene_info['x']</field>
                           </block>
                         </value>
                         <next>
-                          <block type="variables_set" id="uRN@_9/;NZ%^9i`2L9#j">
-                            <field name="VAR" id="y)5Q(.(EPLjteC.5$5C!">球的y座標</field>
+                          <block type="variables_set" id=":?f-u{!)Gl*Bs!?SR[xW">
+                            <field name="VAR" id="HFy*o)Y4{k{R;(G?[bD3">玩家的y座標</field>
                             <value name="VALUE">
-                              <block type="mlplay_get_info" id="~FJ9}F?wjo5`^5Zbg/z0">
-                                <field name="FIELD">scene_info['ball'][1]</field>
+                              <block type="mlplay_get_info" id="xw_yz}ZxV7i|U4zDmgk]">
+                                <field name="FIELD">scene_info['y']</field>
                               </block>
                             </value>
                             <next>
-                              <block type="variables_set" id="2J#av15ngDJM,wpEq}1c">
-                                <field name="VAR" id="F54J.b1x.{UnQV;h)SGs">平台的x座標</field>
+                              <block type="variables_set" id="XrG:6nAXifw/~#pu?k?p">
+                                <field name="VAR" id="QL=`+WzT6MyA{Fq^W_l0">玩家行動</field>
                                 <value name="VALUE">
-                                  <block type="mlplay_get_info" id="lC[HqFZw%NuCya!q@bGq">
-                                    <field name="FIELD">scene_info['platform'][0]</field>
+                                  <block type="procedures_callreturn" id="94Z]_vgPWTjS:4zqaT`2">
+                                    <mutation name="決定玩家行動"></mutation>
                                   </block>
                                 </value>
                                 <next>
-                                  <block type="variables_set" id="Ac[B.nDIA89U~{J78rhi">
-                                    <field name="VAR" id="QL=`+WzT6MyA{Fq^W_l0">平台行動</field>
-                                    <value name="VALUE">
-                                      <block type="procedures_callreturn" id="(b_xG+zyElU(4N6n:F9N">
-                                        <mutation name="決定平台行動"></mutation>
-                                      </block>
-                                    </value>
+                                  <block type="procedures_callnoreturn" id="bqIH*@m#9.nuM7g]Y!j;">
+                                    <mutation name="收集資料"></mutation>
                                     <next>
-                                      <block type="procedures_callnoreturn" id="8S/9#)IQZTHP2]I[xi.]">
-                                        <mutation name="收集資料"></mutation>
-                                        <next>
-                                          <block type="controls_if" id="S6qM+fvQ7ViOEk!3M+*)">
-                                            <mutation elseif="2"></mutation>
-                                            <value name="IF0">
-                                              <block type="logic_compare" id="w~a7Br,NfN!AsW8.)mX~">
-                                                <field name="OP">EQ</field>
-                                                <value name="A">
-                                                  <block type="variables_get" id="1bBU8QnviPi|~bqdO}[7">
-                                                    <field name="VAR" id="QL=`+WzT6MyA{Fq^W_l0">平台行動</field>
-                                                  </block>
-                                                </value>
-                                                <value name="B">
-                                                  <block type="math_number" id="?-Ft*=*/Kx?4XaDzb@RF">
-                                                    <field name="NUM">1</field>
-                                                  </block>
-                                                </value>
+                                      <block type="controls_if" id="($*W$dcR,PQ[0wMz!Ruf">
+                                        <mutation elseif="3" else="1"></mutation>
+                                        <value name="IF0">
+                                          <block type="logic_compare" id="Y-Po6$ZHFH[y4Q?/r0k6">
+                                            <field name="OP">EQ</field>
+                                            <value name="A">
+                                              <block type="variables_get" id="jzBXA7q;gtv72xCC*3^v">
+                                                <field name="VAR" id="QL=`+WzT6MyA{Fq^W_l0">玩家行動</field>
                                               </block>
                                             </value>
-                                            <statement name="DO0">
-                                              <block type="mlplay_return_action" id="#G]MK8GQ!mn#A0F;I4v?">
-                                                <field name="ACTION">MOVE_LEFT</field>
-                                              </block>
-                                            </statement>
-                                            <value name="IF1">
-                                              <block type="logic_compare" id="./wS7Mj?yfbHf!p3}#M0">
-                                                <field name="OP">EQ</field>
-                                                <value name="A">
-                                                  <block type="variables_get" id="o9E`CRTtamNM8`7|]$FT">
-                                                    <field name="VAR" id="QL=`+WzT6MyA{Fq^W_l0">平台行動</field>
-                                                  </block>
-                                                </value>
-                                                <value name="B">
-                                                  <block type="math_number" id="AQQgO{!zPzM4w/X|z+`7">
-                                                    <field name="NUM">2</field>
-                                                  </block>
-                                                </value>
+                                            <value name="B">
+                                              <block type="math_number" id="5xWD6C/t-9:OPV#e5!KK">
+                                                <field name="NUM">1</field>
                                               </block>
                                             </value>
-                                            <statement name="DO1">
-                                              <block type="mlplay_return_action" id="Jzw1!/VoFQ3SaOpZBb7u">
-                                                <field name="ACTION">MOVE_RIGHT</field>
-                                              </block>
-                                            </statement>
-                                            <value name="IF2">
-                                              <block type="logic_compare" id="m|c:KKgmq4aX%.F!uUXH">
-                                                <field name="OP">EQ</field>
-                                                <value name="A">
-                                                  <block type="variables_get" id="gBhIoHmVx+T8l=quMccj">
-                                                    <field name="VAR" id="QL=`+WzT6MyA{Fq^W_l0">平台行動</field>
-                                                  </block>
-                                                </value>
-                                                <value name="B">
-                                                  <block type="math_number" id="@6)+/}.N#^XJ6YUaAK:C">
-                                                    <field name="NUM">3</field>
-                                                  </block>
-                                                </value>
-                                              </block>
-                                            </value>
-                                            <statement name="DO2">
-                                              <block type="mlplay_return_action" id=",12uU)mK@[^kQ:mwi2vz">
-                                                <field name="ACTION">NONE</field>
-                                              </block>
-                                            </statement>
-                                            <next>
-                                              <block type="procedures_callnoreturn" id="lYmMr6^Dc+IJ?ahtAt_G" disabled="true">
-                                                <mutation name="顯示環境訊息"></mutation>
-                                              </block>
-                                            </next>
                                           </block>
-                                        </next>
+                                        </value>
+                                        <statement name="DO0">
+                                          <block type="mlplay_return_action" id="MTT3{^e)O3BzeC7%-mWW">
+                                            <field name="ACTION">['SPEED']</field>
+                                          </block>
+                                        </statement>
+                                        <value name="IF1">
+                                          <block type="logic_compare" id="1f*QCx2)6io/bQVJ0T!3">
+                                            <field name="OP">EQ</field>
+                                            <value name="A">
+                                              <block type="variables_get" id="(+4zO7cFNCqDaT.},pHp">
+                                                <field name="VAR" id="QL=`+WzT6MyA{Fq^W_l0">玩家行動</field>
+                                              </block>
+                                            </value>
+                                            <value name="B">
+                                              <block type="math_number" id="[bQ2+xb7k4{WA_]g#Ka1">
+                                                <field name="NUM">2</field>
+                                              </block>
+                                            </value>
+                                          </block>
+                                        </value>
+                                        <statement name="DO1">
+                                          <block type="mlplay_return_action" id=")N,=A2|Z9%h^J!3FAj(}">
+                                            <field name="ACTION">['BRAKE']</field>
+                                          </block>
+                                        </statement>
+                                        <value name="IF2">
+                                          <block type="logic_compare" id="?lX7glVFc+_aHK[#HAFV">
+                                            <field name="OP">EQ</field>
+                                            <value name="A">
+                                              <block type="variables_get" id="~~uD_ggR!+l@1%7QgrJ-">
+                                                <field name="VAR" id="QL=`+WzT6MyA{Fq^W_l0">玩家行動</field>
+                                              </block>
+                                            </value>
+                                            <value name="B">
+                                              <block type="math_number" id="cX;Bpd.5l!RtN/yuvh1v">
+                                                <field name="NUM">3</field>
+                                              </block>
+                                            </value>
+                                          </block>
+                                        </value>
+                                        <statement name="DO2">
+                                          <block type="mlplay_return_action" id="5zBCr$ym9Vn6msT{A*y,">
+                                            <field name="ACTION">['MOVE_LEFT']</field>
+                                          </block>
+                                        </statement>
+                                        <value name="IF3">
+                                          <block type="logic_compare" id="M-7m@:)!Mtv)7z1po3/W">
+                                            <field name="OP">EQ</field>
+                                            <value name="A">
+                                              <block type="variables_get" id="2@#NJLbW?[mbXcE}RqEL">
+                                                <field name="VAR" id="QL=`+WzT6MyA{Fq^W_l0">玩家行動</field>
+                                              </block>
+                                            </value>
+                                            <value name="B">
+                                              <block type="math_number" id="qsgDp?7U!C|#sN-5@OYD">
+                                                <field name="NUM">4</field>
+                                              </block>
+                                            </value>
+                                          </block>
+                                        </value>
+                                        <statement name="DO3">
+                                          <block type="mlplay_return_action" id="EwixN^bxRMHYX1#?puOa">
+                                            <field name="ACTION">['MOVE_RIGHT']</field>
+                                          </block>
+                                        </statement>
+                                        <statement name="ELSE">
+                                          <block type="mlplay_return_action" id="2p~99C_c`3DrpyQfh=!`">
+                                            <field name="ACTION">[]</field>
+                                          </block>
+                                        </statement>
                                       </block>
                                     </next>
                                   </block>
@@ -312,22 +318,7 @@
                           </block>
                         </next>
                       </block>
-                    </statement>
-                    <statement name="ELSE">
-                      <block type="variables_set" id="%,mdrQ^*;}C,U9d5fa2@">
-                        <field name="VAR" id="cQ),mG`DL!mYJXuH8{GX">已經發球</field>
-                        <value name="VALUE">
-                          <block type="logic_boolean" id="n{Lt[BF8#`mvi2fnpr}s">
-                            <field name="BOOL">TRUE</field>
-                          </block>
-                        </value>
-                        <next>
-                          <block type="mlplay_return_action" id="ta/Tt[327|8;X/_8fZxT">
-                            <field name="ACTION">SERVE_TO_LEFT</field>
-                          </block>
-                        </next>
-                      </block>
-                    </statement>
+                    </next>
                   </block>
                 </statement>
                 <statement name="ELSE">
@@ -454,22 +445,12 @@
             </value>
             <next>
               <block type="variables_set" id="So%(t_2?O)PVsc3s.`t/">
-                <field name="VAR" id="^e/mFFdqf7HO=T-QVgdF">模型輸出_移動命令_二維</field>
+                <field name="VAR" id="^e/mFFdqf7HO=T-QVgdF">模型輸出_玩家行動_二維</field>
                 <value name="VALUE">
                   <block type="lists_create_with" id="slSOsJX9iF=bi{7/J7Zy">
                     <mutation items="0"></mutation>
                   </block>
                 </value>
-                <next>
-                  <block type="variables_set" id="WRb@n+7iYP)$HU3(22pQ">
-                    <field name="VAR" id="cQ),mG`DL!mYJXuH8{GX">已經發球</field>
-                    <value name="VALUE">
-                      <block type="logic_boolean" id="QWy:3Kff)x`N4^g~5JaX">
-                        <field name="BOOL">FALSE</field>
-                      </block>
-                    </value>
-                  </block>
-                </next>
               </block>
             </next>
           </block>
@@ -478,7 +459,7 @@
     </statement>
   </block>
   <block type="procedures_defnoreturn" id="gCH04ngvd02+UW-3iVoj" x="1037" y="388">
-    <field name="NAME">顯示環境訊息</field>
+    <field name="NAME">輸出場景訊息</field>
     <comment pinned="false" h="80" w="160">描述此函式...</comment>
     <statement name="STACK">
       <block type="text_print" id="9A+xMMsJ3$Z$I*A4!c1M">
@@ -487,7 +468,7 @@
             <field name="TEXT">abc</field>
           </shadow>
           <block type="text_join" id="$3S[2nnlknmU,8S-N)_d">
-            <mutation items="10"></mutation>
+            <mutation items="8"></mutation>
             <value name="ADD0">
               <block type="text" id="c|Abr*];U74Z{QZhMB]`">
                 <field name="TEXT">幀數=</field>
@@ -500,42 +481,32 @@
             </value>
             <value name="ADD2">
               <block type="text" id="1W5d5/q7%v!mn!U+z=,y">
-                <field name="TEXT"> 球x=</field>
+                <field name="TEXT"> 玩家x=</field>
               </block>
             </value>
             <value name="ADD3">
-              <block type="variables_get" id="0{~-a#s9%wCP,t!0VWN[">
-                <field name="VAR" id="#`FI;UE9OezOp2B1AhI6">球的x座標</field>
+              <block type="variables_get" id="$)PEuUA`ixm~p~Jy^E]J">
+                <field name="VAR" id="uKl-vF6jy!aFB2{hBkxH">玩家的x座標</field>
               </block>
             </value>
             <value name="ADD4">
               <block type="text" id="aQkZ~lw?uatOHO#9RuJr">
-                <field name="TEXT"> 球y=</field>
+                <field name="TEXT"> 玩家y=</field>
               </block>
             </value>
             <value name="ADD5">
-              <block type="variables_get" id="(o6^!CechZZ.+Q8Z{DlN">
-                <field name="VAR" id="y)5Q(.(EPLjteC.5$5C!">球的y座標</field>
+              <block type="variables_get" id="j;%u.GGFpgg2_M(K[Jjc">
+                <field name="VAR" id="HFy*o)Y4{k{R;(G?[bD3">玩家的y座標</field>
               </block>
             </value>
             <value name="ADD6">
               <block type="text" id="2{gZwn1Yu#.s-._$@0N^">
-                <field name="TEXT"> 預測球x=</field>
+                <field name="TEXT"> 玩家行動=</field>
               </block>
             </value>
             <value name="ADD7">
-              <block type="variables_get" id="b16,:g$GSk1~|nGh6Au~">
-                <field name="VAR" id="kXny^hn]=Xk9tcsn@uqS">球落點</field>
-              </block>
-            </value>
-            <value name="ADD8">
-              <block type="text" id="C}VBpVDG;SU|m!K!!W#K">
-                <field name="TEXT"> 平台x=</field>
-              </block>
-            </value>
-            <value name="ADD9">
-              <block type="variables_get" id="eW;0g{qQO]nqA$ph+q:*">
-                <field name="VAR" id="F54J.b1x.{UnQV;h)SGs">平台的x座標</field>
+              <block type="variables_get" id="W@+sKR/(^%@u7?*UcuMY">
+                <field name="VAR" id="QL=`+WzT6MyA{Fq^W_l0">玩家行動</field>
               </block>
             </value>
           </block>
@@ -547,57 +518,37 @@
     <field name="NAME">初始化玩遊戲變數</field>
     <comment pinned="false" h="47" w="159">初始化玩遊戲變數</comment>
     <statement name="STACK">
-      <block type="variables_set" id="^gk,ZQ_g+gUhMDg[f57h">
-        <field name="VAR" id="#`FI;UE9OezOp2B1AhI6">球的x座標</field>
+      <block type="variables_set" id="mH7FN*mNdh5BPe(jez#;">
+        <field name="VAR" id=".Md17CsZqX1:sfsl=)$J">玩家編號</field>
         <value name="VALUE">
-          <block type="math_number" id="(Z^$IKSyRO#TZ[;PQ~Pa">
+          <block type="math_number" id="C@d4_~=LSSdvlGqw6KXe">
             <field name="NUM">0</field>
           </block>
         </value>
         <next>
-          <block type="variables_set" id="5X)+7lTrjLFD=bei_;U%">
-            <field name="VAR" id="y)5Q(.(EPLjteC.5$5C!">球的y座標</field>
+          <block type="variables_set" id="^gk,ZQ_g+gUhMDg[f57h">
+            <field name="VAR" id="uKl-vF6jy!aFB2{hBkxH">玩家的x座標</field>
             <value name="VALUE">
-              <block type="math_number" id="0RPG[[hj7j(5wu1MPUE$">
+              <block type="math_number" id="(Z^$IKSyRO#TZ[;PQ~Pa">
                 <field name="NUM">0</field>
               </block>
             </value>
             <next>
-              <block type="variables_set" id="gi8VwG^3@Wg+:XR+7!e1">
-                <field name="VAR" id="F54J.b1x.{UnQV;h)SGs">平台的x座標</field>
+              <block type="variables_set" id="5X)+7lTrjLFD=bei_;U%">
+                <field name="VAR" id="HFy*o)Y4{k{R;(G?[bD3">玩家的y座標</field>
                 <value name="VALUE">
-                  <block type="math_number" id=";Hg(A,^A7O,t+_;H$[}n">
+                  <block type="math_number" id="0RPG[[hj7j(5wu1MPUE$">
                     <field name="NUM">0</field>
                   </block>
                 </value>
                 <next>
-                  <block type="variables_set" id="LWx$(^LBGbR8yp5oJu-R">
-                    <field name="VAR" id="QL=`+WzT6MyA{Fq^W_l0">平台行動</field>
+                  <block type="variables_set" id="^W;}}dYQ~WfISgcn+v2F">
+                    <field name="VAR" id="QL=`+WzT6MyA{Fq^W_l0">玩家行動</field>
                     <value name="VALUE">
-                      <block type="math_number" id="$fvxCsj]v@HVdS~x*d]Z">
+                      <block type="math_number" id="$kAogmAlJ?eGoarR#$A[">
                         <field name="NUM">0</field>
                       </block>
                     </value>
-                    <next>
-                      <block type="variables_set" id="Xt`s9v%2|scKl-oJvO+~">
-                        <field name="VAR" id="cQ),mG`DL!mYJXuH8{GX">已經發球</field>
-                        <value name="VALUE">
-                          <block type="logic_boolean" id="Mz7Pm$e843-{316{jPNz">
-                            <field name="BOOL">FALSE</field>
-                          </block>
-                        </value>
-                        <next>
-                          <block type="variables_set" id="@1J5KNB8E~==X;n~nPP;">
-                            <field name="VAR" id="kXny^hn]=Xk9tcsn@uqS">球落點</field>
-                            <value name="VALUE">
-                              <block type="math_number" id="7Rr7$q5L!%-:F{wS;J(e">
-                                <field name="NUM">0</field>
-                              </block>
-                            </value>
-                          </block>
-                        </next>
-                      </block>
-                    </next>
                   </block>
                 </next>
               </block>
@@ -675,20 +626,15 @@
                 <field name="WHERE">FIRST</field>
                 <value name="TO">
                   <block type="lists_create_with" id=",Zs,6P~E?OYpaq{#]93x">
-                    <mutation items="3"></mutation>
+                    <mutation items="2"></mutation>
                     <value name="ADD0">
                       <block type="text" id="Y4J-F=sbiw*qC~5,fk4D">
-                        <field name="TEXT">球的x座標</field>
+                        <field name="TEXT">玩家的x座標</field>
                       </block>
                     </value>
                     <value name="ADD1">
                       <block type="text" id=":sJ+OqS^$}3`X.uo5dz,">
-                        <field name="TEXT">球的y座標</field>
-                      </block>
-                    </value>
-                    <value name="ADD2">
-                      <block type="text" id="Mfv:x8bi=c#YOg?3;1;E">
-                        <field name="TEXT">平台的x座標</field>
+                        <field name="TEXT">玩家的y座標</field>
                       </block>
                     </value>
                   </block>
@@ -738,14 +684,14 @@
                             <mutation items="1"></mutation>
                             <value name="ADD0">
                               <block type="text" id="5PsX_5FGX?;u)b,AG`[g">
-                                <field name="TEXT">平台行動</field>
+                                <field name="TEXT">玩家行動</field>
                               </block>
                             </value>
                           </block>
                         </value>
                         <value name="LIST">
                           <block type="variables_get" id=")~j#?;wa~N?G|zZay7{K">
-                            <field name="VAR" id="^e/mFFdqf7HO=T-QVgdF">模型輸出_移動命令_二維</field>
+                            <field name="VAR" id="^e/mFFdqf7HO=T-QVgdF">模型輸出_玩家行動_二維</field>
                           </block>
                         </value>
                         <next>
@@ -753,7 +699,7 @@
                             <field name="DELIMITER">,</field>
                             <value name="OBJECT">
                               <block type="variables_get" id="y(iF5r79H#eF+/lh^V/M">
-                                <field name="VAR" id="^e/mFFdqf7HO=T-QVgdF">模型輸出_移動命令_二維</field>
+                                <field name="VAR" id="^e/mFFdqf7HO=T-QVgdF">模型輸出_玩家行動_二維</field>
                               </block>
                             </value>
                             <value name="FILENAME">
@@ -792,40 +738,72 @@
       </block>
     </statement>
   </block>
-  <block type="procedures_defreturn" id="VA#]204ajI+3dskMqZ.P" x="1038" y="787">
-    <field name="NAME">決定平台行動</field>
+  <block type="procedures_defreturn" id="IN#/UY!h_]lzni_[^qB]" x="912" y="788">
+    <field name="NAME">決定玩家行動</field>
     <comment pinned="false" h="80" w="160">描述此函式...</comment>
     <statement name="STACK">
-      <block type="controls_if" id="wK[V.drWkAD3|-V}d8?3">
-        <mutation elseif="1"></mutation>
+      <block type="controls_if" id="=12MbK^}lz5RL_E#jfl|">
+        <mutation elseif="3"></mutation>
         <value name="IF0">
-          <block type="mlplay_is_key_pressed" id="X().Ho}34^3*(zGSsC!W">
+          <block type="mlplay_is_key_pressed" id="?Pb$z)qPP@k0,A2#UA*L">
             <field name="TYPE">arrow</field>
-            <field name="KEY">left</field>
+            <field name="KEY">right</field>
           </block>
         </value>
         <statement name="DO0">
-          <block type="procedures_ifreturn" id="!ZRJJ8_+HyM+}p[jm#.w">
+          <block type="procedures_ifreturn" id="gz,}{?CeDhHDDDQ_CXTv">
             <mutation value="1"></mutation>
             <value name="VALUE">
-              <block type="math_number" id="/^1(oBp?fOb)`_HG.7/}">
+              <block type="math_number" id="~i(Y`##2)mEG+w56gyuz">
                 <field name="NUM">1</field>
               </block>
             </value>
           </block>
         </statement>
         <value name="IF1">
-          <block type="mlplay_is_key_pressed" id="w^K%/9*e{;;BGp*;hu$_">
+          <block type="mlplay_is_key_pressed" id="}gWMqcuhu%tO+B2:)seq">
             <field name="TYPE">arrow</field>
-            <field name="KEY">right</field>
+            <field name="KEY">left</field>
           </block>
         </value>
         <statement name="DO1">
-          <block type="procedures_ifreturn" id="r%y9Ck08@nsdSZ/[Mvg,">
+          <block type="procedures_ifreturn" id="p[!lk9aif8m#Vnw=GNiB">
             <mutation value="1"></mutation>
             <value name="VALUE">
-              <block type="math_number" id="Od(q/EA44dzzqt{Gk-(@">
+              <block type="math_number" id="UX@JYGL43bV|wq6AIi]E">
                 <field name="NUM">2</field>
+              </block>
+            </value>
+          </block>
+        </statement>
+        <value name="IF2">
+          <block type="mlplay_is_key_pressed" id="#7$Ua;#oL$F=ub[E#Cr*">
+            <field name="TYPE">arrow</field>
+            <field name="KEY">up</field>
+          </block>
+        </value>
+        <statement name="DO2">
+          <block type="procedures_ifreturn" id="#bEN)Dmb0~$fMt29W,)5">
+            <mutation value="1"></mutation>
+            <value name="VALUE">
+              <block type="math_number" id="y7R(hU$X:1rkNaT6Jlc?">
+                <field name="NUM">3</field>
+              </block>
+            </value>
+          </block>
+        </statement>
+        <value name="IF3">
+          <block type="mlplay_is_key_pressed" id=".Ks7,-G)A$,cc+TGXeTw">
+            <field name="TYPE">arrow</field>
+            <field name="KEY">down</field>
+          </block>
+        </value>
+        <statement name="DO3">
+          <block type="procedures_ifreturn" id="YQ*Rhpz1?D*JNm.Grjo=">
+            <mutation value="1"></mutation>
+            <value name="VALUE">
+              <block type="math_number" id="8--XFn|aSQjPv,.?B701">
+                <field name="NUM">4</field>
               </block>
             </value>
           </block>
@@ -833,8 +811,8 @@
       </block>
     </statement>
     <value name="RETURN">
-      <block type="math_number" id=":hN;P7Mz?GyLPL#`=MsR">
-        <field name="NUM">3</field>
+      <block type="math_number" id="qvIB,C0A]i}{iW[)F.Aa">
+        <field name="NUM">1</field>
       </block>
     </value>
   </block>
@@ -875,8 +853,7 @@
                     </value>
                     <next>
                       <block type="variables_set" id="ls59pJVW2(R/V8yI(D/]">
-                        <field name="VAR" id="^e/mFFdqf7HO=T-QVgdF">模型輸出_移動命令_二維</field>
-                        <comment pinned="false" h="94" w="211">因為PAIA桌面版積木只能將二維清單存成csv檔,故另建一個二維清單</comment>
+                        <field name="VAR" id="^e/mFFdqf7HO=T-QVgdF">模型輸出_玩家行動_二維</field>
                         <value name="VALUE">
                           <block type="lists_create_with" id="OG$r05qa|s_LWO0vzzB-">
                             <mutation items="0"></mutation>
@@ -903,8 +880,39 @@
                                 <next>
                                   <block type="variables_set" id="hx2lRC:cK8GRjz@ugl{j">
                                     <field name="VAR" id="ZVHZ!Cc4nX_G1;+%HDxq">過關不存檔次數</field>
-                                    <comment pinned="false" h="72" w="327">過關幀數&lt;存檔最小幀數或
+                                    <comment pinned="false" h="94" w="211">過關幀數&lt;存檔最小幀數或
 過關幀數&gt;存檔最大幀數的遊戲次數
+                                
+                                
+                                
+                                
+                                
+                                
+                                
+                                
+                                
+                                
+                                
+                                
+                                
+                                
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
                                     
                                     
                                     </comment>
@@ -930,7 +938,7 @@
       </block>
     </statement>
   </block>
-  <block type="procedures_defreturn" id="yro6WB1NQrQ8{nM8JHq}" x="-1213" y="1487">
+  <block type="procedures_defreturn" id="yro6WB1NQrQ8{nM8JHq}" x="-1212" y="1562">
     <mutation statements="false">
       <arg name="數值" varid="q~`NgC9jm)%Iw^f_U^{n"></arg>
     </mutation>
@@ -976,7 +984,7 @@
       </block>
     </value>
   </block>
-  <block type="procedures_defreturn" id="YX?jesE}6nC9aqTdlX0`" x="-1212" y="1587">
+  <block type="procedures_defreturn" id="YX?jesE}6nC9aqTdlX0`" x="-1212" y="1663">
     <mutation statements="false"></mutation>
     <field name="NAME">過關幀數在收集範圍嗎</field>
     <comment pinned="false" h="73" w="113">過關幀數在收集範圍嗎</comment>
@@ -1016,7 +1024,78 @@
       </block>
     </value>
   </block>
-  <block type="procedures_defnoreturn" id="6NbYsGy#_{^6ZIzMoO2o" x="-1213" y="1712">
+  <block type="procedures_defreturn" id="22FiV8,QWg%a_6T{49|P" x="-1213" y="1763">
+    <mutation statements="false">
+      <arg name="分子" varid="GLYqo_4k[I4N!bjZ4))p"></arg>
+      <arg name="分母" varid="m{mzG85-gV;/Z{S@4#4."></arg>
+    </mutation>
+    <field name="NAME">正確率</field>
+    <comment pinned="false" h="80" w="160">取到小數點以下4位</comment>
+    <value name="RETURN">
+      <block type="text_join" id="VC)dhcPS73gNsxgBn+s*">
+        <mutation items="7"></mutation>
+        <value name="ADD0">
+          <block type="text" id=")c^liUwf[@88u$e_HVb_">
+            <field name="TEXT">正確率=</field>
+          </block>
+        </value>
+        <value name="ADD1">
+          <block type="variables_get" id="V=Ns6ZzPDlg(_i+9*GoU">
+            <field name="VAR" id="GLYqo_4k[I4N!bjZ4))p">分子</field>
+          </block>
+        </value>
+        <value name="ADD2">
+          <block type="text" id="1N4T6{PD-4Xkj-_sBW^B">
+            <field name="TEXT">/</field>
+          </block>
+        </value>
+        <value name="ADD3">
+          <block type="variables_get" id="`p-yK$O+rOB#8Akt=KW)">
+            <field name="VAR" id="m{mzG85-gV;/Z{S@4#4.">分母</field>
+          </block>
+        </value>
+        <value name="ADD4">
+          <block type="text" id="mNP7-}ZpA5@9?{z=1[-K">
+            <field name="TEXT">(</field>
+          </block>
+        </value>
+        <value name="ADD5">
+          <block type="procedures_callreturn" id="?j];.=v,3cK+hp`}X6Vd">
+            <mutation name="取到小數點以下4位">
+              <arg name="數值"></arg>
+            </mutation>
+            <value name="ARG0">
+              <block type="math_arithmetic" id="Y20J58p04lJRCUy0sacR">
+                <field name="OP">DIVIDE</field>
+                <value name="A">
+                  <shadow type="math_number">
+                    <field name="NUM">1</field>
+                  </shadow>
+                  <block type="variables_get" id="E1e,CMZX}D0-+lUj5Vnz">
+                    <field name="VAR" id="GLYqo_4k[I4N!bjZ4))p">分子</field>
+                  </block>
+                </value>
+                <value name="B">
+                  <shadow type="math_number">
+                    <field name="NUM">1</field>
+                  </shadow>
+                  <block type="variables_get" id="^07Ci-u9h8[_H;/_p7-d">
+                    <field name="VAR" id="m{mzG85-gV;/Z{S@4#4.">分母</field>
+                  </block>
+                </value>
+              </block>
+            </value>
+          </block>
+        </value>
+        <value name="ADD6">
+          <block type="text" id="c;GKDM,SDB)%h4SBK=/a">
+            <field name="TEXT">)</field>
+          </block>
+        </value>
+      </block>
+    </value>
+  </block>
+  <block type="procedures_defnoreturn" id="6NbYsGy#_{^6ZIzMoO2o" x="-1212" y="2063">
     <mutation>
       <arg name="已存檔次數" varid="y#UQHn]$HAy.^rnjGz*5"></arg>
     </mutation>
@@ -1029,7 +1108,7 @@
             <field name="TEXT">abc</field>
           </shadow>
           <block type="text_join" id="wpad}TsEVs9uSbmH+5Y-">
-            <mutation items="13"></mutation>
+            <mutation items="8"></mutation>
             <value name="ADD0">
               <block type="text" id="1L7c}MHBPQ*-YsBLUiPG">
                 <field name="TEXT">【己收集</field>
@@ -1126,60 +1205,25 @@
             </value>
             <value name="ADD6">
               <block type="text" id="6plT*B8zxema!fp}n#Ww">
-                <field name="TEXT">)正確率=</field>
+                <field name="TEXT">)</field>
               </block>
             </value>
             <value name="ADD7">
-              <block type="variables_get" id="6w0U%j$_w(=U9[x+(mF%">
-                <field name="VAR" id="O%0ffUq|%9lTTX[362k^">過關次數</field>
-              </block>
-            </value>
-            <value name="ADD8">
-              <block type="text" id="S`FktePpb/;;8EoS0yRl">
-                <field name="TEXT">/</field>
-              </block>
-            </value>
-            <value name="ADD9">
-              <block type="variables_get" id="P4{Sd)qlC#IhH-gT4^ML">
-                <field name="VAR" id="TD8O.^=SMG/u]SkA08gS">遊戲次數</field>
-              </block>
-            </value>
-            <value name="ADD10">
-              <block type="text" id="3#-]m~.)|Jzb7)$666`,">
-                <field name="TEXT">(</field>
-              </block>
-            </value>
-            <value name="ADD11">
-              <block type="procedures_callreturn" id="HiR3%#5_WNnW%pw|5d*f">
-                <mutation name="取到小數點以下4位">
-                  <arg name="數值"></arg>
+              <block type="procedures_callreturn" id="cj{,Z-4Wju{+!Q=uBoN}">
+                <mutation name="正確率">
+                  <arg name="分子"></arg>
+                  <arg name="分母"></arg>
                 </mutation>
                 <value name="ARG0">
-                  <block type="math_arithmetic" id="I!)+]Dvu]U;,+T,q[ya,">
-                    <field name="OP">DIVIDE</field>
-                    <value name="A">
-                      <shadow type="math_number">
-                        <field name="NUM">1</field>
-                      </shadow>
-                      <block type="variables_get" id="g:vb)JT^tB)PstFMM}w.">
-                        <field name="VAR" id="O%0ffUq|%9lTTX[362k^">過關次數</field>
-                      </block>
-                    </value>
-                    <value name="B">
-                      <shadow type="math_number">
-                        <field name="NUM">1</field>
-                      </shadow>
-                      <block type="variables_get" id="3%)dC_g%ir--]YFL9Q8e">
-                        <field name="VAR" id="TD8O.^=SMG/u]SkA08gS">遊戲次數</field>
-                      </block>
-                    </value>
+                  <block type="variables_get" id="6w0U%j$_w(=U9[x+(mF%">
+                    <field name="VAR" id="O%0ffUq|%9lTTX[362k^">過關次數</field>
                   </block>
                 </value>
-              </block>
-            </value>
-            <value name="ADD12">
-              <block type="text" id="U-gDk;`^H},!0WOXE)9=">
-                <field name="TEXT">)</field>
+                <value name="ARG1">
+                  <block type="variables_get" id="P4{Sd)qlC#IhH-gT4^ML">
+                    <field name="VAR" id="TD8O.^=SMG/u]SkA08gS">遊戲次數</field>
+                  </block>
+                </value>
               </block>
             </value>
           </block>
@@ -1187,7 +1231,7 @@
       </block>
     </statement>
   </block>
-  <block type="procedures_defnoreturn" id="0IUMg5u!9]]}6Sn$aTPI" x="-562" y="1737">
+  <block type="procedures_defnoreturn" id="0IUMg5u!9]]}6Sn$aTPI" x="-538" y="2062">
     <mutation>
       <arg name="已存檔次數" varid="y#UQHn]$HAy.^rnjGz*5"></arg>
     </mutation>

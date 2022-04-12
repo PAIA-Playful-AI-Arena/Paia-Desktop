@@ -1,6 +1,8 @@
 <xml xmlns="https://developers.google.com/blockly/xml">
   <variables>
     <variable id="$UsGYKakUP(sr8*=5~0r">數值</variable>
+    <variable id="F+oS$(u;p6}TI5R1;(7[">分子</variable>
+    <variable id=",t|4k.BhYl*p6bW,9%Js">分母</variable>
     <variable id="2t~{j/OwS7zy*ywj!f;5">幀數</variable>
     <variable id="RFE=,nE_Y*a[8h4yqNp{">球的x座標</variable>
     <variable id="m_Ons%_(.R$4cA=@^|B%">遊戲狀態</variable>
@@ -10,8 +12,8 @@
     <variable id="bC!gRCCh5=K25!oh@v;7">遊戲次數</variable>
     <variable id="2qGIIUtOmEIUbrsIO$W:">球的x方向速度</variable>
     <variable id="VQ6f[whz1UsLU0vvfOAI">AI模型</variable>
-    <variable id="_3hhF$j5Mwi!vLNCbz@q">過關次數</variable>
     <variable id="uj:c?Ni8*q5VJNF3L;0`">球的y方向速度</variable>
+    <variable id="_3hhF$j5Mwi!vLNCbz@q">過關次數</variable>
     <variable id="F(}$gYIZmGj]36wPr5TS">平台的x座標</variable>
     <variable id="$ETyp1[P7ZU7vzE=ngla">平台行動</variable>
     <variable id="@rBG=grKZC_^7zs=7]{x">模型輸入</variable>
@@ -705,7 +707,7 @@
       </block>
     </statement>
   </block>
-  <block type="procedures_defreturn" id="4{Z^ys|0j$Zb$uoFB++2" x="1163" y="12">
+  <block type="procedures_defreturn" id="4{Z^ys|0j$Zb$uoFB++2" x="1138" y="63">
     <mutation statements="false">
       <arg name="數值" varid="$UsGYKakUP(sr8*=5~0r"></arg>
     </mutation>
@@ -751,162 +753,76 @@
       </block>
     </value>
   </block>
-  <block type="procedures_defnoreturn" id="pFeLTfP1|_yDs|NC0q)w" x="1163" y="138">
-    <field name="NAME">輸出遊戲成績</field>
-    <comment pinned="false" h="80" w="160">描述此函式...</comment>
-    <statement name="STACK">
-      <block type="text_print" id="OD-i/-Am1oXA3OrYuo?W">
-        <value name="TEXT">
-          <shadow type="text">
-            <field name="TEXT">abc</field>
-          </shadow>
-          <block type="text_join" id="BC)$yYOj,Km#[B%@o()T">
-            <mutation items="12"></mutation>
-            <value name="ADD0">
-              <block type="variables_get" id="c/@B98G9Njz^rBq14Epk">
-                <field name="VAR" id="G|h$J8:QMc6vt);z+AF/">玩家編號</field>
-              </block>
-            </value>
-            <value name="ADD1">
-              <block type="logic_ternary" id=".aW3/6Z3[AtFXDv7}qxj">
-                <value name="IF">
-                  <block type="procedures_callreturn" id=";x}U85/J^!^|{Q8neV4k">
-                    <mutation name="過關了嗎?"></mutation>
-                  </block>
-                </value>
-                <value name="THEN">
-                  <block type="text" id="iKlbJK[_t;4|Mdz^qgzk">
-                    <field name="TEXT">過關！</field>
-                  </block>
-                </value>
-                <value name="ELSE">
-                  <block type="text" id="2aClBlz_@dXPrUj|IPS4">
-                    <field name="TEXT">失敗！</field>
-                  </block>
-                </value>
-              </block>
-            </value>
-            <value name="ADD2">
-              <block type="math_single" id="AL2Mn9}UmHbkWQc*n?9S">
-                <field name="OP">ABS</field>
-                <value name="NUM">
-                  <shadow type="math_number" id="M1Z!k67|-!idqxM9UB^d">
-                    <field name="NUM">9</field>
+  <block type="procedures_defreturn" id="p2;dBb{|/:dS%a%`:`03" x="1138" y="163">
+    <mutation statements="false">
+      <arg name="分子" varid="F+oS$(u;p6}TI5R1;(7["></arg>
+      <arg name="分母" varid=",t|4k.BhYl*p6bW,9%Js"></arg>
+    </mutation>
+    <field name="NAME">正確率</field>
+    <comment pinned="false" h="80" w="160">取到小數點以下4位</comment>
+    <value name="RETURN">
+      <block type="text_join" id="ccP!RQ$)xQpE#hZC6yj;">
+        <mutation items="7"></mutation>
+        <value name="ADD0">
+          <block type="text" id="![R`P,19Pl{wy)YpmC_m">
+            <field name="TEXT">正確率=</field>
+          </block>
+        </value>
+        <value name="ADD1">
+          <block type="variables_get" id="vR=8J/IRQ`MLkdJeN.sU">
+            <field name="VAR" id="F+oS$(u;p6}TI5R1;(7[">分子</field>
+          </block>
+        </value>
+        <value name="ADD2">
+          <block type="text" id="(d26Thw.Nr_Q}l}XuF2+">
+            <field name="TEXT">/</field>
+          </block>
+        </value>
+        <value name="ADD3">
+          <block type="variables_get" id="gnEs_J(dyOtVu4jLtTM=">
+            <field name="VAR" id=",t|4k.BhYl*p6bW,9%Js">分母</field>
+          </block>
+        </value>
+        <value name="ADD4">
+          <block type="text" id="I:i}Z9)Vz8LCtk-J(nr|">
+            <field name="TEXT">(</field>
+          </block>
+        </value>
+        <value name="ADD5">
+          <block type="procedures_callreturn" id="GNxgd{#[JeHu*ZB)VYPF">
+            <mutation name="取到小數點以下4位">
+              <arg name="數值"></arg>
+            </mutation>
+            <value name="ARG0">
+              <block type="math_arithmetic" id="|aBj`~FJL]8#)]VVM`Wi">
+                <field name="OP">DIVIDE</field>
+                <value name="A">
+                  <shadow type="math_number">
+                    <field name="NUM">1</field>
                   </shadow>
-                  <block type="variables_get" id="HBDHBj%TDiizuTuhG+Op">
-                    <field name="VAR" id="2qGIIUtOmEIUbrsIO$W:">球的x方向速度</field>
+                  <block type="variables_get" id="(dJiy;(obpxnHiYlM%ck">
+                    <field name="VAR" id="F+oS$(u;p6}TI5R1;(7[">分子</field>
                   </block>
                 </value>
-              </block>
-            </value>
-            <value name="ADD3">
-              <block type="text" id="=^EEX]~;.sL7r6~Ai@AB">
-                <field name="TEXT">(總幀數=</field>
-              </block>
-            </value>
-            <value name="ADD4">
-              <block type="variables_get" id="URek9tFP)#.WAg6*:7S?">
-                <field name="VAR" id="2t~{j/OwS7zy*ywj!f;5">幀數</field>
-              </block>
-            </value>
-            <value name="ADD5">
-              <block type="text" id=".ql,ra4Jb95J0BiX%CC4">
-                <field name="TEXT">)正確率=</field>
-              </block>
-            </value>
-            <value name="ADD6">
-              <block type="dicts_get_value" id="wXR?}_5]+OJ?rBh:;w-!">
-                <value name="DICT">
-                  <block type="variables_get" id="nj)(aERM+[;{d/U[nKAA">
-                    <field name="VAR" id="_3hhF$j5Mwi!vLNCbz@q">過關次數</field>
+                <value name="B">
+                  <shadow type="math_number">
+                    <field name="NUM">1</field>
+                  </shadow>
+                  <block type="variables_get" id="+#i3y;J1Ou4tW7J5o)en">
+                    <field name="VAR" id=",t|4k.BhYl*p6bW,9%Js">分母</field>
                   </block>
                 </value>
-                <value name="KEY">
-                  <block type="variables_get" id="/o|,b`NSXqY/?v2W2=hN">
-                    <field name="VAR" id="G|h$J8:QMc6vt);z+AF/">玩家編號</field>
-                  </block>
-                </value>
-              </block>
-            </value>
-            <value name="ADD7">
-              <block type="text" id="ONFMC_h|_U,+U{;DyHoN">
-                <field name="TEXT">/</field>
-              </block>
-            </value>
-            <value name="ADD8">
-              <block type="dicts_get_value" id="yEcl1U%!T23oD}:[[HfT">
-                <value name="DICT">
-                  <block type="variables_get" id="uP9[.N!kbFD=[`*}!N!K">
-                    <field name="VAR" id="bC!gRCCh5=K25!oh@v;7">遊戲次數</field>
-                  </block>
-                </value>
-                <value name="KEY">
-                  <block type="variables_get" id="B/2G(wIp=#W@kHq_MHO8">
-                    <field name="VAR" id="G|h$J8:QMc6vt);z+AF/">玩家編號</field>
-                  </block>
-                </value>
-              </block>
-            </value>
-            <value name="ADD9">
-              <block type="text" id="N|e?z%!*3_cmk!;[by}T">
-                <field name="TEXT">(</field>
-              </block>
-            </value>
-            <value name="ADD10">
-              <block type="procedures_callreturn" id="J.R$U|8M92mNd]bO44$w">
-                <mutation name="取到小數點以下4位">
-                  <arg name="數值"></arg>
-                </mutation>
-                <value name="ARG0">
-                  <block type="math_arithmetic" id="ztrfM+*Zzv3`UCU.$m[7">
-                    <field name="OP">DIVIDE</field>
-                    <value name="A">
-                      <shadow type="math_number" id="BDSiS|fyfS,/0fY|zoHi">
-                        <field name="NUM">1</field>
-                      </shadow>
-                      <block type="dicts_get_value" id="jc]B;~]iOiCOcT_Cb3eE">
-                        <value name="DICT">
-                          <block type="variables_get" id="2dHdxcbasB8EzuN??=42">
-                            <field name="VAR" id="_3hhF$j5Mwi!vLNCbz@q">過關次數</field>
-                          </block>
-                        </value>
-                        <value name="KEY">
-                          <block type="variables_get" id="g[7b3nz#{o~hR_OxAnTf">
-                            <field name="VAR" id="G|h$J8:QMc6vt);z+AF/">玩家編號</field>
-                          </block>
-                        </value>
-                      </block>
-                    </value>
-                    <value name="B">
-                      <shadow type="math_number" id=",h%@mwxM09*2^R_%RgG7">
-                        <field name="NUM">1</field>
-                      </shadow>
-                      <block type="dicts_get_value" id="h8/GTXmuRkBo6PUDJB|s">
-                        <value name="DICT">
-                          <block type="variables_get" id="paf}-r3,-KtF3EC!s%Ve">
-                            <field name="VAR" id="bC!gRCCh5=K25!oh@v;7">遊戲次數</field>
-                          </block>
-                        </value>
-                        <value name="KEY">
-                          <block type="variables_get" id="7!;(YbXfGepovu/dj+a|">
-                            <field name="VAR" id="G|h$J8:QMc6vt);z+AF/">玩家編號</field>
-                          </block>
-                        </value>
-                      </block>
-                    </value>
-                  </block>
-                </value>
-              </block>
-            </value>
-            <value name="ADD11">
-              <block type="text" id="V):0DkYRxghb#)Pav2^V">
-                <field name="TEXT">)</field>
               </block>
             </value>
           </block>
         </value>
+        <value name="ADD6">
+          <block type="text" id="w%I^?lJ;f[HJZs5eLOy[">
+            <field name="TEXT">)</field>
+          </block>
+        </value>
       </block>
-    </statement>
+    </value>
   </block>
   <block type="procedures_defnoreturn" id="aNlGdn?4CD(#/ku3.;][" x="-487" y="362">
     <field name="NAME">初始化玩遊戲變數</field>
@@ -1040,7 +956,111 @@
       </block>
     </statement>
   </block>
-  <block type="procedures_defreturn" id="-~:5$W@`)EjxIA(Wl#0," x="1162" y="738">
+  <block type="procedures_defnoreturn" id="pFeLTfP1|_yDs|NC0q)w" x="1137" y="463">
+    <field name="NAME">輸出遊戲成績</field>
+    <comment pinned="false" h="80" w="160">描述此函式...</comment>
+    <statement name="STACK">
+      <block type="text_print" id="OD-i/-Am1oXA3OrYuo?W">
+        <value name="TEXT">
+          <shadow type="text">
+            <field name="TEXT">abc</field>
+          </shadow>
+          <block type="text_join" id="BC)$yYOj,Km#[B%@o()T">
+            <mutation items="7"></mutation>
+            <value name="ADD0">
+              <block type="variables_get" id="c/@B98G9Njz^rBq14Epk">
+                <field name="VAR" id="G|h$J8:QMc6vt);z+AF/">玩家編號</field>
+              </block>
+            </value>
+            <value name="ADD1">
+              <block type="logic_ternary" id=".aW3/6Z3[AtFXDv7}qxj">
+                <value name="IF">
+                  <block type="procedures_callreturn" id=";x}U85/J^!^|{Q8neV4k">
+                    <mutation name="過關了嗎?"></mutation>
+                  </block>
+                </value>
+                <value name="THEN">
+                  <block type="text" id="iKlbJK[_t;4|Mdz^qgzk">
+                    <field name="TEXT">過關！</field>
+                  </block>
+                </value>
+                <value name="ELSE">
+                  <block type="text" id="2aClBlz_@dXPrUj|IPS4">
+                    <field name="TEXT">失敗！</field>
+                  </block>
+                </value>
+              </block>
+            </value>
+            <value name="ADD2">
+              <block type="math_single" id="AL2Mn9}UmHbkWQc*n?9S">
+                <field name="OP">ABS</field>
+                <value name="NUM">
+                  <shadow type="math_number" id="M1Z!k67|-!idqxM9UB^d">
+                    <field name="NUM">9</field>
+                  </shadow>
+                  <block type="variables_get" id="HBDHBj%TDiizuTuhG+Op">
+                    <field name="VAR" id="2qGIIUtOmEIUbrsIO$W:">球的x方向速度</field>
+                  </block>
+                </value>
+              </block>
+            </value>
+            <value name="ADD3">
+              <block type="text" id="=^EEX]~;.sL7r6~Ai@AB">
+                <field name="TEXT">(總幀數=</field>
+              </block>
+            </value>
+            <value name="ADD4">
+              <block type="variables_get" id="URek9tFP)#.WAg6*:7S?">
+                <field name="VAR" id="2t~{j/OwS7zy*ywj!f;5">幀數</field>
+              </block>
+            </value>
+            <value name="ADD5">
+              <block type="text" id=".ql,ra4Jb95J0BiX%CC4">
+                <field name="TEXT">)</field>
+              </block>
+            </value>
+            <value name="ADD6">
+              <block type="procedures_callreturn" id="gWn_C*)n^dG8~Fua+PRL">
+                <mutation name="正確率">
+                  <arg name="分子"></arg>
+                  <arg name="分母"></arg>
+                </mutation>
+                <value name="ARG0">
+                  <block type="dicts_get_value" id="p!(y;TCc_tn]W%N!.r[Q">
+                    <value name="DICT">
+                      <block type="variables_get" id="ubzj4Sq#?Xc}#5kOl%DA">
+                        <field name="VAR" id="_3hhF$j5Mwi!vLNCbz@q">過關次數</field>
+                      </block>
+                    </value>
+                    <value name="KEY">
+                      <block type="variables_get" id="T]|RMyC`C{Rsej{M;tev">
+                        <field name="VAR" id="G|h$J8:QMc6vt);z+AF/">玩家編號</field>
+                      </block>
+                    </value>
+                  </block>
+                </value>
+                <value name="ARG1">
+                  <block type="dicts_get_value" id="tEw0)S=!}S+K_Rb]hcOk">
+                    <value name="DICT">
+                      <block type="variables_get" id="g8HhhBlzI}B*FWDJzmWL">
+                        <field name="VAR" id="bC!gRCCh5=K25!oh@v;7">遊戲次數</field>
+                      </block>
+                    </value>
+                    <value name="KEY">
+                      <block type="variables_get" id="VPDKvFlJLS%U*3#q61wp">
+                        <field name="VAR" id="G|h$J8:QMc6vt);z+AF/">玩家編號</field>
+                      </block>
+                    </value>
+                  </block>
+                </value>
+              </block>
+            </value>
+          </block>
+        </value>
+      </block>
+    </statement>
+  </block>
+  <block type="procedures_defreturn" id="-~:5$W@`)EjxIA(Wl#0," x="1137" y="887">
     <field name="NAME">過關了嗎?</field>
     <comment pinned="false" h="80" w="160">描述此函式...</comment>
     <statement name="STACK">

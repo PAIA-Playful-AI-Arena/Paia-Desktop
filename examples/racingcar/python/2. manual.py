@@ -1,21 +1,6 @@
-from pynput import keyboard
-from collections import defaultdict
+import pygame
 import pickle
 import os
-
-_KEYBOARD_ON_PRESSED = None
-
-def on_press(key):
-    _KEYBOARD_ON_PRESSED[str(key)] = True
-
-def on_release(key):
-    _KEYBOARD_ON_PRESSED[str(key)] = False
-
-_KEYBOARD_ON_PRESSED = defaultdict(bool)
-listener = keyboard.Listener(
-    on_press=on_press,
-    on_release=on_release)
-listener.start()
 
 class MLPlay:
     def __init__(self, player):
@@ -23,21 +8,21 @@ class MLPlay:
         self.other_cars_position = []
         self.player_car_position = []
         self.action = []
-    def update(self, scene_info):
+    def update(self, scene_info, keyboard):
         if scene_info['status'] == "RUNNING":
-            if _KEYBOARD_ON_PRESSED["Key.right"]:
+            if pygame.K_RIGHT in keyboard:
                 self.player_car_position.append([scene_info['x'], scene_info['y']])
                 self.action.append(1)
                 return ['SPEED']
-            elif _KEYBOARD_ON_PRESSED["Key.left"]:
+            elif pygame.K_LEFT in keyboard:
                 self.player_car_position.append([scene_info['x'], scene_info['y']])
                 self.action.append(2)
                 return ['BRAKE']
-            elif _KEYBOARD_ON_PRESSED["Key.up"]:
+            elif pygame.K_UP in keyboard:
                 self.player_car_position.append([scene_info['x'], scene_info['y']])
                 self.action.append(3)
                 return ['MOVE_LEFT']
-            elif _KEYBOARD_ON_PRESSED["Key.down"]:
+            elif pygame.K_DOWN in keyboard:
                 self.player_car_position.append([scene_info['x'], scene_info['y']])
                 self.action.append(4)
                 return ['MOVE_RIGHT']

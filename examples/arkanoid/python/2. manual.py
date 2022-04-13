@@ -1,29 +1,13 @@
 import pickle
 import os
-from pynput import keyboard
-from collections import defaultdict
-
-_KEYBOARD_ON_PRESSED = None
-
-def on_press(key):
-    _KEYBOARD_ON_PRESSED[str(key)] = True
-
-def on_release(key):
-    _KEYBOARD_ON_PRESSED[str(key)] = False
-
-_KEYBOARD_ON_PRESSED = defaultdict(bool)
-listener = keyboard.Listener(
-    on_press=on_press,
-    on_release=on_release)
-listener.start()
-
+import pygame
 
 class MLPlay:
     def __init__(self):
         self.ball_served = False
         self.actions = []
         self.positions = []
-    def update(self, scene_info):
+    def update(self, scene_info, keyboard):
         if scene_info['status'] == "GAME_PASS" or scene_info['status'] == "GAME_OVER":
             with open(os.path.join(os.path.dirname(__file__), 'target.pickle'), 'wb') as f:
                 pickle.dump(self.actions, f)
@@ -31,19 +15,19 @@ class MLPlay:
                 pickle.dump(self.positions, f)
             return "RESET"
         if not self.ball_served:
-            if (_KEYBOARD_ON_PRESSED["'A'"] or _KEYBOARD_ON_PRESSED["'a'"]):
+            if (pygame.K_a in keyboard):
                 self.ball_served = True
                 return "SERVE_TO_LEFT"
-            elif (_KEYBOARD_ON_PRESSED["'D'"] or _KEYBOARD_ON_PRESSED["'d'"]):
+            elif (pygame.K_d in keyboard):
                 self.ball_served = True
                 return "SERVE_TO_RIGHT"
         else:
-            if _KEYBOARD_ON_PRESSED["Key.left"]:
+            if pygame.K_LEFT in keyboard:
                 self.ball_served = True
                 self.positions.append([scene_info['ball'][0], scene_info['ball'][1]])
                 self.actions.append(1)
                 return "MOVE_LEFT"
-            elif _KEYBOARD_ON_PRESSED["Key.right"]:
+            elif pygame.K_RIGHT in keyboard:
                 self.ball_served = True
                 self.positions.append([scene_info['ball'][0], scene_info['ball'][1]])
                 self.actions.append(0)

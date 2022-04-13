@@ -1,22 +1,6 @@
 import pickle
 import os
-from pynput import keyboard
-from collections import defaultdict
-
-_KEYBOARD_ON_PRESSED = None
-
-def on_press(key):
-    _KEYBOARD_ON_PRESSED[str(key)] = True
-
-def on_release(key):
-    _KEYBOARD_ON_PRESSED[str(key)] = False
-
-_KEYBOARD_ON_PRESSED = defaultdict(bool)
-listener = keyboard.Listener(
-    on_press=on_press,
-    on_release=on_release)
-listener.start()
-
+import pygame
 
 class MLPlay:
     def __init__(self, player):
@@ -27,22 +11,22 @@ class MLPlay:
         self.right_PWM = 0
         self.feature = []
         self.target = []
-    def update(self, scene_info):
+    def update(self, scene_info, keyboard):
         if scene_info['status'] != "GAME_PASS":
             with open(os.path.join(os.path.dirname(__file__), 'feature.pickle'), 'wb') as f:
                 pickle.dump(self.feature, f)
             with open(os.path.join(os.path.dirname(__file__), 'target.pickle'), 'wb') as f:
                 pickle.dump(self.target, f)
-        elif _KEYBOARD_ON_PRESSED["Key.up"]:
+        elif pygame.K_UP in keyboard:
             self.left_PWM = 150
             self.right_PWM = 150
-        elif _KEYBOARD_ON_PRESSED["Key.right"]:
+        elif pygame.K_RIGHT in keyboard:
             self.left_PWM = 100
             self.right_PWM = -100
-        elif _KEYBOARD_ON_PRESSED["Key.left"]:
+        elif pygame.K_LEFT in keyboard:
             self.left_PWM = -100
             self.right_PWM = 100
-        elif _KEYBOARD_ON_PRESSED["Key.down"]:
+        elif pygame.K_DOWN in keyboard:
             self.left_PWM = -150
             self.right_PWM = -150
         else:

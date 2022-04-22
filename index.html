@@ -239,7 +239,7 @@
       });
       var path = require('path');
       var fs = require('fs');
-      destination = path.join(__dirname, destination);
+      destination = path.join(__dirname, destination).replace('app.asar', 'app.asar.unpacked');
       var download = require('download-git-repo');
       download(url, destination, function (err) {
         button.innerHTML = '<i class="bi bi-download"></i> 下載 / 更新';

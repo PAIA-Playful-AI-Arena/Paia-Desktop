@@ -620,11 +620,13 @@ Code.initMlgameBlocks = function() {
   var configPath = path.join(__dirname, 'MLGame', 'games', Code.GAME, 'blockly.json').replace('app.asar', 'app.asar.unpacked');
   if (fs.existsSync(configPath)) {
     var gameOptions = JSON.parse(window.readFile(configPath));
+    var reservedWords = ['MLPlay', 'self', 'scene_info', 'keyboard', 'args', 'kwargs', 'os', 'cmath', 'csv', 'plt', 'pickle', 'pygame', 'neighbors', 'tree', 'svm', 'ensemble', 'neural_network', 'linear_model', 'metrics', 'model_selection'];
     if ("INIT_INFO" in gameOptions) {
       var options = [];
       gameOptions["INIT_INFO"].forEach((op, index) => {
         var opName = `${Code.GAME.toUpperCase()}_INIT_INFO_${index+1}`;
         options.push([`%{BKY_${opName}}`, op[0]]);
+        reservedWords.push(op[0]);
         if (Code.LANG == 'en') {
           Blockly.Msg[opName] = op[1];
         } else if (Code.LANG == 'zh-hant') {
@@ -703,6 +705,8 @@ Code.initMlgameBlocks = function() {
       });
       Blockly.Msg["MLPLAY_RETURN_ACTION_OPTIONS"] = options;
     }
+
+    Blockly.Python.addReservedWords(reservedWords.join());
   }
 };
 
@@ -1597,6 +1601,9 @@ Code.downloadFileset = function() {
     require('https').get(e.file_url, (response) => {
       response.on('data', (d) => {
         file.write(d);
+      });
+      response.on('end', () => {
+        file.close();
         finish++;
         if (finish + error == total) {
           if (error == 0) {

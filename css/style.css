@@ -100,6 +100,23 @@ body {
   box-shadow: inset 0px 1px 1.5px rgba(0, 0, 0, 0.5);
 }
 
+#opened_python {
+  overflow-x: overlay;
+  overflow-y: hidden;
+  max-width: calc(100% - (400px));
+  flex-wrap: nowrap;
+}
+
+#opened_python .nav-link {
+  color: #888;
+  box-shadow: inset 0px 0px 1.5px rgba(0, 0, 0, 0.3);
+}
+
+#opened_python .nav-link.active {
+  color: #000;
+  box-shadow: inset 0px 1px 1.5px rgba(0, 0, 0, 0.5);
+}
+
 .row::-webkit-scrollbar {
   height: 3px;
 }

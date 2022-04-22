@@ -73,13 +73,12 @@
           "/python/interpreter.py"
         ],
         "asar": {
-          "unpackDir": "{MLGame,library,python}"
+          "unpackDir": "{MLGame,python}"
         }
       },
       "makers": [
         {
-          "name": "@electron-forge/maker-squirrel",
-          "config": {}
+          "name": "@electron-forge/maker-squirrel"
         },
         {
           "name": "@electron-forge/maker-zip",

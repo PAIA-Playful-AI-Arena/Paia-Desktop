@@ -449,6 +449,9 @@ Code.init = function() {
   
   // Update library dropdown menu
   var libraryDir = path.join(__dirname, 'library', Code.GAME.toLowerCase()).replace('app.asar', 'app.asar.unpacked');
+  if (!fs.existsSync(libraryDir)) {
+    fs.mkdirSync(libraryDir, { recursive: true });
+  }
   fs.watch(libraryDir, (eventType, filename) => {
     Code.updateLibraryList();
   });
@@ -708,8 +711,27 @@ Code.initMlgameBlocks = function() {
  */
  Code.updateLibraryList = function() {
   $('#library').empty();
-  var libraryDir = path.join(__dirname, 'library', Code.GAME.toLowerCase()).replace('app.asar', 'app.asar.unpacked');
   var index = 0;
+  var libraryDir = path.join(__dirname, 'examples', Code.GAME.toLowerCase(), 'xml');
+  fs.readdirSync(libraryDir, { withFileTypes: true }).forEach(dirent => {
+    if (dirent.isDirectory()) {
+      var filesetDir = path.join(libraryDir, dirent.name);
+      $('#library').append($(`<a href="#library-${index}" data-toggle="collapse" aria-expanded="false" class="group mt-2" title="${filesetDir}"><i class="bi bi-caret-right-fill pointer mr-1"></i>${dirent.name}</a>`))
+      var $list = $(`<ul class="collapse list-unstyled" id="library-${index}"></ul>`)
+      $('#library').append($list);
+      index++;
+      fs.readdirSync(filesetDir).forEach(file => {
+        if (file.endsWith(".xml")) {
+          var filePath = path.join(filesetDir, file);
+          $list.append($(`<li class="ml-3 mt-1"><a href="#" id="${filePath}" title="${filePath}">${file}</a></li>`));
+          Code.bindClick(filePath,
+            function() {Code.loadXml(filePath); Code.renderContent();});
+        }
+      });
+    }
+  });
+
+  var libraryDir = path.join(__dirname, 'library', Code.GAME.toLowerCase()).replace('app.asar', 'app.asar.unpacked');
   fs.readdirSync(libraryDir, { withFileTypes: true }).forEach(dirent => {
     if (dirent.isDirectory()) {
       var filesetDir = path.join(libraryDir, dirent.name);
@@ -895,14 +917,6 @@ Code.afterLogin = function() {
   });
   Code.setNavWidth();
   $('#login-dialog').modal('hide');
-};
-
-/**
- * Load example xml file from the folder of examples. 
- */
-Code.loadExample = function(name) {
-  var xmlPath = path.join(__dirname, 'xml', 'examples', Code.GAME.toLowerCase(), name + '.xml');
-  Code.loadXml(xmlPath);
 };
 
 /**
@@ -1245,21 +1259,21 @@ Code.loadProject = function() {
 Code.newProject = function() {
   Code.PROJECT = $('#project-name').val();
   var dir = path.join(__dirname, 'MLGame', 'games', Code.GAME, 'ml', Code.PROJECT).replace('app.asar', 'app.asar.unpacked');
+  var start = path.join(__dirname, 'examples', Code.GAME.toLowerCase(), 'xml', '範例程式 1', '1. start.xml');
   try {
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir);
       $('#project_name').html(Code.PROJECT);
-      Code.loadExample('1. start')
-      $('#file_name').html('1. start.xml');
+      if (fs.existsSync(start)) {
+        Code.loadXml(start);
+      }
       $('#project-dialog').modal('hide');
     } else if (window.confirm(`${Code.PROJECT} 已存在，是否改為載入此專案？`)) {
       $('#project_name').html(Code.PROJECT);
       if(fs.existsSync(path.join(dir, 'ml_play.xml'))) {
         Code.loadXml(path.join(dir, 'ml_play.xml'))
-        $('#file_name').html('ml_play.xml');
-      } else {
-        Code.loadExample('1. start')
-        $('#file_name').html('1. start.xml');
+      } else if (fs.existsSync(start)) {
+        Code.loadXml(start);
       }
       $('#project-dialog').modal('hide');
       // Add log
@@ -1301,6 +1315,7 @@ Code.openProject = function() {
     dir = dir[0];
   }
   var projectDir = path.join(mlPath, path.basename(dir));
+  var start = path.join(__dirname, 'examples', Code.GAME.toLowerCase(), 'xml', '範例程式 1', '1. start.xml');
   if (path.normalize(path.dirname(dir)) != path.normalize(mlPath)) {
     if (window.confirm('將複製此專案至遊戲資料夾下，是否繼續？')) {
       if (!fs.existsSync(projectDir)) {
@@ -1322,10 +1337,8 @@ Code.openProject = function() {
   $('#project_name').html(Code.PROJECT);
   if(fs.existsSync(path.join(projectDir, 'ml_play.xml'))) {
     Code.loadXml(path.join(projectDir, 'ml_play.xml'))
-    $('#file_name').html('ml_play.xml');
-  } else {
-    Code.loadExample('1. start')
-    $('#file_name').html('1. start.xml');
+  } else if (fs.existsSync(start)) {
+    Code.loadXml(start);
   }
   $('#project-dialog').modal('hide');
   // Add log

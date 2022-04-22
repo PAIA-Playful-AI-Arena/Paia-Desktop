@@ -183,6 +183,7 @@ window.sendLog = function() {
               msg = 'Ajax request aborted.';
           } else {
               msg = 'Uncaught Error.\n' + jqXHR.responseText;
+              store.reset('log');
           }
           console.log(msg);
         }
@@ -200,6 +201,7 @@ window.sendLog = function() {
               msg = 'Ajax request aborted.';
           } else {
               msg = 'Uncaught Error.\n' + jqXHR.responseText;
+              store.reset('log');
           }
           console.log(msg);
         }

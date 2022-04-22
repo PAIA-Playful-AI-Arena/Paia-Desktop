@@ -36,6 +36,11 @@ Code.PROJECT_WATCHER = null;
 Code.MODE = 'play';
 
 /**
+ * The Python editor is toggled or not.
+ */
+Code.PYTHON_EDITOR = false;
+
+/**
  * The mode of running program.
  */
 Code.LOGIN = false;
@@ -263,9 +268,8 @@ Code.checkAllGeneratorFunctionsDefined = function(generator) {
 };
 
 Code.setNavWidth = function() {
-  var width = $("#tab_list").width() - $("#show_python").width() - $("#tab_user").width() - $("#tab_lang").width() - $("#tab_option").width() - 150;
+  var width = $("#tab_list").width() - $("#toggle_python").width() - $("#tab_user").width() - $("#tab_lang").width() - $("#tab_option").width() - 150;
   $("#opened_xml").css("max-width", `${width}px`);
-  $("#right-shadow").css("left", `${width - 100}px`);
 };
 
 /**
@@ -487,8 +491,8 @@ Code.init = function() {
       function() {Code.discard(); Code.renderContent();});
   Code.bindClick('clean_trashcan',
       function() {Code.workspace.trashcan.emptyContents(); Code.renderContent();});
-  Code.bindClick('show_python',
-      function() {Code.showPython(); Code.renderContent();});
+  Code.bindClick('toggle_python',
+      function() {Code.togglePython(); Code.renderContent();});
   Code.bindClick('login_logout',
       function() {Code.loginout(); Code.renderContent();});
   Code.bindClick('show_filesets',
@@ -520,6 +524,11 @@ Code.init = function() {
   // Try to Use saved token to login.
   Code.token_login();
 
+  // Initialize content visibility.
+  $("#content_python").css("visibility", "hidden");
+  $("#content_blocks").css("visibility", "visible");
+  Code.workspace.setVisible(true);
+  
   // Show project dialog
   if (Code.GAME == 'easy_game' && !fs.existsSync(path.join(__dirname, 'MLGame', 'games', Code.GAME, 'ml', 'new').replace('app.asar', 'app.asar.unpacked'))) {
     $('#project-name').val('new');
@@ -926,7 +935,13 @@ Code.loadXml = function(xmlPath) {
   }
   var name = path.basename(xmlPath);
   if (xmlPath in Code.PATH_MAP) {
+    if (Code.PYTHON_EDITOR) {
+      Code.togglePython();
+    }
     name = Code.PATH_MAP[xmlPath];
+    if (name == Code.FOCUSED_XML) {
+      return;
+    }
     Code.workspace.clear();
     Blockly.Xml.domToWorkspace(Code.OPENED_XMLS[name].xml, Code.workspace);
     Code.workspace.setScale(Code.OPENED_XMLS[name].settings.scale);
@@ -937,9 +952,6 @@ Code.loadXml = function(xmlPath) {
     var scrollTarget = ($("#opened_xml").width() - Code.OPENED_XMLS[name].$item.width()) / 2;
     $("#opened_xml").animate({ scrollLeft: tabPos - scrollTarget });
     Code.FOCUSED_XML = name;
-    Code.workspace.setVisible(true);
-    $("#content_blocks").css("visibility", "visible");
-    $("#content_python").css("visibility", "hidden");
     return;
   } else {
     var index = 1;
@@ -967,6 +979,9 @@ Code.loadXml = function(xmlPath) {
         function() {Code.loadXml(xmlPath); Code.renderContent();});
       Code.bindClick(`close-${xmlPath}`,
         function() {Code.closeXml(xmlPath); Code.renderContent();});
+      if (Code.PYTHON_EDITOR) {
+        Code.togglePython();
+      }
       $("#opened_xml a").removeClass("active");
       $link.addClass("active");
       var tabPos = $("#opened_xml").scrollLeft() + $item.position().left;
@@ -975,9 +990,6 @@ Code.loadXml = function(xmlPath) {
       Code.OPENED_XMLS[name].$item = $item;
       Code.OPENED_XMLS[name].$link = $link;
       Code.FOCUSED_XML = name;
-      Code.workspace.setVisible(true);
-      $("#content_blocks").css("visibility", "visible");
-      $("#content_python").css("visibility", "hidden");
     } catch (err) {
       window.alert(err);
     }
@@ -1034,11 +1046,22 @@ Code.saveXml = function() {
   }
 };
 
-// Show python editor.
-Code.showPython = function() {
-  $("#content_python").css("visibility", "visible");
-  $("#content_blocks").css("visibility", "hidden");
-  Code.workspace.setVisible(false);
+// Toggle python editor.
+Code.togglePython = function() {
+  if (Code.PYTHON_EDITOR) {
+    $("#toggle_python").html("Python");
+    $("#content_python").css("visibility", "hidden");
+    $("#content_blocks").css("visibility", "visible");
+    Code.workspace.setVisible(true);
+    Code.PYTHON_EDITOR = false;
+  } else {
+    $("#toggle_python").html("積木");
+    $("#content_python").css("visibility", "visible");
+    $("#content_blocks").css("visibility", "hidden");
+    Code.workspace.setVisible(false);
+    Code.PYTHON_EDITOR = true;
+  }
+  Code.setNavWidth();
 };
 
 /**

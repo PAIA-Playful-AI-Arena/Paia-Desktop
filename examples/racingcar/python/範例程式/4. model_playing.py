@@ -2,13 +2,12 @@ import pickle
 import os
 
 class MLPlay:
-    def __init__(self, player):
-        self.player = player
+    def __init__(self, *args, **kwargs):
         self.other_cars_position = []
         with open(os.path.join(os.path.dirname(__file__), 'model.pickle'), 'rb') as f:
             self.model = pickle.load(f)
-    def update(self, scene_info):
-        if scene_info['status'] == "RUNNING":
+    def update(self, scene_info, keyboard=[], *args, **kwargs):
+        if scene_info['status'] == "GAME_ALIVE":
             self.action = self.model.predict([[scene_info['x'], scene_info['y']]])
             if self.action == 1:
                 return ['SPEED']

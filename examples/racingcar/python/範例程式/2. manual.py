@@ -3,13 +3,12 @@ import pickle
 import os
 
 class MLPlay:
-    def __init__(self, player):
-        self.player = player
+    def __init__(self, *args, **kwargs):
         self.other_cars_position = []
         self.player_car_position = []
         self.action = []
-    def update(self, scene_info, keyboard):
-        if scene_info['status'] == "RUNNING":
+    def update(self, scene_info, keyboard=[], *args, **kwargs):
+        if scene_info['status'] == "GAME_ALIVE":
             if pygame.K_RIGHT in keyboard:
                 self.player_car_position.append([scene_info['x'], scene_info['y']])
                 self.action.append(1)
@@ -26,7 +25,7 @@ class MLPlay:
                 self.player_car_position.append([scene_info['x'], scene_info['y']])
                 self.action.append(4)
                 return ['MOVE_RIGHT']
-        elif scene_info['status'] == "END":
+        else:
             with open(os.path.join(os.path.dirname(__file__), 'feature.pickle'), 'wb') as f:
                 pickle.dump(self.player_car_position, f)
             with open(os.path.join(os.path.dirname(__file__), 'target.pickle'), 'wb') as f:

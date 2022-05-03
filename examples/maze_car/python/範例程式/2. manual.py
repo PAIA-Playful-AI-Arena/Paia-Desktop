@@ -3,7 +3,7 @@ import os
 import pygame
 
 class MLPlay:
-    def __init__(self, player):
+    def __init__(self, player, *args, **kwargs):
         self.f_sensor_value = 0
         self.r_sensor_value = 0
         self.l_sensor_value = 0
@@ -11,8 +11,8 @@ class MLPlay:
         self.right_PWM = 0
         self.feature = []
         self.target = []
-    def update(self, scene_info, keyboard):
-        if scene_info['status'] != "GAME_PASS":
+    def update(self, scene_info, keyboard=[], *args, **kwargs):
+        if scene_info['status'] == "GAME_PASS":
             with open(os.path.join(os.path.dirname(__file__), 'feature.pickle'), 'wb') as f:
                 pickle.dump(self.feature, f)
             with open(os.path.join(os.path.dirname(__file__), 'target.pickle'), 'wb') as f:

@@ -2,7 +2,7 @@ import pickle
 import os
 
 class MLPlay:
-    def __init__(self, player):
+    def __init__(self, player, *args, **kwargs):
         self.f_sensor_value = 0
         self.r_sensor_value = 0
         self.l_sensor_value = 0
@@ -12,7 +12,7 @@ class MLPlay:
         self.PWMs = []
         with open(os.path.join(os.path.dirname(__file__), 'model.pickle'), 'rb') as f:
             self.model = pickle.load(f)
-    def update(self, scene_info):
+    def update(self, scene_info, keyboard=[], *args, **kwargs):
         self.f_sensor_value = scene_info['F_sensor']
         self.l_sensor_value = scene_info['L_sensor']
         self.r_sensor_value = scene_info['R_sensor']

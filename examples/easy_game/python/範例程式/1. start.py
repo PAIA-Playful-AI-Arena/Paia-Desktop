@@ -2,10 +2,10 @@ import random
 
 
 class MLPlay:
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
         print("Initial ml script")
 
-    def update(self, scene_info: dict):
+    def update(self, scene_info, keyboard=[], *args, **kwargs):
         """
         Generate the command according to the received scene information
         """

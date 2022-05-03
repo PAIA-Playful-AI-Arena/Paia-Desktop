@@ -3,13 +3,13 @@ The template of the main script of the machine learning process
 """
 
 class MLPlay:
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
         """
         Constructor
         """
         self.ball_served = False
 
-    def update(self, scene_info):
+    def update(self, scene_info, keyboard=[], *args, **kwargs):
         """
         Generate the command according to the received `scene_info`.
         """

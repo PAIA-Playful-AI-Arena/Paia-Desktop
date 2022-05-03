@@ -2,12 +2,12 @@ import pickle
 import os
 
 class MLPlay:
-    def __init__(self, side):
+    def __init__(self, side, *args, **kwargs):
         self.ball_served = False
         self.side = side
         with open(os.path.join(os.path.dirname(__file__), 'model.pickle'), 'rb') as f:
             self.model = pickle.load(f)
-    def update(self, scene_info):
+    def update(self, scene_info, keyboard=[], *args, **kwargs):
         if scene_info['status'] != "GAME_ALIVE":
             return "RESET"
         if not self.ball_served:

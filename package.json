@@ -70,7 +70,8 @@
           "(.*)__pycache__",
           "/python/build",
           "/python/interpreter.spec",
-          "/python/interpreter.py"
+          "/python/interpreter.py",
+          "/venv"
         ],
         "asar": {
           "unpackDir": "{MLGame,python}"

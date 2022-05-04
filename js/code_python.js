@@ -861,7 +861,7 @@ Code.openProject = function() {
     dir = dir[0];
   }
   var projectDir = path.join(mlPath, path.basename(dir));
-  var start = path.join(__dirname, 'examples', Code.GAME.toLowerCase(), 'python', '範例程式', '1. start.python');
+  var start = path.join(__dirname, 'examples', Code.GAME.toLowerCase(), 'python', '範例程式', '1. start.py');
   if (path.normalize(path.dirname(dir)) != path.normalize(mlPath)) {
     if (window.confirm('將複製此專案至遊戲資料夾下，是否繼續？')) {
       if (!fs.existsSync(projectDir)) {

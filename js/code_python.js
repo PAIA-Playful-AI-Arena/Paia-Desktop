@@ -638,6 +638,31 @@ Code.afterLogin = function() {
 };
 
 /**
+ * Close Python file and try to load another opened Python. 
+ */
+ Code.closePython = function(pythonPath) {
+  var name = Code.PATH_MAP[pythonPath];
+  if (Code.OPENED_PYTHONS[name].$link.find('.not-saved').html() == '*' &&
+      !window.confirm(`${name} 有尚未儲存的修改，關閉後將遺失，是否確定關閉檔案？`)) {
+    return;
+  }
+  if (Code.OPENED_PYTHONS[name].$link.hasClass('active')) {
+    var $links = $("#opened_python .nav-link");
+    var index = $links.index(Code.OPENED_PYTHONS[name].$link);
+    if (index - 1 >= 0) {
+      $links[index - 1].click();
+    } else if (index + 1 < $links.length) {
+      $links[index + 1].click();
+    } else {
+      Code.FOCUSED_PYTHON = "";
+    }
+  }
+  Code.OPENED_PYTHONS[name].$item.remove();
+  delete Code.OPENED_PYTHONS[name];
+  delete Code.PATH_MAP[pythonPath];
+};
+
+/**
  * Let user select the path to a python file and save to it. 
  */
  Code.savePython = function() {

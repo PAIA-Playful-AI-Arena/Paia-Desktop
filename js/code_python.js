@@ -589,6 +589,7 @@ Code.afterLogin = function() {
   var name = path.basename(pythonPath);
   if (pythonPath in Code.PATH_MAP) {
     name = Code.PATH_MAP[pythonPath];
+    Code.FOCUSED_PYTHON = "";
     Code.editor.setValue(Code.OPENED_PYTHONS[name].python);
     $("#opened_python a").removeClass("active");
     Code.OPENED_PYTHONS[name].$link.addClass("active");
@@ -605,6 +606,7 @@ Code.afterLogin = function() {
     }
     try {
       var pythonText = window.readFile(pythonPath);
+      Code.FOCUSED_PYTHON = "";
       Code.editor.setValue(pythonText);
       Code.PATH_MAP[pythonPath] = name;
       Code.OPENED_PYTHONS[name] = {};

@@ -407,11 +407,12 @@ Code.init = function() {
   // Set callback function when workspace is changed.
   Code.workspace.addChangeListener((e) => {
     if (!e.isUiEvent) {
-      if (Code.FOCUSED_XML != "") {
+      if (Code.FOCUSED_XML != "" && !Code.OPENED_XMLS[Code.FOCUSED_XML].isLoading) {
         Code.OPENED_XMLS[Code.FOCUSED_XML].$link.find('.not-saved').html('*');
         Code.OPENED_XMLS[Code.FOCUSED_XML].xml = Blockly.Xml.workspaceToDom(Code.workspace);
       }
       if (e.type == "finished_loading") {
+        Code.OPENED_XMLS[Code.FOCUSED_XML].isLoading = false;
         if (Code.OPENED_XMLS[Code.FOCUSED_XML].trashcan === undefined || Code.OPENED_XMLS[Code.FOCUSED_XML].trashcan.length == 0) {
           Code.workspace.trashcan.emptyContents();
         } else {
@@ -962,6 +963,7 @@ Code.loadXml = function(xmlPath) {
     }
     Code.workspace.clear();
     Blockly.Xml.domToWorkspace(Code.OPENED_XMLS[name].xml, Code.workspace);
+    Code.OPENED_XMLS[name].isLoading = true;
     Code.workspace.setScale(Code.OPENED_XMLS[name].settings.scale);
     Code.workspace.scroll(Code.OPENED_XMLS[name].settings.x, Code.OPENED_XMLS[name].settings.y);
     $("#opened_xml a").removeClass("active");
@@ -987,6 +989,7 @@ Code.loadXml = function(xmlPath) {
       Code.OPENED_XMLS[name].path = xmlPath;
       Code.OPENED_XMLS[name].xml = xml;
       Code.OPENED_XMLS[name].settings = {x: Code.workspace.scrollX, y: Code.workspace.scrollY, scale: Code.workspace.scale};
+      Code.OPENED_XMLS[name].isLoading = true;
       var $item = $('<li class="nav-item"></li>');
       var $link = $(`<a class="nav-link pr-4" href="#" id="tab-${xmlPath}" title="${xmlPath}">${name}<span class="not-saved"></span>&ensp;</a>`);
       var $close = $(`<button class="p-0 border-0 bg-white tab-close" id="close-${xmlPath}"><i class="bi bi-x"></i></button>`);
@@ -1019,6 +1022,10 @@ Code.loadXml = function(xmlPath) {
  */
 Code.closeXml = function(xmlPath) {
   var name = Code.PATH_MAP[xmlPath];
+  if (Code.OPENED_XMLS[name].$link.find('.not-saved').html() == '*' &&
+      !window.confirm(`${name} 有尚未儲存的修改，關閉後將遺失，是否確定關閉檔案？`)) {
+    return;
+  }
   if (Code.OPENED_XMLS[name].$link.hasClass('active')) {
     var $links = $("#opened_xml .nav-link");
     var index = $links.index(Code.OPENED_XMLS[name].$link);

@@ -247,8 +247,12 @@ Code.init = function() {
   // Set the mode if editor is changed.
   Code.editor.on("change", (changeObj) => {
     if (Code.FOCUSED_PYTHON != "") {
-      Code.OPENED_PYTHONS[Code.FOCUSED_PYTHON].$link.find('.not-saved').html('*');
       Code.OPENED_PYTHONS[Code.FOCUSED_PYTHON].python = Code.editor.getValue();
+      if (Code.OPENED_PYTHONS[Code.FOCUSED_PYTHON].python != Code.OPENED_PYTHONS[Code.FOCUSED_PYTHON].pythonText) {
+        Code.OPENED_PYTHONS[Code.FOCUSED_PYTHON].$link.find('.not-saved').html('*');
+      } else {
+        Code.OPENED_PYTHONS[Code.FOCUSED_PYTHON].$link.find('.not-saved').html('');
+      }
     }
   });
 
@@ -588,6 +592,14 @@ Code.afterLogin = function() {
   var name = path.basename(pythonPath);
   if (pythonPath in Code.PATH_MAP) {
     name = Code.PATH_MAP[pythonPath];
+    var pythonText = window.readFile(pythonPath);
+    if (pythonText != Code.OPENED_PYTHONS[name].pythonText) {
+      Code.OPENED_PYTHONS[name].pythonText = pythonText;
+      if (window.confirm(`${name} 已被更改過，是否重新載入？`)) {
+        Code.OPENED_PYTHONS[name].$link.find('.not-saved').html('');
+        Code.OPENED_PYTHONS[name].python = pythonText;
+      }
+    }
     Code.FOCUSED_PYTHON = "";
     Code.editor.setValue(Code.OPENED_PYTHONS[name].python);
     $("#opened_python a").removeClass("active");
@@ -611,6 +623,7 @@ Code.afterLogin = function() {
       Code.OPENED_PYTHONS[name] = {};
       Code.OPENED_PYTHONS[name].path = pythonPath;
       Code.OPENED_PYTHONS[name].python = pythonText;
+      Code.OPENED_PYTHONS[name].pythonText = pythonText;
       var $item = $('<li class="nav-item"></li>');
       var $link = $(`<a class="nav-link pr-4" href="#" id="tab-${pythonPath}" title="${pythonPath}">${name}<span class="not-saved"></span>&ensp;</a>`);
       var $close = $(`<button class="p-0 border-0 bg-white tab-close" id="close-${pythonPath}"><i class="bi bi-x"></i></button>`);
@@ -669,7 +682,7 @@ Code.afterLogin = function() {
  Code.savePython = function() {
   var pythonPath = window.savePath({
     title: "儲存 Python 檔",
-    defaultPath: path.join(__dirname, 'MLGame', 'games', Code.GAME, 'ml', Code.PROJECT, 'ml_play.py').replace('app.asar', 'app.asar.unpacked'),
+    defaultPath: path.join(__dirname, 'MLGame', 'games', Code.GAME, 'ml', Code.PROJECT, Code.FOCUSED_PYTHON).replace('app.asar', 'app.asar.unpacked'),
     filters: [
         {name: 'Python', extensions: ['py']}
     ]
@@ -680,6 +693,12 @@ Code.afterLogin = function() {
     var pythonText = Code.editor.getValue();
     window.writeFile(pythonPath, pythonText);
     Code.OPENED_PYTHONS[Code.FOCUSED_PYTHON].$link.find('.not-saved').html('');
+    if (pythonPath == Code.OPENED_PYTHONS[Code.FOCUSED_PYTHON].path) {
+      Code.OPENED_PYTHONS[Code.FOCUSED_PYTHON].pythonText = pythonText;
+    } else {
+      Code.closePython(Code.OPENED_PYTHONS[Code.FOCUSED_PYTHON].path);
+      Code.loadPython(pythonPath);
+    }
     // Add log
     window.addLog('store_py', {
       type: "file",

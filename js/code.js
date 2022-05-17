@@ -407,8 +407,12 @@ Code.init = function() {
   Code.workspace.addChangeListener((e) => {
     if (!e.isUiEvent) {
       if (Code.FOCUSED_XML != "" && !Code.OPENED_XMLS[Code.FOCUSED_XML].isLoading) {
-        Code.OPENED_XMLS[Code.FOCUSED_XML].$link.find('.not-saved').html('*');
         Code.OPENED_XMLS[Code.FOCUSED_XML].xml = Blockly.Xml.workspaceToDom(Code.workspace);
+        if (Blockly.Xml.domToPrettyText(Code.OPENED_XMLS[Code.FOCUSED_XML].xml) != Code.OPENED_XMLS[Code.FOCUSED_XML].xmlText) {
+          Code.OPENED_XMLS[Code.FOCUSED_XML].$link.find('.not-saved').html('*');
+        } else {
+          Code.OPENED_XMLS[Code.FOCUSED_XML].$link.find('.not-saved').html('');
+        }
       }
       if (e.type == "finished_loading") {
         Code.OPENED_XMLS[Code.FOCUSED_XML].isLoading = false;
@@ -964,6 +968,14 @@ Code.loadXml = function(xmlPath) {
     if (name == Code.FOCUSED_XML) {
       return;
     }
+    var xmlText = window.readFile(xmlPath);
+    if (xmlText != Code.OPENED_XMLS[name].xmlText) {
+      Code.OPENED_XMLS[name].xmlText = xmlText;
+      if (window.confirm(`${name} 已被更改過，是否重新載入？`)) {
+        Code.OPENED_XMLS[name].$link.find('.not-saved').html('');
+        Code.OPENED_XMLS[name].xml = Blockly.Xml.textToDom(xmlText);
+      }
+    }
     Code.workspace.clear();
     Blockly.Xml.domToWorkspace(Code.OPENED_XMLS[name].xml, Code.workspace);
     Code.OPENED_XMLS[name].isLoading = true;
@@ -991,6 +1003,7 @@ Code.loadXml = function(xmlPath) {
       Code.OPENED_XMLS[name] = {};
       Code.OPENED_XMLS[name].path = xmlPath;
       Code.OPENED_XMLS[name].xml = xml;
+      Code.OPENED_XMLS[name].xmlText = xmlText;
       Code.OPENED_XMLS[name].settings = {x: Code.workspace.scrollX, y: Code.workspace.scrollY, scale: Code.workspace.scale};
       Code.OPENED_XMLS[name].isLoading = true;
       var $item = $('<li class="nav-item"></li>');
@@ -1052,7 +1065,7 @@ Code.closeXml = function(xmlPath) {
 Code.saveXml = function() {
   var xmlPath = window.savePath({
     title: "儲存 XML 檔",
-    defaultPath: path.join(__dirname, 'MLGame', 'games', Code.GAME, 'ml', Code.PROJECT, 'ml_play.xml').replace('app.asar', 'app.asar.unpacked'),
+    defaultPath: path.join(__dirname, 'MLGame', 'games', Code.GAME, 'ml', Code.PROJECT, Code.FOCUSED_XML).replace('app.asar', 'app.asar.unpacked'),
     filters: [
         {name: 'XML', extensions: ['xml']}
     ]
@@ -1064,6 +1077,12 @@ Code.saveXml = function() {
     var xmlText = Blockly.Xml.domToPrettyText(xml);
     window.writeFile(xmlPath, xmlText);
     Code.OPENED_XMLS[Code.FOCUSED_XML].$link.find('.not-saved').html('');
+    if (xmlPath == Code.OPENED_XMLS[Code.FOCUSED_XML].path) {
+      Code.OPENED_XMLS[Code.FOCUSED_XML].xmlText = xmlText;
+    } else {
+      Code.closeXml(Code.OPENED_XMLS[Code.FOCUSED_XML].path);
+      Code.loadXml(xmlPath);
+    }
     // Add log
     window.addLog('store_xml', {
       type: "file",

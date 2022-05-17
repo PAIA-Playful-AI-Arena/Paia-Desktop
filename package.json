@@ -7,7 +7,11 @@
   "scripts": {
     "start": "electron-forge start",
     "package": "electron-forge package",
+    "package-competition": "cross-var npm --no-git-tag-version version $npm_package_version-competition && electron-forge package",
+    "package-competition-tn": "cross-var npm --no-git-tag-version version $npm_package_version-competition-tn && electron-forge package",
     "make": "electron-forge make",
+    "make-competition": "cross-var npm --no-git-tag-version version $npm_package_version-competition && electron-forge make",
+    "make-competition-tn": "cross-var npm --no-git-tag-version version $npm_package_version-competition-tn && electron-forge make",
     "make-only": "electron-forge make --skip-package",
     "make-py": "cd ./python && pyinstaller -y --hidden-import=cmath --hidden-import=csv --hidden-import=pathlib --hidden-import=matplotlib.pyplot --hidden-import=queue --hidden-import=pygame --hidden-import=multiprocessing --hidden-import=pickle --hidden-import=Box2D --hidden-import=sklearn.neighbors --hidden-import=sklearn.tree --hidden-import=sklearn.svm --hidden-import=sklearn.ensemble --hidden-import=sklearn.neural_network --hidden-import=sklearn.linear_model --hidden-import=sklearn.metrics --hidden-import=sklearn.model_selection --hidden-import=sklearn.utils._weight_vector --hidden-import=scipy.special.cython_special --hidden-import=pandas interpreter.py"
   },
@@ -36,6 +40,7 @@
     "bootstrap": "^4.6.1",
     "bootstrap-icons": "^1.5.0",
     "codemirror": "^5.61.1",
+    "cross-var": "^1.1.0",
     "dateformat": "^4.6.3",
     "dotenv": "^14.2.0",
     "download-git-repo": "^3.0.2",

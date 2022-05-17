@@ -183,8 +183,7 @@ Code.init = function() {
   document.title += ` ${app.getVersion()}`;
   
   // Hide fileset download part when competition mode is true.
-  if (window.isCompetitionMode()) {
-    console.log(window.isCompetitionMode());
+  if (app.getVersion().indexOf("competition") != -1) {
     $("#fileset_download_div").css("display", "none");
   }
   

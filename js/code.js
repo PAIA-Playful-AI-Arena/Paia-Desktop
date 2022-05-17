@@ -280,8 +280,7 @@ Code.init = function() {
   document.title += ` ${app.getVersion()}`;
   
   // Hide fileset download part when competition mode is true.
-  if (window.isCompetitionMode()) {
-    console.log(window.isCompetitionMode());
+  if (app.getVersion().indexOf("competition") != -1) {
     $("#fileset_download_div").css("display", "none");
   }
   
@@ -717,7 +716,11 @@ Code.initMlgameBlocks = function() {
  Code.updateLibraryList = function() {
   $('#library').empty();
   var index = 0;
-  var libraryDir = path.join(__dirname, 'examples', Code.GAME.toLowerCase(), 'xml');
+  if (app.getVersion().indexOf("competition-tn") != -1) {
+    var libraryDir = path.join(__dirname, 'examples', Code.GAME.toLowerCase(), 'tainan');
+  } else {
+    var libraryDir = path.join(__dirname, 'examples', Code.GAME.toLowerCase(), 'xml');
+  }
   fs.readdirSync(libraryDir, { withFileTypes: true }).forEach(dirent => {
     if (dirent.isDirectory()) {
       var filesetDir = path.join(libraryDir, dirent.name);

@@ -467,30 +467,30 @@ Code.init = function() {
   }
 
   // Replace the README of easy_game with tutorials.
-  if (Code.GAME == 'easy_game') {
-    $('#show_readme').html('教學');
-    $('#readme-title').html('Tutorials');
-    $('#readme-dialog .modal-content').append('<div class="modal-footer"><button type="button" onclick="Code.prevTutorials();" class="btn btn-outline-secondary mr-auto">&lt; 前一頁</button><button type="button" onclick="Code.nextTutorials();" class="btn btn-outline-secondary">下一頁 &gt;</button></div>')
-    Code.tutorialsTotalPage = 0;
-    var dir = path.join(__dirname, 'tutorials');
-    fs.readdirSync(dir).forEach(file => {
-      if (file.endsWith('.md')) {
-        Code.tutorialsTotalPage++;
-      };
-    });
-    Code.tutorialsCurPage = 1;
-    var readme_path = path.join(__dirname, 'tutorials', String(Code.tutorialsCurPage) + '.md');
-    var readme_text = window.readFile(readme_path);
-    var showdown  = require('showdown'),
-        converter = new showdown.Converter(),
-        readme    = converter.makeHtml(readme_text);
-    $('#readme-body').html(readme);
-    Code.bindClick('show_readme',
-      function() {Code.showTutorials(); Code.renderContent();});
-  } else {
-    Code.bindClick('show_readme',
-      function() {Code.showReadme(); Code.renderContent();});
-  }
+  // if (Code.GAME == 'easy_game') {
+  //   $('#show_readme').html('教學');
+  //   $('#readme-title').html('Tutorials');
+  //   $('#readme-dialog .modal-content').append('<div class="modal-footer"><button type="button" onclick="Code.prevTutorials();" class="btn btn-outline-secondary mr-auto">&lt; 前一頁</button><button type="button" onclick="Code.nextTutorials();" class="btn btn-outline-secondary">下一頁 &gt;</button></div>')
+  //   Code.tutorialsTotalPage = 0;
+  //   var dir = path.join(__dirname, 'tutorials');
+  //   fs.readdirSync(dir).forEach(file => {
+  //     if (file.endsWith('.md')) {
+  //       Code.tutorialsTotalPage++;
+  //     };
+  //   });
+  //   Code.tutorialsCurPage = 1;
+  //   var readme_path = path.join(__dirname, 'tutorials', String(Code.tutorialsCurPage) + '.md');
+  //   var readme_text = window.readFile(readme_path);
+  //   var showdown  = require('showdown'),
+  //       converter = new showdown.Converter(),
+  //       readme    = converter.makeHtml(readme_text);
+  //   $('#readme-body').html(readme);
+  //   Code.bindClick('show_readme',
+  //     function() {Code.showTutorials(); Code.renderContent();});
+  // } else {
+  Code.bindClick('show_readme',
+    function() {Code.showReadme(); Code.renderContent();});
+  // }
 
   Code.bindClick('run',
       function() {Code.run(); Code.renderContent();});
@@ -537,13 +537,13 @@ Code.init = function() {
   Code.workspace.setVisible(true);
   
   // Show project dialog
-  if (Code.GAME == 'easy_game' && !fs.existsSync(path.join(__dirname, 'MLGame', 'games', Code.GAME, 'ml', 'new').replace('app.asar', 'app.asar.unpacked'))) {
-    $('#project-name').val('new');
-    Code.newProject();
-    $('#readme-dialog').modal('show');
-  } else {
-    $('#project-dialog').modal('show');
-  }
+  // if (Code.GAME == 'easy_game' && !fs.existsSync(path.join(__dirname, 'MLGame', 'games', Code.GAME, 'ml', 'new').replace('app.asar', 'app.asar.unpacked'))) {
+  //   $('#project-name').val('new');
+  //   Code.newProject();
+  //   $('#readme-dialog').modal('show');
+  // } else {
+  $('#project-dialog').modal('show');
+  // }
 
   // Lazy-load the syntax-highlighting.
   window.setTimeout(Code.importPrettify, 1);

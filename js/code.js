@@ -36,6 +36,11 @@ Code.PROJECT_WATCHER = null;
 Code.MODE = 'play';
 
 /**
+ * The Python editor is toggled or not.
+ */
+Code.PYTHON_EDITOR = false;
+
+/**
  * The mode of running program.
  */
 Code.LOGIN = false;
@@ -54,6 +59,11 @@ Code.FILESET_FOUND = null;
  * The list of all opened files.
  */
 Code.OPENED_XMLS = {};
+
+/**
+ * The mapping from paths to displayed names.
+ */
+Code.PATH_MAP = {};
 
  /**
  * The name of currently focused XML.
@@ -257,12 +267,22 @@ Code.checkAllGeneratorFunctionsDefined = function(generator) {
   return valid;
 };
 
+Code.setNavWidth = function() {
+  var width = $("#tab_list").width() - $("#toggle_python").width() - $("#tab_user").width() - $("#tab_lang").width() - $("#tab_option").width() - 150;
+  $("#opened_xml").css("max-width", `${width}px`);
+};
+
 /**
  * Initialize Blockly.  Called on page load.
  */
 Code.init = function() {
   // Add version to the title.
   document.title += ` ${app.getVersion()}`;
+  
+  // Hide fileset download part when competition mode is true.
+  if (app.getVersion().indexOf("competition") != -1) {
+    $("#fileset_download_div").css("display", "none");
+  }
   
   // Load dialog body for selecting game arguments.
   Code.initGameArgs();
@@ -326,6 +346,7 @@ Code.init = function() {
       el.style.width = bBox.width + 'px';
       el.style.width = (2 * bBox.width - el.offsetWidth) + 'px';
     }
+    Code.setNavWidth();
   };
   window.addEventListener('resize', onresize, false);
 
@@ -385,11 +406,16 @@ Code.init = function() {
   // Set callback function when workspace is changed.
   Code.workspace.addChangeListener((e) => {
     if (!e.isUiEvent) {
-      if (Code.FOCUSED_XML != "") {
-        Code.OPENED_XMLS[Code.FOCUSED_XML].$link.find('.not-saved').html('*');
+      if (Code.FOCUSED_XML != "" && !Code.OPENED_XMLS[Code.FOCUSED_XML].isLoading) {
         Code.OPENED_XMLS[Code.FOCUSED_XML].xml = Blockly.Xml.workspaceToDom(Code.workspace);
+        if (Blockly.Xml.domToPrettyText(Code.OPENED_XMLS[Code.FOCUSED_XML].xml) != Code.OPENED_XMLS[Code.FOCUSED_XML].xmlText) {
+          Code.OPENED_XMLS[Code.FOCUSED_XML].$link.find('.not-saved').html('*');
+        } else {
+          Code.OPENED_XMLS[Code.FOCUSED_XML].$link.find('.not-saved').html('');
+        }
       }
       if (e.type == "finished_loading") {
+        Code.OPENED_XMLS[Code.FOCUSED_XML].isLoading = false;
         if (Code.OPENED_XMLS[Code.FOCUSED_XML].trashcan === undefined || Code.OPENED_XMLS[Code.FOCUSED_XML].trashcan.length == 0) {
           Code.workspace.trashcan.emptyContents();
         } else {
@@ -426,7 +452,10 @@ Code.init = function() {
   Blockly.Python.INDENT = "    ";
   
   // Update library dropdown menu
-  var libraryDir = path.join(__dirname, 'library', Code.GAME.toLowerCase());
+  var libraryDir = path.join(__dirname, 'library', Code.GAME.toLowerCase()).replace('app.asar', 'app.asar.unpacked');
+  if (!fs.existsSync(libraryDir)) {
+    fs.mkdirSync(libraryDir, { recursive: true });
+  }
   fs.watch(libraryDir, (eventType, filename) => {
     Code.updateLibraryList();
   });
@@ -438,30 +467,30 @@ Code.init = function() {
   }
 
   // Replace the README of easy_game with tutorials.
-  if (Code.GAME == 'easy_game') {
-    $('#show_readme').html('教學');
-    $('#readme-title').html('Tutorials');
-    $('#readme-dialog .modal-content').append('<div class="modal-footer"><button type="button" onclick="Code.prevTutorials();" class="btn btn-outline-secondary mr-auto">&lt; 前一頁</button><button type="button" onclick="Code.nextTutorials();" class="btn btn-outline-secondary">下一頁 &gt;</button></div>')
-    Code.tutorialsTotalPage = 0;
-    var dir = path.join(__dirname, 'tutorials');
-    fs.readdirSync(dir).forEach(file => {
-      if (file.endsWith('.md')) {
-        Code.tutorialsTotalPage++;
-      };
-    });
-    Code.tutorialsCurPage = 1;
-    var readme_path = path.join(__dirname, 'tutorials', String(Code.tutorialsCurPage) + '.md');
-    var readme_text = window.readFile(readme_path);
-    var showdown  = require('showdown'),
-        converter = new showdown.Converter(),
-        readme    = converter.makeHtml(readme_text);
-    $('#readme-body').html(readme);
-    Code.bindClick('show_readme',
-      function() {Code.showTutorials(); Code.renderContent();});
-  } else {
-    Code.bindClick('show_readme',
-      function() {Code.showReadme(); Code.renderContent();});
-  }
+  // if (Code.GAME == 'easy_game') {
+  //   $('#show_readme').html('教學');
+  //   $('#readme-title').html('Tutorials');
+  //   $('#readme-dialog .modal-content').append('<div class="modal-footer"><button type="button" onclick="Code.prevTutorials();" class="btn btn-outline-secondary mr-auto">&lt; 前一頁</button><button type="button" onclick="Code.nextTutorials();" class="btn btn-outline-secondary">下一頁 &gt;</button></div>')
+  //   Code.tutorialsTotalPage = 0;
+  //   var dir = path.join(__dirname, 'tutorials');
+  //   fs.readdirSync(dir).forEach(file => {
+  //     if (file.endsWith('.md')) {
+  //       Code.tutorialsTotalPage++;
+  //     };
+  //   });
+  //   Code.tutorialsCurPage = 1;
+  //   var readme_path = path.join(__dirname, 'tutorials', String(Code.tutorialsCurPage) + '.md');
+  //   var readme_text = window.readFile(readme_path);
+  //   var showdown  = require('showdown'),
+  //       converter = new showdown.Converter(),
+  //       readme    = converter.makeHtml(readme_text);
+  //   $('#readme-body').html(readme);
+  //   Code.bindClick('show_readme',
+  //     function() {Code.showTutorials(); Code.renderContent();});
+  // } else {
+  Code.bindClick('show_readme',
+    function() {Code.showReadme(); Code.renderContent();});
+  // }
 
   Code.bindClick('run',
       function() {Code.run(); Code.renderContent();});
@@ -469,8 +498,8 @@ Code.init = function() {
       function() {Code.discard(); Code.renderContent();});
   Code.bindClick('clean_trashcan',
       function() {Code.workspace.trashcan.emptyContents(); Code.renderContent();});
-  Code.bindClick('show_python',
-      function() {Code.showPython(); Code.renderContent();});
+  Code.bindClick('toggle_python',
+      function() {Code.togglePython(); Code.renderContent();});
   Code.bindClick('login_logout',
       function() {Code.loginout(); Code.renderContent();});
   Code.bindClick('show_filesets',
@@ -488,7 +517,7 @@ Code.init = function() {
   Code.bindClick('save_python',
       function() {Code.savePython(); Code.renderContent();});
   Code.bindClick('open_example_dir',
-      function() {window.openPath(path.join(__dirname, 'xml', 'examples', Code.GAME.toLowerCase())); Code.renderContent();});
+      function() {window.openPath(path.join(__dirname, 'library', Code.GAME.toLowerCase()).replace('app.asar', 'app.asar.unpacked')); Code.renderContent();});
   Code.bindClick('en',
       function() {Code.changeLanguage('en'); Code.renderContent();});
   Code.bindClick('zh-hant',
@@ -502,8 +531,19 @@ Code.init = function() {
   // Try to Use saved token to login.
   Code.token_login();
 
+  // Initialize content visibility.
+  $("#content_python").css("visibility", "hidden");
+  $("#content_blocks").css("visibility", "visible");
+  Code.workspace.setVisible(true);
+  
   // Show project dialog
+  // if (Code.GAME == 'easy_game' && !fs.existsSync(path.join(__dirname, 'MLGame', 'games', Code.GAME, 'ml', 'new').replace('app.asar', 'app.asar.unpacked'))) {
+  //   $('#project-name').val('new');
+  //   Code.newProject();
+  //   $('#readme-dialog').modal('show');
+  // } else {
   $('#project-dialog').modal('show');
+  // }
 
   // Lazy-load the syntax-highlighting.
   window.setTimeout(Code.importPrettify, 1);
@@ -529,7 +569,7 @@ Code.initLanguage = function() {
  * Initialize dialog body for selecting game arguments.
  */
 Code.initGameArgs = function() {
-  var config = JSON.parse(window.readFile(path.join(__dirname, 'MLGame', 'games', Code.GAME, 'game_config.json')));
+  var config = JSON.parse(window.readFile(path.join(__dirname, 'MLGame', 'games', Code.GAME, 'game_config.json').replace('app.asar', 'app.asar.unpacked')));
   var $body = $('<div class="modal-body my-2"></div>')
   $body.append('<div class="form-group"><label for="">每秒顯示張數 (FPS)</label><input type="number" class="form-control", id="game_fps", min="1", max="300", step="1", value="30", data-bind="value:replyNumber"></div>');
   $('#game-args').append($body);
@@ -581,14 +621,16 @@ Code.initGameArgs = function() {
  * Use blockly.json to initialize options of MLGame blocks.
  */
 Code.initMlgameBlocks = function() {
-  var configPath = path.join(__dirname, 'MLGame', 'games', Code.GAME, 'blockly.json');
+  var configPath = path.join(__dirname, 'MLGame', 'games', Code.GAME, 'blockly.json').replace('app.asar', 'app.asar.unpacked');
   if (fs.existsSync(configPath)) {
     var gameOptions = JSON.parse(window.readFile(configPath));
+    var reservedWords = ['MLPlay', 'self', 'scene_info', 'keyboard', 'args', 'kwargs', 'os', 'cmath', 'csv', 'plt', 'pickle', 'pygame', 'neighbors', 'tree', 'svm', 'ensemble', 'neural_network', 'linear_model', 'metrics', 'model_selection'];
     if ("INIT_INFO" in gameOptions) {
       var options = [];
       gameOptions["INIT_INFO"].forEach((op, index) => {
         var opName = `${Code.GAME.toUpperCase()}_INIT_INFO_${index+1}`;
         options.push([`%{BKY_${opName}}`, op[0]]);
+        reservedWords.push(op[0]);
         if (Code.LANG == 'en') {
           Blockly.Msg[opName] = op[1];
         } else if (Code.LANG == 'zh-hant') {
@@ -667,6 +709,8 @@ Code.initMlgameBlocks = function() {
       });
       Blockly.Msg["MLPLAY_RETURN_ACTION_OPTIONS"] = options;
     }
+
+    Blockly.Python.addReservedWords(reservedWords.join());
   }
 };
 
@@ -675,8 +719,31 @@ Code.initMlgameBlocks = function() {
  */
  Code.updateLibraryList = function() {
   $('#library').empty();
-  var libraryDir = path.join(__dirname, 'library', Code.GAME.toLowerCase());
   var index = 0;
+  if (app.getVersion().indexOf("competition-tn") != -1 && Code.GAME != "easy_game") {
+    var libraryDir = path.join(__dirname, 'examples', Code.GAME.toLowerCase(), 'tainan');
+  } else {
+    var libraryDir = path.join(__dirname, 'examples', Code.GAME.toLowerCase(), 'xml');
+  }
+  fs.readdirSync(libraryDir, { withFileTypes: true }).forEach(dirent => {
+    if (dirent.isDirectory()) {
+      var filesetDir = path.join(libraryDir, dirent.name);
+      $('#library').append($(`<a href="#library-${index}" data-toggle="collapse" aria-expanded="false" class="group mt-2" title="${filesetDir}"><i class="bi bi-caret-right-fill pointer mr-1"></i>${dirent.name}</a>`))
+      var $list = $(`<ul class="collapse list-unstyled" id="library-${index}"></ul>`)
+      $('#library').append($list);
+      index++;
+      fs.readdirSync(filesetDir).forEach(file => {
+        if (file.endsWith(".xml")) {
+          var filePath = path.join(filesetDir, file);
+          $list.append($(`<li class="ml-3 mt-1"><a href="#" id="${filePath}" title="${filePath}">${file}</a></li>`));
+          Code.bindClick(filePath,
+            function() {Code.loadXml(filePath); Code.renderContent();});
+        }
+      });
+    }
+  });
+
+  var libraryDir = path.join(__dirname, 'library', Code.GAME.toLowerCase()).replace('app.asar', 'app.asar.unpacked');
   fs.readdirSync(libraryDir, { withFileTypes: true }).forEach(dirent => {
     if (dirent.isDirectory()) {
       var filesetDir = path.join(libraryDir, dirent.name);
@@ -701,7 +768,7 @@ Code.initMlgameBlocks = function() {
  */
  Code.updateProjectList = function() {
   $('#project-files').empty();
-  var projectDir = path.join(__dirname, 'MLGame', 'games', Code.GAME, 'ml', Code.PROJECT);
+  var projectDir = path.join(__dirname, 'MLGame', 'games', Code.GAME, 'ml', Code.PROJECT).replace('app.asar', 'app.asar.unpacked');
   fs.readdirSync(projectDir).forEach(file => {
     if (file.endsWith(".xml")) {
       var filePath = path.join(projectDir, file);
@@ -839,6 +906,7 @@ Code.logout = function() {
   document.querySelectorAll('.need-login').forEach(e => {
     e.classList.add("disabled");
   });
+  Code.setNavWidth();
   window.sendLog();
   window.clearToken();
   window.resetStore();
@@ -859,15 +927,8 @@ Code.afterLogin = function() {
     console.log("取得使用者資料錯誤");
     window.logout();
   });
+  Code.setNavWidth();
   $('#login-dialog').modal('hide');
-};
-
-/**
- * Load example xml file from the folder of examples. 
- */
-Code.loadExample = function(name) {
-  var xmlPath = path.join(__dirname, 'xml', 'examples', Code.GAME.toLowerCase(), name + '.xml');
-  Code.loadXml(xmlPath);
 };
 
 /**
@@ -876,7 +937,7 @@ Code.loadExample = function(name) {
 Code.openXml = function() {
   var xmlPath = window.selectPath({
     title: "開啟 XML 檔",
-    defaultPath: path.join(__dirname, 'MLGame', 'games', Code.GAME, 'ml', Code.PROJECT),
+    defaultPath: path.join(__dirname, 'MLGame', 'games', Code.GAME, 'ml', Code.PROJECT).replace('app.asar', 'app.asar.unpacked'),
     filters: [
       {name: 'xml', extensions: ['xml']}
     ],
@@ -894,65 +955,93 @@ Code.openXml = function() {
  * Load xml file to workscpace. 
  */
 Code.loadXml = function(xmlPath) {
-  var name = path.basename(xmlPath);
-  var index = 1;
+  // Save trashcan state before open another xml.
   if (Code.FOCUSED_XML != "") {
     Code.OPENED_XMLS[Code.FOCUSED_XML].trashcan = Code.workspace.trashcan.contents_.slice();
   }
-  while (name in Code.OPENED_XMLS) {
-    if (Code.OPENED_XMLS[name].$link.prop('title') == xmlPath) {
-      Code.workspace.clear();
-      Blockly.Xml.domToWorkspace(Code.OPENED_XMLS[name].xml, Code.workspace);
-      Code.workspace.setScale(Code.OPENED_XMLS[name].settings.scale);
-      Code.workspace.scroll(Code.OPENED_XMLS[name].settings.x, Code.OPENED_XMLS[name].settings.y);
-      $("#opened_xml a").removeClass("active");
-      Code.OPENED_XMLS[name].$link.addClass("active");
-      $("#opened_xml").animate({ scrollLeft: $("#opened_xml").scrollLeft() + Code.OPENED_XMLS[name].$item.position().left - $("#opened_xml").width()});
-      Code.FOCUSED_XML = name;
-      Code.workspace.setVisible(true);
-      $("#content_blocks").css("visibility", "visible");
-      $("#content_python").css("visibility", "hidden");
+  var name = path.basename(xmlPath);
+  if (xmlPath in Code.PATH_MAP) {
+    if (Code.PYTHON_EDITOR) {
+      Code.togglePython();
+    }
+    name = Code.PATH_MAP[xmlPath];
+    if (name == Code.FOCUSED_XML) {
       return;
-    } else {
+    }
+    var xmlText = window.readFile(xmlPath);
+    if (xmlText != Code.OPENED_XMLS[name].xmlText) {
+      Code.OPENED_XMLS[name].xmlText = xmlText;
+      if (window.confirm(`${name} 已被更改過，是否重新載入？`)) {
+        Code.OPENED_XMLS[name].$link.find('.not-saved').html('');
+        Code.OPENED_XMLS[name].xml = Blockly.Xml.textToDom(xmlText);
+      }
+    }
+    Code.workspace.clear();
+    Blockly.Xml.domToWorkspace(Code.OPENED_XMLS[name].xml, Code.workspace);
+    Code.OPENED_XMLS[name].isLoading = true;
+    Code.workspace.setScale(Code.OPENED_XMLS[name].settings.scale);
+    Code.workspace.scroll(Code.OPENED_XMLS[name].settings.x, Code.OPENED_XMLS[name].settings.y);
+    $("#opened_xml a").removeClass("active");
+    Code.OPENED_XMLS[name].$link.addClass("active");
+    var tabPos = $("#opened_xml").scrollLeft() + Code.OPENED_XMLS[name].$item.position().left;
+    var scrollTarget = ($("#opened_xml").width() - Code.OPENED_XMLS[name].$item.width()) / 2;
+    $("#opened_xml").animate({ scrollLeft: tabPos - scrollTarget });
+    Code.FOCUSED_XML = name;
+    return;
+  } else {
+    var index = 1;
+    while (name in Code.OPENED_XMLS) {
       name = `${path.basename(xmlPath)} (${index})`;
       index++;
     }
-  }
-  try {
-    var xmlText = window.readFile(xmlPath);
-    var xml = Blockly.Xml.textToDom(xmlText);
-    Code.workspace.clear();
-    Blockly.Xml.domToWorkspace(xml, Code.workspace);
-    Code.OPENED_XMLS[name] = {};
-    Code.OPENED_XMLS[name].path = xmlPath;
-    Code.OPENED_XMLS[name].xml = xml;
-    Code.OPENED_XMLS[name].settings = {x: Code.workspace.scrollX, y: Code.workspace.scrollY, scale: Code.workspace.scale};
-    var $item = $('<li class="nav-item"></li>');
-    var $link = $(`<a class="nav-link pr-4" href="#" id="tab-${xmlPath}" title="${xmlPath}">${name}<span class="not-saved"></span>&ensp;</a>`);
-    var $close = $(`<button class="p-0 border-0 bg-white tab-close" onclick="Code.closeXml('${name}')"><i class="bi bi-x"></i></button>`);
-    $item.append($link);
-    $item.append($close);
-    $("#opened_xml").append($item);
-    Code.bindClick(`tab-${xmlPath}`,
-    function() {Code.loadXml(xmlPath); Code.renderContent();});
-    $("#opened_xml a").removeClass("active");
-    $link.addClass("active");
-    $("#opened_xml").animate({ scrollLeft: $("#opened_xml").scrollLeft() + $item.position().left - $("#opened_xml").width()});
-    Code.OPENED_XMLS[name].$item = $item;
-    Code.OPENED_XMLS[name].$link = $link;
-    Code.FOCUSED_XML = name;
-    Code.workspace.setVisible(true);
-    $("#content_blocks").css("visibility", "visible");
-    $("#content_python").css("visibility", "hidden");
-  } catch (err) {
-    window.alert(err);
+    try {
+      var xmlText = window.readFile(xmlPath);
+      var xml = Blockly.Xml.textToDom(xmlText);
+      Code.workspace.clear();
+      Blockly.Xml.domToWorkspace(xml, Code.workspace);
+      Code.PATH_MAP[xmlPath] = name;
+      Code.OPENED_XMLS[name] = {};
+      Code.OPENED_XMLS[name].path = xmlPath;
+      Code.OPENED_XMLS[name].xml = xml;
+      Code.OPENED_XMLS[name].xmlText = xmlText;
+      Code.OPENED_XMLS[name].settings = {x: Code.workspace.scrollX, y: Code.workspace.scrollY, scale: Code.workspace.scale};
+      Code.OPENED_XMLS[name].isLoading = true;
+      var $item = $('<li class="nav-item"></li>');
+      var $link = $(`<a class="nav-link pr-4" href="#" id="tab-${xmlPath}" title="${xmlPath}">${name}<span class="not-saved"></span>&ensp;</a>`);
+      var $close = $(`<button class="p-0 border-0 bg-white tab-close" id="close-${xmlPath}"><i class="bi bi-x"></i></button>`);
+      $item.append($link);
+      $item.append($close);
+      $("#opened_xml").append($item);
+      Code.bindClick(`tab-${xmlPath}`,
+        function() {Code.loadXml(xmlPath); Code.renderContent();});
+      Code.bindClick(`close-${xmlPath}`,
+        function() {Code.closeXml(xmlPath); Code.renderContent();});
+      if (Code.PYTHON_EDITOR) {
+        Code.togglePython();
+      }
+      $("#opened_xml a").removeClass("active");
+      $link.addClass("active");
+      var tabPos = $("#opened_xml").scrollLeft() + $item.position().left;
+      var scrollTarget = ($("#opened_xml").width() - $item.width()) / 2;
+      $("#opened_xml").animate({ scrollLeft: tabPos - scrollTarget });
+      Code.OPENED_XMLS[name].$item = $item;
+      Code.OPENED_XMLS[name].$link = $link;
+      Code.FOCUSED_XML = name;
+    } catch (err) {
+      window.alert(err);
+    }
   }
 };
 
 /**
  * Close xml file and try to load another opened xml. 
  */
-Code.closeXml = function(name) {
+Code.closeXml = function(xmlPath) {
+  var name = Code.PATH_MAP[xmlPath];
+  if (Code.OPENED_XMLS[name].$link.find('.not-saved').html() == '*' &&
+      !window.confirm(`${name} 有尚未儲存的修改，關閉後將遺失，是否確定關閉檔案？`)) {
+    return;
+  }
   if (Code.OPENED_XMLS[name].$link.hasClass('active')) {
     var $links = $("#opened_xml .nav-link");
     var index = $links.index(Code.OPENED_XMLS[name].$link);
@@ -967,6 +1056,7 @@ Code.closeXml = function(name) {
   }
   Code.OPENED_XMLS[name].$item.remove();
   delete Code.OPENED_XMLS[name];
+  delete Code.PATH_MAP[xmlPath];
 };
 
 /**
@@ -975,7 +1065,7 @@ Code.closeXml = function(name) {
 Code.saveXml = function() {
   var xmlPath = window.savePath({
     title: "儲存 XML 檔",
-    defaultPath: path.join(__dirname, 'MLGame', 'games', Code.GAME, 'ml', Code.PROJECT, 'ml_play.xml'),
+    defaultPath: path.join(__dirname, 'MLGame', 'games', Code.GAME, 'ml', Code.PROJECT, Code.FOCUSED_XML).replace('app.asar', 'app.asar.unpacked'),
     filters: [
         {name: 'XML', extensions: ['xml']}
     ]
@@ -987,6 +1077,12 @@ Code.saveXml = function() {
     var xmlText = Blockly.Xml.domToPrettyText(xml);
     window.writeFile(xmlPath, xmlText);
     Code.OPENED_XMLS[Code.FOCUSED_XML].$link.find('.not-saved').html('');
+    if (xmlPath == Code.OPENED_XMLS[Code.FOCUSED_XML].path) {
+      Code.OPENED_XMLS[Code.FOCUSED_XML].xmlText = xmlText;
+    } else {
+      Code.closeXml(Code.OPENED_XMLS[Code.FOCUSED_XML].path);
+      Code.loadXml(xmlPath);
+    }
     // Add log
     window.addLog('store_xml', {
       type: "file",
@@ -997,11 +1093,22 @@ Code.saveXml = function() {
   }
 };
 
-// Show python editor.
-Code.showPython = function() {
-  $("#content_python").css("visibility", "visible");
-  $("#content_blocks").css("visibility", "hidden");
-  Code.workspace.setVisible(false);
+// Toggle python editor.
+Code.togglePython = function() {
+  if (Code.PYTHON_EDITOR) {
+    $("#toggle_python").html("Python");
+    $("#content_python").css("visibility", "hidden");
+    $("#content_blocks").css("visibility", "visible");
+    Code.workspace.setVisible(true);
+    Code.PYTHON_EDITOR = false;
+  } else {
+    $("#toggle_python").html("積木");
+    $("#content_python").css("visibility", "visible");
+    $("#content_blocks").css("visibility", "hidden");
+    Code.workspace.setVisible(false);
+    Code.PYTHON_EDITOR = true;
+  }
+  Code.setNavWidth();
 };
 
 /**
@@ -1021,7 +1128,7 @@ Code.saveTmpPython = function(dir) {
 Code.savePython = function() {
   var pythonPath = window.savePath({
     title: "另存 Python 檔",
-    defaultPath: path.join(__dirname, 'MLGame', 'games', Code.GAME, 'ml', Code.PROJECT, 'ml_play.py'),
+    defaultPath: path.join(__dirname, 'MLGame', 'games', Code.GAME, 'ml', Code.PROJECT, 'ml_play.py').replace('app.asar', 'app.asar.unpacked'),
     filters: [
         {name: 'Python', extensions: ['py']}
     ]
@@ -1056,7 +1163,7 @@ Code.run = function() {
  * Play the game according to the parameters. 
  */
 Code.play = function() {
-  var project_path = path.join(__dirname, 'MLGame', 'games', Code.GAME, 'ml', Code.PROJECT);
+  var project_path = path.join(__dirname, 'MLGame', 'games', Code.GAME, 'ml', Code.PROJECT).replace('app.asar', 'app.asar.unpacked');
   var file_name = Code.saveTmpPython(project_path);
   var file_path = path.join(project_path, file_name);
   var fps = document.getElementById('game_fps').value;
@@ -1086,8 +1193,8 @@ Code.play = function() {
   total_args = total_args.concat(['-f', fps, Code.GAME]).concat(args);
   var options = {
     mode: 'text',
-    pythonPath: path.join(__dirname, 'python', 'dist', 'interpreter', 'interpreter'),
-    scriptPath: path.join(__dirname, 'MLGame'),
+    pythonPath: path.join(__dirname, 'python', 'dist', 'interpreter', 'interpreter').replace('app.asar', 'app.asar.unpacked'),
+    scriptPath: path.join(__dirname, 'MLGame').replace('app.asar', 'app.asar.unpacked'),
     args: total_args
   };
   $('#run-mlgame-dialog').modal('hide');
@@ -1109,12 +1216,12 @@ Code.play = function() {
  * Execute python program. 
  */
 Code.execute = function() {
-  var project_path = path.join(__dirname, 'MLGame', 'games', Code.GAME, 'ml', Code.PROJECT);
+  var project_path = path.join(__dirname, 'MLGame', 'games', Code.GAME, 'ml', Code.PROJECT).replace('app.asar', 'app.asar.unpacked');
   var file_name = Code.saveTmpPython(project_path);
   var file_path = path.join(project_path, file_name);
   var options = {
     mode: 'text',
-    pythonPath: path.join(__dirname, 'python', 'dist', 'interpreter', 'interpreter'),
+    pythonPath: path.join(__dirname, 'python', 'dist', 'interpreter', 'interpreter').replace('app.asar', 'app.asar.unpacked'),
     scriptPath: project_path,
     args: []
   };
@@ -1134,7 +1241,7 @@ Code.execute = function() {
 };
 
 Code.showReadme = function() {
-  var readme_path = path.join(__dirname, 'MLGame', 'games', Code.GAME, 'README.md');
+  var readme_path = path.join(__dirname, 'MLGame', 'games', Code.GAME, 'README.md').replace('app.asar', 'app.asar.unpacked');
   var readme_text = window.readFile(readme_path);
   var showdown  = require('showdown'),
       converter = new showdown.Converter(),
@@ -1184,22 +1291,26 @@ Code.loadProject = function() {
  */
 Code.newProject = function() {
   Code.PROJECT = $('#project-name').val();
-  var dir = path.join(__dirname, 'MLGame', 'games', Code.GAME, 'ml', Code.PROJECT);
+  var dir = path.join(__dirname, 'MLGame', 'games', Code.GAME, 'ml', Code.PROJECT).replace('app.asar', 'app.asar.unpacked');
+  if (app.getVersion().indexOf("competition-tn") != -1 && Code.GAME != "easy_game") {
+    var start = path.join(__dirname, 'examples', Code.GAME.toLowerCase(), 'tainan', '範例程式', 'manual.xml');
+  } else {
+    var start = path.join(__dirname, 'examples', Code.GAME.toLowerCase(), 'xml', '範例程式 1', '1. start.xml');
+  }
   try {
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir);
       $('#project_name').html(Code.PROJECT);
-      Code.loadExample('1. start')
-      $('#file_name').html('1. start.xml');
+      if (fs.existsSync(start)) {
+        Code.loadXml(start);
+      }
       $('#project-dialog').modal('hide');
     } else if (window.confirm(`${Code.PROJECT} 已存在，是否改為載入此專案？`)) {
       $('#project_name').html(Code.PROJECT);
       if(fs.existsSync(path.join(dir, 'ml_play.xml'))) {
         Code.loadXml(path.join(dir, 'ml_play.xml'))
-        $('#file_name').html('ml_play.xml');
-      } else {
-        Code.loadExample('1. start')
-        $('#file_name').html('1. start.xml');
+      } else if (fs.existsSync(start)) {
+        Code.loadXml(start);
       }
       $('#project-dialog').modal('hide');
       // Add log
@@ -1229,7 +1340,7 @@ Code.newProject = function() {
  * Load existing project.
  */
 Code.openProject = function() {
-  var mlPath = path.join(__dirname, 'MLGame', 'games', Code.GAME, 'ml')
+  var mlPath = path.join(__dirname, 'MLGame', 'games', Code.GAME, 'ml').replace('app.asar', 'app.asar.unpacked');
   var dir = window.selectPath({
     title: "開啟專案資料夾",
     defaultPath: mlPath,
@@ -1241,6 +1352,11 @@ Code.openProject = function() {
     dir = dir[0];
   }
   var projectDir = path.join(mlPath, path.basename(dir));
+  if (app.getVersion().indexOf("competition-tn") != -1 && Code.GAME != "easy_game") {
+    var start = path.join(__dirname, 'examples', Code.GAME.toLowerCase(), 'tainan', '範例程式', 'manual.xml');
+  } else {
+    var start = path.join(__dirname, 'examples', Code.GAME.toLowerCase(), 'xml', '範例程式 1', '1. start.xml');
+  }
   if (path.normalize(path.dirname(dir)) != path.normalize(mlPath)) {
     if (window.confirm('將複製此專案至遊戲資料夾下，是否繼續？')) {
       if (!fs.existsSync(projectDir)) {
@@ -1262,10 +1378,8 @@ Code.openProject = function() {
   $('#project_name').html(Code.PROJECT);
   if(fs.existsSync(path.join(projectDir, 'ml_play.xml'))) {
     Code.loadXml(path.join(projectDir, 'ml_play.xml'))
-    $('#file_name').html('ml_play.xml');
-  } else {
-    Code.loadExample('1. start')
-    $('#file_name').html('1. start.xml');
+  } else if (fs.existsSync(start)) {
+    Code.loadXml(start);
   }
   $('#project-dialog').modal('hide');
   // Add log
@@ -1291,7 +1405,7 @@ Code.openProject = function() {
  * Reveal project directory.
  */
 Code.revealProject = function() {
-  window.openPath(path.join(__dirname, 'MLGame', 'games', Code.GAME, 'ml', Code.PROJECT));
+  window.openPath(path.join(__dirname, 'MLGame', 'games', Code.GAME, 'ml', Code.PROJECT).replace('app.asar', 'app.asar.unpacked'));
 };
 
 /**
@@ -1311,7 +1425,7 @@ Code.exportProject = function() {
   }
   var projectDir = path.join(dest, Code.PROJECT);
   if (!fs.existsSync(projectDir) || window.confirm(`${projectDir} 已經存在，您要覆蓋它嗎？`)) {
-    var src = path.join(__dirname, 'MLGame', 'games', Code.GAME, 'ml', Code.PROJECT);
+    var src = path.join(__dirname, 'MLGame', 'games', Code.GAME, 'ml', Code.PROJECT).replace('app.asar', 'app.asar.unpacked');
     window.copyDir(src, dest);
     // Add log
     window.addLog('export_project', {
@@ -1367,6 +1481,7 @@ Code.uploadFileset = function() {
         window.alert(`檔案集新增成功，下載代碼：${res.data}`);
       }
       $("#upload-filset-dialog").modal('hide');
+      Code.showFilesets();
     } else {
       window.alert(`範例程式上傳失敗：${res.detail}`);
     }
@@ -1444,13 +1559,12 @@ Code.showFilesets = function() {
 Code.updateFilesetFile = function(index) {
   var filePath = window.selectPath({
     title: "上傳檔案",
-    defaultPath: path.join(__dirname, 'MLGame', 'games', Code.GAME, 'ml', Code.PROJECT),
-    properties: ["openFile"]
+    defaultPath: path.join(__dirname, 'MLGame', 'games', Code.GAME, 'ml', Code.PROJECT).replace('app.asar', 'app.asar.unpacked'),
+    properties: ["openFile", "multiSelections"]
   });
   if (filePath === undefined) {
     return;
   }
-  $("#filset-dialog").modal('hide');
   var error = 0;
   filePath.forEach((f) => {
     var data = new FormData();
@@ -1458,7 +1572,6 @@ Code.updateFilesetFile = function(index) {
     var file = new File([window.readFile(f)], name);
     data.append("files", file, name);
     window.paiaAPI("PUT", `fileset/${index}/file`, data, false, 'USER_TOKEN', (res) => {
-      $("#filset-dialog").modal('hide');
       Code.showFilesets();
     }, (jqXHR, exception) => {
       var msg = '';
@@ -1510,20 +1623,41 @@ Code.findFileset = function() {
  * Download fileset.
  */
 Code.downloadFileset = function() {
-  var dir = path.join(__dirname, 'library', Code.GAME.toLowerCase(), `${Code.FILESET_FOUND.name}@${Code.FILESET_FOUND.token}`);
+  var dir = path.join(__dirname, 'library', Code.GAME.toLowerCase(), `${Code.FILESET_FOUND.name}@${Code.FILESET_FOUND.token}`).replace('app.asar', 'app.asar.unpacked');
   if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir);
   } else if (!window.confirm(`${dir} 已存在，是否要覆蓋此程式集？`)) {
     return;
   }
+  $("#saved_filesets").html(`程式庫 <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`);
+  var total = Code.FILESET_FOUND.files.length;
+  var finish = 0;
+  var error = 0;
   Code.FILESET_FOUND.files.forEach((e) => {
     var file = fs.createWriteStream(path.join(dir, e.file_name));
     require('https').get(e.file_url, (response) => {
       response.on('data', (d) => {
         file.write(d);
       });
-    }).on('error', (error) => {
-      window.alert(`${e.file_name} 下載錯誤： ${error}`);
+      response.on('end', () => {
+        file.close();
+        finish++;
+        if (finish + error == total) {
+          if (error == 0) {
+            window.alert(`${Code.FILESET_FOUND.name} 檔案集下載完成`);
+          } else {
+            window.alert(`${Code.FILESET_FOUND.name} 檔案集下載完成，${error} 個檔案發生錯誤`);
+          }
+          $("#saved_filesets").html(`程式庫`);
+        }
+      });
+    }).on('error', (e) => {
+      error++;
+      if (finish + error == total) {
+        window.alert(`${Code.FILESET_FOUND.name} 檔案集下載完成，${error} 個檔案發生錯誤`);
+        $("#saved_filesets").html(`程式庫`);
+      }
+      console.error(e);
     });
   });
 };
@@ -1533,7 +1667,6 @@ Code.downloadFileset = function() {
  */
 Code.deleteFileset = function(index) {
   if (window.confirm("確定要刪除此檔案集嗎？")) {
-    $("#filset-dialog").modal('hide');
     window.paiaAPI("DELETE", `fileset/${index}`, null, false, 'USER_TOKEN', (res) => {
       if (res.status == "success") {
         window.alert(`成功刪除檔案集`);
@@ -1562,7 +1695,6 @@ Code.deleteFileset = function(index) {
  */
 Code.deleteFilesetFile = function(index, filename) {
   if (window.confirm(`確定要刪除 ${filename} 嗎？`)) {
-    $("#filset-dialog").modal('hide');
     var data = {
       filename: filename
     }

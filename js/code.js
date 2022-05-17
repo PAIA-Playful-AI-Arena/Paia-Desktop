@@ -720,7 +720,7 @@ Code.initMlgameBlocks = function() {
  Code.updateLibraryList = function() {
   $('#library').empty();
   var index = 0;
-  if (app.getVersion().indexOf("competition-tn") != -1) {
+  if (app.getVersion().indexOf("competition-tn") != -1 && Code.GAME != "easy_game") {
     var libraryDir = path.join(__dirname, 'examples', Code.GAME.toLowerCase(), 'tainan');
   } else {
     var libraryDir = path.join(__dirname, 'examples', Code.GAME.toLowerCase(), 'xml');
@@ -1292,7 +1292,11 @@ Code.loadProject = function() {
 Code.newProject = function() {
   Code.PROJECT = $('#project-name').val();
   var dir = path.join(__dirname, 'MLGame', 'games', Code.GAME, 'ml', Code.PROJECT).replace('app.asar', 'app.asar.unpacked');
-  var start = path.join(__dirname, 'examples', Code.GAME.toLowerCase(), 'xml', '範例程式 1', '1. start.xml');
+  if (app.getVersion().indexOf("competition-tn") != -1 && Code.GAME != "easy_game") {
+    var start = path.join(__dirname, 'examples', Code.GAME.toLowerCase(), 'tainan', '範例程式', 'manual.xml');
+  } else {
+    var start = path.join(__dirname, 'examples', Code.GAME.toLowerCase(), 'xml', '範例程式 1', '1. start.xml');
+  }
   try {
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir);
@@ -1348,7 +1352,11 @@ Code.openProject = function() {
     dir = dir[0];
   }
   var projectDir = path.join(mlPath, path.basename(dir));
-  var start = path.join(__dirname, 'examples', Code.GAME.toLowerCase(), 'xml', '範例程式 1', '1. start.xml');
+  if (app.getVersion().indexOf("competition-tn") != -1 && Code.GAME != "easy_game") {
+    var start = path.join(__dirname, 'examples', Code.GAME.toLowerCase(), 'tainan', '範例程式', 'manual.xml');
+  } else {
+    var start = path.join(__dirname, 'examples', Code.GAME.toLowerCase(), 'xml', '範例程式 1', '1. start.xml');
+  }
   if (path.normalize(path.dirname(dir)) != path.normalize(mlPath)) {
     if (window.confirm('將複製此專案至遊戲資料夾下，是否繼續？')) {
       if (!fs.existsSync(projectDir)) {

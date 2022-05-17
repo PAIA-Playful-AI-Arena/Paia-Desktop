@@ -75,14 +75,16 @@ function createWindow () {
 
   // Open the DevTools.
   // mainWindow.webContents.openDevTools()
-  var handleRedirect = (e, url) => {
+  mainWindow.webContents.on('will-navigate', (event, url) => {
     if(url.startsWith('http')) {
-      e.preventDefault()
+      event.preventDefault()
       shell.openExternal(url)
     }
-  }
+  })
   
-  mainWindow.webContents.on('will-navigate', handleRedirect)
+  mainWindow.webContents.on('new-window', (event, url) => {
+    event.preventDefault()
+  })
 }
 
 // Make sure not launching multiple times during install on Windows.

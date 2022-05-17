@@ -5,6 +5,7 @@
     <title>PAIA Desktop</title>
     <link rel="stylesheet" href="node_modules/vex-js/dist/css/vex.css" />
     <link rel="stylesheet" href="node_modules/vex-js/dist/css/vex-theme-os.css" />
+    <link rel="stylesheet" href="node_modules/bootstrap-icons/font/bootstrap-icons.css">
     <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="node_modules/codemirror/lib/codemirror.css">
     <link rel="stylesheet" href="node_modules/codemirror/addon/fold/foldgutter.css">
@@ -31,6 +32,33 @@
     <script src="js/code_python.js"></script>
   </head>
   <body>
+    <!-- Login dialog -->
+    <div class="modal fade" id="login-dialog" tabindex="-1">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <h5 class="text-center mt-3">登入 PAIA</h5>
+          <form name="play" action="javascript:Code.login()">
+            <div class="modal-body my-2">
+              <div class="container">
+                <div class="form-group">
+                  <label for="email">Email</label>
+                  <input type="email" class="form-control" id="email" aria-describedby="emailHelp" placeholder="account@gmail.com" required>
+                </div>
+                <div class="form-group">
+                  <label for="password">密碼</label>
+                  <input type="password" class="form-control" id="password" placeholder="Password" required>
+                </div>
+                <button type="submit" class="btn btn-primary">登入</button>
+                <span class="text-danger ml-3" id="state-content"></span>
+              </div>
+            </div>
+          </form>
+          <button type="button" onclick="Code.google_login()">
+            <img src="media/google-login.png" alt="...">
+          </button>
+        </div>
+      </div>
+    </div>
     <!-- Project dialog -->
     <div class="modal fade" id="project-dialog" tabindex="-1" data-backdrop="static" data-keyboard="false" aria-hidden="true">
       <div class="modal-dialog">
@@ -47,6 +75,7 @@
               </div>
             </div>
             <div class="modal-footer">
+              <button type="button" onclick="location.href='index.html';" class="btn btn-outline-primary mr-auto">返回遊戲選單</button>
               <button type="submit" class="btn btn-outline-primary">新建</button>
               <button type="button" onclick="Code.openProject()" class="btn btn-outline-secondary">載入</button>
             </div>
@@ -104,49 +133,152 @@
         </div>
       </div>
     </div>
-    <div class="container-fluid" id="blockly_container">
-      <ul class="nav nav-tabs"  role="tablist">
-        <li class="nav-item" role="presentation">
-          <a class="nav-link" id="tab_python" data-toggle="tab" role="tab"
-              aria-controls="profile" aria-selected="false">Python</a>
-        </li>
-        <li class="nav-item ml-auto" role="presentation" id="tab_title"> 
-          <a class="navbar-brand ml-auto" tabindex="-1" aria-disabled="true">
-            <span id='game_name'>...</span> - <span id='project_name'>...</span> - <span id='file_name'></span><span id='not_saved'></span>
-          </a>
-        </li>
-        <li class="nav-item dropdown ml-auto">
-          <a class="nav-link dropdown-toggle" id="tab_example" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">範例程式</a>
-          <div class="dropdown-menu dropdown-menu-right" id="examples"></div>
-        </li>
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" id="tab_lang" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">語言</a>
-          <div class="dropdown-menu dropdown-menu-right">
-            <a class="dropdown-item" href="#" id="zh-hant">中文</a>
-            <a class="dropdown-item" href="#" id="en">英文</a>
+    <!-- Fileset list dialog -->
+    <div class="modal fade" id="filset-dialog" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">線上檔案集</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
           </div>
-        </li>
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" id="tab_option" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">選項</a>
-          <div class="dropdown-menu dropdown-menu-right">
-            <a class="dropdown-item" href="#" id="show_readme">遊戲說明</a>
-            <a class="dropdown-item" href="#" id="run_mlgame">玩遊戲</a>
-            <a class="dropdown-item" href="#" id="run_python">執行程式</a>
-            <div class="dropdown-divider"></div>
-            <a class="dropdown-item" href="#" id='load_project'>新建 / 載入專案</a>
-            <a class="dropdown-item" href="#" id='export_project'>匯出專案</a>
-            <a class="dropdown-item" href="#" id='reveal_project'>開啟專案資料夾</a>
-            <div class="dropdown-divider"></div>
-            <a class="dropdown-item" href="#" id='open_python'>開啟 Python 檔</a>
-            <a class="dropdown-item" href="#" id='save_python'>儲存 Python 檔</a>
-            <div class="dropdown-divider"></div>
-            <a class="dropdown-item" href="#" id="open_example_dir">開啟範例程式路徑</a>
-            <a class="dropdown-item" href="index.html" id="discard">選擇遊戲</a>
+          <div class="modal-body my-2">
+            <div class="accordion" id="fileset-list"></div>
           </div>
-        </li>
-      </ul>
-      <div class="tab-content" id="tab_content">
-        <textarea id="content_python" class="content"></textarea>
+          <div class="modal-footer">
+            <button type="button" onclick="Code.updateFileset(-1);" class="btn btn-outline-primary">新增檔案集</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Fileset upload dialog -->
+    <div class="modal fade" id="upload-filset-dialog" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">新增 / 更新範例程式集</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <form name="upload-filset" action="javascript:Code.uploadFileset()">
+            <div class="modal-body my-2">
+              <div class="form-group">
+                <label for="">名稱</label>
+                <input type="text" class="form-control" id="filset-name" required>
+              </div>
+              <div class="form-group">
+                <label for="">描述</label>
+                <input type="text" class="form-control" id="filset-description">
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">取消</button>
+              <button type="submit" class="btn btn-outline-primary">新增 / 更新</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    
+    <div class="wrapper">
+      <nav class="pt-3 px-3" id="sidebar">
+        <div class="sidebar-header">
+          <h4 id='game_name'></h4>
+        </div>
+        <div class="dropdown-divider"></div>
+        <ul class="list-unstyled my-3">
+          <div class="row mx-0 justify-content-between">
+            <h6 class="mb-0" id="saved_filesets">程式庫</h6>
+            <div class="dropdown position-static">
+              <a href="#" data-toggle="dropdown" data-boundary="viewport" id="fileset-options"><i class="bi bi-three-dots"></i></a>
+              <div class="dropdown-menu" aria-labelledby="fileset-options">
+                <button class="dropdown-item" type="button" id="open_example_dir"><i class="bi bi-folder2-open"></i> 開啟程式庫路徑</button>
+              </div>
+            </div>
+          </div>
+          <li id="library"></li>
+        </ul>
+        <div class="dropdown-divider"></div>
+        <ul class="list-unstyled my-3">
+          <div class="row mx-0 justify-content-between">
+            <h6 class="mb-0">目前專案</h6>
+            <div class="dropdown position-static">
+              <a href="#" data-toggle="dropdown" data-boundary="viewport" id="project-options"><i class="bi bi-three-dots"></i></a>
+              <div class="dropdown-menu" aria-labelledby="project-options">
+                <button class="dropdown-item" type="button" id="load_project"><i class="bi bi-box-arrow-in-left"></i> 新建 / 載入專案</button>
+                <button class="dropdown-item" type="button" id="export_project"><i class="bi bi-box-arrow-right"></i> 匯出專案</button>
+                <button class="dropdown-item" type="button" id="reveal_project"><i class="bi bi-folder2-open"></i> 開啟專案資料夾位置</button>
+              </div>
+            </div>
+          </div>
+          <li>
+            <a href="#project-files" data-toggle="collapse" aria-expanded="false" class="group mt-2" id="project-link">
+              <i class="bi bi-caret-right-fill pointer mr-1"></i>
+              <span id="project_name"></span>
+            </a>
+            <ul class="collapse list-unstyled" id="project-files">
+            </ul>
+          </li>
+        </ul>
+        <div class="dropdown-divider"></div>
+        <ul class="list-unstyled my-3" id="fileset_download_div">
+          <h6>下載特定專案</h6>
+          <form name="download-filset" action="javascript:Code.findFileset()">
+            <div class="form-group py-1">
+              <div class="input-group input-group-sm">
+                <div class="input-group-prepend">
+                  <button type="submit" class="btn btn-outline-light"><i class="bi bi-search"></i></button>
+                </div>
+                <input type="text" class="form-control" id="fileset-download-token" placeholder="輸入專案代碼"
+                pattern="[\w]{1,10}" required>
+              </div>
+            </div>
+          </form>
+          <ul class="collapse list-unstyled" id="fileset-data">
+            <p>分享者：<span id="fileset-author"></span></p>
+            <p>專案名稱：<span id="fileset-name"></span></p>
+            <p>最後更新時間：<span id="fileset-updated-at"></span></p>
+            <button class="btn btn-sm btn-outline-light" onclick="Code.downloadFileset()">下載</button>
+          </ul>
+        </ul>
+      </nav>
+      <div class="container-fluid" id="blockly-container">
+        <ul class="nav nav-tabs" role="tablist" id="tab_list">
+          <div class="row mx-0" id="opened_python"></div>
+          <li class="nav-item dropdown ml-auto">
+            <a class="nav-link dropdown-toggle" id="tab_user" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">尚未登入</a>
+            <div class="dropdown-menu dropdown-menu-right">
+              <a class="dropdown-item" href="#" id="login_logout">登入</a>
+              <div class="dropdown-divider"></div>
+              <a class="dropdown-item need-login disabled" href="#" id="show_filesets">線上檔案集</a>
+            </div>
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" id="tab_lang" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">語言</a>
+            <div class="dropdown-menu dropdown-menu-right">
+              <a class="dropdown-item" href="#" id="zh-hant">中文</a>
+              <a class="dropdown-item" href="#" id="en">英文</a>
+            </div>
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" id="tab_option" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">選項</a>
+            <div class="dropdown-menu dropdown-menu-right">
+              <a class="dropdown-item" href="#" id="show_readme">遊戲說明</a>
+              <a class="dropdown-item" href="#" id="run_mlgame">玩遊戲</a>
+              <a class="dropdown-item" href="#" id="run_python">執行程式</a>
+              <div class="dropdown-divider"></div>
+              <a class="dropdown-item" href="#" id='open_python'>開啟 Python 檔</a>
+              <a class="dropdown-item" href="#" id='save_python'>儲存 Python 檔</a>
+              <div class="dropdown-divider"></div>
+              <a class="dropdown-item" href="index.html" id="discard">選擇遊戲</a>
+            </div>
+          </li>
+        </ul>
+        <div class="tab-content" id="tab_content">
+          <textarea id="content_python" class="content"></textarea>
+        </div>
       </div>
     </div>
   </body>

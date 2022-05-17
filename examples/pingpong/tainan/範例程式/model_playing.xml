@@ -1,0 +1,626 @@
+<xml xmlns="https://developers.google.com/blockly/xml">
+  <variables>
+    <variable id="Hx_tmkxsaE/QweCL3EP2">玩家編號</variable>
+    <variable id="byAb-$y[6SV.#u`:N]I?">發球位置</variable>
+    <variable id="Yq1qN0)adlwIRz,J~})m">發球方向</variable>
+    <variable id="TY520b5z*IDY6yOPh3],">平台X座標</variable>
+    <variable id="AH61U?,1A?Lp7`=z-0mX">AI模型</variable>
+    <variable id="=fl|O+xkzobXiSKekJcg">預測結果</variable>
+    <variable id="K/qkR:JYq!?Ortvf:rSM">移動方向</variable>
+  </variables>
+  <block type="mlplay_class" id="RUg|=sCltV/Pf]+(7O)_" x="-2238" y="38">
+    <statement name="INIT">
+      <block type="variables_set" id="U]{DsFG)$0cj~#Ut6/.k">
+        <field name="VAR" id="Hx_tmkxsaE/QweCL3EP2">玩家編號</field>
+        <value name="VALUE">
+          <block type="mlplay_init_info" id="O,%sx`THBS+ORLdi*3U?">
+            <field name="FIELD">side</field>
+          </block>
+        </value>
+        <next>
+          <block type="controls_if" id="#p|drWnM6QF-J/l;N[Gh">
+            <mutation else="1"></mutation>
+            <value name="IF0">
+              <block type="logic_compare" id="~va*UP|plePI7?eA7[?D">
+                <field name="OP">EQ</field>
+                <value name="A">
+                  <block type="variables_get" id="gSr%6J$?PJYV|YcFKgDe">
+                    <field name="VAR" id="Hx_tmkxsaE/QweCL3EP2">玩家編號</field>
+                  </block>
+                </value>
+                <value name="B">
+                  <block type="text" id="fHV1L;K[IP8,3oOAmCGy">
+                    <field name="TEXT">1P</field>
+                  </block>
+                </value>
+              </block>
+            </value>
+            <statement name="DO0">
+              <block type="file_load" id="7y!-EKu{(,pL%eyVgGe3">
+                <comment pinned="false" h="44" w="159">載入1P的AI模型</comment>
+                <value name="FILENAME">
+                  <block type="text" id=")(MK9SK6)-WzKeK)Mm_p">
+                    <field name="TEXT">model_1P</field>
+                  </block>
+                </value>
+                <value name="OBJECT">
+                  <block type="variables_get" id="(=IU_onin7rBKjiw3Z`:">
+                    <field name="VAR" id="AH61U?,1A?Lp7`=z-0mX">AI模型</field>
+                  </block>
+                </value>
+              </block>
+            </statement>
+            <statement name="ELSE">
+              <block type="file_load" id=")Xn:ztvL|*lWI-i7|p#d">
+                <comment pinned="false" h="45" w="146">載入2P的AI模型</comment>
+                <value name="FILENAME">
+                  <block type="text" id="@PohqpXRl_lm|WsDcr?9">
+                    <field name="TEXT">model_2P</field>
+                  </block>
+                </value>
+                <value name="OBJECT">
+                  <block type="variables_get" id="c~4tW}@1UHh;Tpza#H[@">
+                    <field name="VAR" id="AH61U?,1A?Lp7`=z-0mX">AI模型</field>
+                  </block>
+                </value>
+              </block>
+            </statement>
+            <next>
+              <block type="variables_set" id="bPquKBd+D}RybTi=Cecf">
+                <field name="VAR" id="byAb-$y[6SV.#u`:N]I?">發球位置</field>
+                <value name="VALUE">
+                  <block type="math_random_int" id=");_I76T^MbnJve9Xx+|M">
+                    <value name="FROM">
+                      <shadow type="math_number" id="3bByWVJJEy*4ggx]-qdf">
+                        <field name="NUM">1</field>
+                      </shadow>
+                      <block type="math_arithmetic" id="_:A[GyCNOD]q{EOq;5IT">
+                        <field name="OP">ADD</field>
+                        <value name="A">
+                          <shadow type="math_number" id="%CE((c|iY5IdZ48}*9)w">
+                            <field name="NUM">1</field>
+                          </shadow>
+                          <block type="mlplay_get_constant" id="Re(nFfHY}]nyodZs!qE8">
+                            <field name="CONSTANT">1/0</field>
+                          </block>
+                        </value>
+                        <value name="B">
+                          <shadow type="math_number" id="NeS:SD)d3IknA1h0WEDV">
+                            <field name="NUM">1</field>
+                          </shadow>
+                          <block type="math_number" id="eB~*sj8zn)QnKAVUGZD_">
+                            <field name="NUM">20</field>
+                          </block>
+                        </value>
+                      </block>
+                    </value>
+                    <value name="TO">
+                      <shadow type="math_number" id="(EJ7PgQzrMcB$!.G5*BX">
+                        <field name="NUM">100</field>
+                      </shadow>
+                      <block type="math_arithmetic" id="-SL`1Fvp0G03q[`-#r_N">
+                        <field name="OP">MINUS</field>
+                        <value name="A">
+                          <shadow type="math_number">
+                            <field name="NUM">1</field>
+                          </shadow>
+                          <block type="mlplay_get_constant" id="T[g*]baPqf%LmjK_TgcF">
+                            <field name="CONSTANT">2/200</field>
+                          </block>
+                        </value>
+                        <value name="B">
+                          <shadow type="math_number">
+                            <field name="NUM">1</field>
+                          </shadow>
+                          <block type="math_number" id="EAUEm^w.B^,qd5kA$|py">
+                            <field name="NUM">20</field>
+                          </block>
+                        </value>
+                      </block>
+                    </value>
+                  </block>
+                </value>
+                <next>
+                  <block type="variables_set" id="_;xu4*6uHm,qme`*Ir.R">
+                    <field name="VAR" id="Yq1qN0)adlwIRz,J~})m">發球方向</field>
+                    <value name="VALUE">
+                      <block type="math_modulo" id="pt4^/[(8EagwkkD{]qHI">
+                        <value name="DIVIDEND">
+                          <shadow type="math_number" id="]KapO$%$.W9+Pvl$5dGQ">
+                            <field name="NUM">64</field>
+                          </shadow>
+                          <block type="math_random_int" id="5H?d$#/A+ki6E#uC(}e*">
+                            <value name="FROM">
+                              <shadow type="math_number" id="E0Axi1IA,gvCb75Ck,zs">
+                                <field name="NUM">1</field>
+                              </shadow>
+                              <block type="math_number" id="rCQe=qkuHyj(3Xk5Gb)#">
+                                <field name="NUM">1</field>
+                              </block>
+                            </value>
+                            <value name="TO">
+                              <shadow type="math_number" id="Fb!/mRHiga*1QU{yY,ez">
+                                <field name="NUM">100</field>
+                              </shadow>
+                              <block type="math_number" id="rRZq3@t^sc+]0?aN=@xl">
+                                <field name="NUM">100</field>
+                              </block>
+                            </value>
+                          </block>
+                        </value>
+                        <value name="DIVISOR">
+                          <shadow type="math_number" id="^7Zu:Z]K!.}W=tJ+(fJb">
+                            <field name="NUM">10</field>
+                          </shadow>
+                          <block type="math_number" id="RqW818}qhR^%/LMuP/zx">
+                            <field name="NUM">2</field>
+                          </block>
+                        </value>
+                      </block>
+                    </value>
+                  </block>
+                </next>
+              </block>
+            </next>
+          </block>
+        </next>
+      </block>
+    </statement>
+    <statement name="UPDATE">
+      <block type="controls_if" id="HXtZ(I*tS1Hw^Bk7?{-3">
+        <value name="IF0">
+          <block type="logic_compare" id="`]z:fY(vCR_H0Qbr:n^]">
+            <field name="OP">NEQ</field>
+            <value name="A">
+              <block type="mlplay_get_info" id="]x}ErYGm!xnxEsgwXl!*">
+                <field name="FIELD">scene_info['status']</field>
+              </block>
+            </value>
+            <value name="B">
+              <block type="mlplay_game_status" id="@CFWo6F~Ihf0^C5~zG/3">
+                <field name="STATUS">GAME_ALIVE</field>
+              </block>
+            </value>
+          </block>
+        </value>
+        <statement name="DO0">
+          <block type="mlplay_return_action" id="#5ulUcX#g3F-%3do+C1$">
+            <field name="ACTION">RESET</field>
+          </block>
+        </statement>
+        <next>
+          <block type="controls_if" id="~j3a%?_g28jP7+z#jstD">
+            <mutation else="1"></mutation>
+            <value name="IF0">
+              <block type="logic_compare" id="z49O|HR8%=fpfNwe?)mJ">
+                <field name="OP">EQ</field>
+                <value name="A">
+                  <block type="variables_get" id="5[gUkJt^$j8}k!Y0VeiG">
+                    <field name="VAR" id="Hx_tmkxsaE/QweCL3EP2">玩家編號</field>
+                  </block>
+                </value>
+                <value name="B">
+                  <block type="text" id="YB$-z-8qlG~qyfpAZNgD">
+                    <field name="TEXT">1P</field>
+                  </block>
+                </value>
+              </block>
+            </value>
+            <statement name="DO0">
+              <block type="variables_set" id="gN2~j95Ljqvq9,QbP0P#">
+                <field name="VAR" id="TY520b5z*IDY6yOPh3],">平台X座標</field>
+                <value name="VALUE">
+                  <block type="mlplay_get_info" id="AFeiRkYYr,^({m22k3#4">
+                    <field name="FIELD">scene_info['platform_1P'][0]</field>
+                  </block>
+                </value>
+              </block>
+            </statement>
+            <statement name="ELSE">
+              <block type="variables_set" id="_S=#n+t9Vd}u|,#`SyW}">
+                <field name="VAR" id="TY520b5z*IDY6yOPh3],">平台X座標</field>
+                <value name="VALUE">
+                  <block type="mlplay_get_info" id="rGgDhB|DU-XHY,gXv}4z">
+                    <field name="FIELD">scene_info['platform_2P'][0]</field>
+                  </block>
+                </value>
+              </block>
+            </statement>
+            <next>
+              <block type="controls_if" id="EVvV2kK+-[JLvGjT].3d">
+                <mutation else="1"></mutation>
+                <value name="IF0">
+                  <block type="logic_negate" id="7SASlID(o(q{c09;L}S;">
+                    <value name="BOOL">
+                      <block type="mlplay_get_info" id="6G}uq-St0}$M?dBS8|r5">
+                        <field name="FIELD">scene_info['ball_served']</field>
+                      </block>
+                    </value>
+                  </block>
+                </value>
+                <statement name="DO0">
+                  <block type="controls_whileUntil" id="3glb7lVTfi4onhs%S]KD">
+                    <field name="MODE">UNTIL</field>
+                    <value name="BOOL">
+                      <block type="logic_operation" id="zy9)|F@GhxbIAdW|TR=!">
+                        <field name="OP">AND</field>
+                        <value name="A">
+                          <block type="logic_compare" id="S7|OS,6z0P!=-Z]LQ?s$">
+                            <field name="OP">LTE</field>
+                            <value name="A">
+                              <block type="math_arithmetic" id="Es-kqPFMMt{b{l~Seg:w">
+                                <field name="OP">MINUS</field>
+                                <value name="A">
+                                  <shadow type="math_number" id="w2r:mB7@iW0U=yiOW+YX">
+                                    <field name="NUM">1</field>
+                                  </shadow>
+                                  <block type="variables_get" id="(%*lm!4p7k8rU9pSQHQ(">
+                                    <field name="VAR" id="byAb-$y[6SV.#u`:N]I?">發球位置</field>
+                                  </block>
+                                </value>
+                                <value name="B">
+                                  <shadow type="math_number" id="yK54J!H?cDl6/]F$M0@X">
+                                    <field name="NUM">1</field>
+                                  </shadow>
+                                  <block type="math_number" id="OmySS7ga(Px9eBW+NaQ}">
+                                    <field name="NUM">30</field>
+                                  </block>
+                                </value>
+                              </block>
+                            </value>
+                            <value name="B">
+                              <block type="variables_get" id="gq;WR;(kw~QNB]%(:dCF">
+                                <field name="VAR" id="TY520b5z*IDY6yOPh3],">平台X座標</field>
+                              </block>
+                            </value>
+                          </block>
+                        </value>
+                        <value name="B">
+                          <block type="logic_compare" id="GTJf{ucad.W2#gmh.S$]">
+                            <field name="OP">LTE</field>
+                            <value name="A">
+                              <block type="variables_get" id=";PqP9UHylm2{[v[Dy:@a">
+                                <field name="VAR" id="TY520b5z*IDY6yOPh3],">平台X座標</field>
+                              </block>
+                            </value>
+                            <value name="B">
+                              <block type="math_arithmetic" id="6m)#w/0h0(px75Mwt_MX">
+                                <field name="OP">MINUS</field>
+                                <value name="A">
+                                  <shadow type="math_number">
+                                    <field name="NUM">1</field>
+                                  </shadow>
+                                  <block type="variables_get" id="CsT`D(TFUr4PsDST#8[J">
+                                    <field name="VAR" id="byAb-$y[6SV.#u`:N]I?">發球位置</field>
+                                  </block>
+                                </value>
+                                <value name="B">
+                                  <shadow type="math_number">
+                                    <field name="NUM">1</field>
+                                  </shadow>
+                                  <block type="math_number" id="c;YHTRG^$x3HC7M(k(B^">
+                                    <field name="NUM">10</field>
+                                  </block>
+                                </value>
+                              </block>
+                            </value>
+                          </block>
+                        </value>
+                      </block>
+                    </value>
+                    <statement name="DO">
+                      <block type="controls_if" id="[~LL,.yw[K~_PF_;pi?(">
+                        <mutation else="1"></mutation>
+                        <value name="IF0">
+                          <block type="logic_compare" id="*E)@ZOlH^x:$!8E/u6.}">
+                            <field name="OP">LT</field>
+                            <value name="A">
+                              <block type="variables_get" id="@OMnau:(OLQh!oR~h!tm">
+                                <field name="VAR" id="byAb-$y[6SV.#u`:N]I?">發球位置</field>
+                              </block>
+                            </value>
+                            <value name="B">
+                              <block type="math_arithmetic" id="VIlI5sbOBaalge*[:PJA">
+                                <field name="OP">ADD</field>
+                                <value name="A">
+                                  <shadow type="math_number" id="V*K}t@RZEIKd_(Z_f@?z">
+                                    <field name="NUM">1</field>
+                                  </shadow>
+                                  <block type="variables_get" id="3;-x$S!C!+E@Zn9$EESH">
+                                    <field name="VAR" id="TY520b5z*IDY6yOPh3],">平台X座標</field>
+                                  </block>
+                                </value>
+                                <value name="B">
+                                  <shadow type="math_number" id="GOt#njDgS)@EUCJ{0,Ob">
+                                    <field name="NUM">1</field>
+                                  </shadow>
+                                  <block type="math_arithmetic" id="80EN3[R{|3[=FOGt#P}o">
+                                    <field name="OP">DIVIDE</field>
+                                    <value name="A">
+                                      <shadow type="math_number" id="^H@lbjq8]wB1}$Dv45=9">
+                                        <field name="NUM">1</field>
+                                      </shadow>
+                                      <block type="mlplay_get_constant" id="eS[K^G*R.)!+|0Tmv@~v">
+                                        <field name="CONSTANT">5/40</field>
+                                      </block>
+                                    </value>
+                                    <value name="B">
+                                      <shadow type="math_number" id="Jfo*e}N?U*}9mpK:m*V}">
+                                        <field name="NUM">1</field>
+                                      </shadow>
+                                      <block type="math_number" id="@S6j$]$o_`JteKR?o8?I">
+                                        <field name="NUM">2</field>
+                                      </block>
+                                    </value>
+                                  </block>
+                                </value>
+                              </block>
+                            </value>
+                          </block>
+                        </value>
+                        <statement name="DO0">
+                          <block type="mlplay_return_action" id="5or{@UCiOKyDg%P/QQFE">
+                            <field name="ACTION">MOVE_LEFT</field>
+                          </block>
+                        </statement>
+                        <statement name="ELSE">
+                          <block type="mlplay_return_action" id="#:s+d[hdwz0X}^.Hx^Np">
+                            <field name="ACTION">MOVE_RIGHT</field>
+                          </block>
+                        </statement>
+                      </block>
+                    </statement>
+                    <next>
+                      <block type="controls_if" id="#$LU6yZ:|4dR!LJJ=^x+">
+                        <mutation else="1"></mutation>
+                        <value name="IF0">
+                          <block type="logic_compare" id="#yWr8|dcZ6ea-.!0(K}T">
+                            <field name="OP">EQ</field>
+                            <value name="A">
+                              <block type="variables_get" id="hqTkPT{9n}u=qG{5AlPK">
+                                <field name="VAR" id="Yq1qN0)adlwIRz,J~})m">發球方向</field>
+                              </block>
+                            </value>
+                            <value name="B">
+                              <block type="math_number" id="?^(e.}C|+3:(IW+8HqaU">
+                                <field name="NUM">1</field>
+                              </block>
+                            </value>
+                          </block>
+                        </value>
+                        <statement name="DO0">
+                          <block type="mlplay_return_action" id="!@}12k|uPKSl{q`7:KTv">
+                            <field name="ACTION">SERVE_TO_LEFT</field>
+                          </block>
+                        </statement>
+                        <statement name="ELSE">
+                          <block type="mlplay_return_action" id="!}VX~=F?;`WYnHi6g8?/">
+                            <field name="ACTION">SERVE_TO_RIGHT</field>
+                          </block>
+                        </statement>
+                      </block>
+                    </next>
+                  </block>
+                </statement>
+                <statement name="ELSE">
+                  <block type="variables_set" id="PQa`0a(mH/X^}8zl`@x0">
+                    <field name="VAR" id="=fl|O+xkzobXiSKekJcg">預測結果</field>
+                    <value name="VALUE">
+                      <block type="model_predict" id="wzpbhKL$s?-va`CCp+Xz">
+                        <value name="MODEL">
+                          <block type="variables_get" id="duv3?RbnT=*DP2{tHHAD">
+                            <field name="VAR" id="AH61U?,1A?Lp7`=z-0mX">AI模型</field>
+                          </block>
+                        </value>
+                        <value name="X">
+                          <block type="lists_create_with" id=";y|K]`JoaH6Prg?;tuV[">
+                            <mutation items="1"></mutation>
+                            <value name="ADD0">
+                              <block type="lists_create_with" id="o5]0m4Hw2ksO(fD?h6Ys">
+                                <mutation items="5"></mutation>
+                                <comment pinned="false" h="72" w="261">所有的特徵資料必須跟收集的順序相同喔!!</comment>
+                                <value name="ADD0">
+                                  <block type="mlplay_get_info" id="5tQ/6tTBMw*)j~39p|i6">
+                                    <field name="FIELD">scene_info['ball'][0]</field>
+                                  </block>
+                                </value>
+                                <value name="ADD1">
+                                  <block type="mlplay_get_info" id="|8G1f}`MKl?bV;}-Hmb.">
+                                    <field name="FIELD">scene_info['ball'][1]</field>
+                                  </block>
+                                </value>
+                                <value name="ADD2">
+                                  <block type="mlplay_get_info" id="H#[@q(4FUSQ/3?PelGEM">
+                                    <field name="FIELD">scene_info['ball_speed'][0]</field>
+                                  </block>
+                                </value>
+                                <value name="ADD3">
+                                  <block type="mlplay_get_info" id="M4]pFtDzp}4p]TcYro}.">
+                                    <field name="FIELD">scene_info['ball_speed'][1]</field>
+                                  </block>
+                                </value>
+                                <value name="ADD4">
+                                  <block type="variables_get" id="B];0QB/+[G2mTs({`wLu">
+                                    <field name="VAR" id="TY520b5z*IDY6yOPh3],">平台X座標</field>
+                                  </block>
+                                </value>
+                              </block>
+                            </value>
+                          </block>
+                        </value>
+                      </block>
+                    </value>
+                    <next>
+                      <block type="variables_set" id="wG#A+q=]0r-e6ODmV;-P">
+                        <field name="VAR" id="K/qkR:JYq!?Ortvf:rSM">移動方向</field>
+                        <value name="VALUE">
+                          <block type="lists_getIndex" id="t_`25m`Xg9lPyj.)u{Rz">
+                            <mutation statement="false" at="false"></mutation>
+                            <field name="MODE">GET</field>
+                            <field name="WHERE">FIRST</field>
+                            <value name="VALUE">
+                              <block type="variables_get" id="9c_k-]3Vb[va?Z.e1;#T">
+                                <field name="VAR" id="=fl|O+xkzobXiSKekJcg">預測結果</field>
+                              </block>
+                            </value>
+                          </block>
+                        </value>
+                        <next>
+                          <block type="controls_if" id="hm?3-.4DPOI-b_rRvYw3">
+                            <mutation elseif="1" else="1"></mutation>
+                            <value name="IF0">
+                              <block type="logic_compare" id="kLWaj18?i!nz}E+#qoN?">
+                                <field name="OP">EQ</field>
+                                <value name="A">
+                                  <block type="variables_get" id="/uyRjbs3S#3s@BV0{jo`">
+                                    <field name="VAR" id="K/qkR:JYq!?Ortvf:rSM">移動方向</field>
+                                  </block>
+                                </value>
+                                <value name="B">
+                                  <block type="math_number" id="?!)FFjS_*lHx{Uydf4J+">
+                                    <field name="NUM">1</field>
+                                  </block>
+                                </value>
+                              </block>
+                            </value>
+                            <statement name="DO0">
+                              <block type="mlplay_return_action" id="5Q5=y5.E^HUA#RNN:moA">
+                                <field name="ACTION">MOVE_LEFT</field>
+                              </block>
+                            </statement>
+                            <value name="IF1">
+                              <block type="logic_compare" id="BWMwiOZ/fjd-_rkN(_H~">
+                                <field name="OP">EQ</field>
+                                <value name="A">
+                                  <block type="variables_get" id="$uBrhZ^[zKxNuIWrSMI7">
+                                    <field name="VAR" id="K/qkR:JYq!?Ortvf:rSM">移動方向</field>
+                                  </block>
+                                </value>
+                                <value name="B">
+                                  <block type="math_number" id="j8F$W_Kg{5eYtdWP;xOn">
+                                    <field name="NUM">2</field>
+                                  </block>
+                                </value>
+                              </block>
+                            </value>
+                            <statement name="DO1">
+                              <block type="mlplay_return_action" id=")tav8nC5S1|KD|d+Q%Ht">
+                                <field name="ACTION">MOVE_RIGHT</field>
+                              </block>
+                            </statement>
+                            <statement name="ELSE">
+                              <block type="mlplay_return_action" id="`:0%Ey2A=D544Z1zcNG8">
+                                <field name="ACTION">NONE</field>
+                              </block>
+                            </statement>
+                          </block>
+                        </next>
+                      </block>
+                    </next>
+                  </block>
+                </statement>
+              </block>
+            </next>
+          </block>
+        </next>
+      </block>
+    </statement>
+    <statement name="RESET">
+      <block type="variables_set" id="t(#2K3-2`~Xl#Eyo5$6_">
+        <field name="VAR" id="byAb-$y[6SV.#u`:N]I?">發球位置</field>
+        <value name="VALUE">
+          <block type="math_random_int" id="{@X8Yt+ln?/quNXgN~vy">
+            <value name="FROM">
+              <shadow type="math_number">
+                <field name="NUM">1</field>
+              </shadow>
+              <block type="math_arithmetic" id=";?$K?K#~.}p/CXO?ZLT7">
+                <field name="OP">ADD</field>
+                <value name="A">
+                  <shadow type="math_number">
+                    <field name="NUM">1</field>
+                  </shadow>
+                  <block type="mlplay_get_constant" id="U;9wc.{z^kNwtVHfdDiK">
+                    <field name="CONSTANT">1/0</field>
+                  </block>
+                </value>
+                <value name="B">
+                  <shadow type="math_number">
+                    <field name="NUM">1</field>
+                  </shadow>
+                  <block type="math_number" id="s:^Z^VJsD{GvDhX`1iH+">
+                    <field name="NUM">20</field>
+                  </block>
+                </value>
+              </block>
+            </value>
+            <value name="TO">
+              <shadow type="math_number">
+                <field name="NUM">100</field>
+              </shadow>
+              <block type="math_arithmetic" id="~1]}oiDh:{_3Ird]2G3-">
+                <field name="OP">MINUS</field>
+                <value name="A">
+                  <shadow type="math_number">
+                    <field name="NUM">1</field>
+                  </shadow>
+                  <block type="mlplay_get_constant" id="_7Xsy-M0lRAD@WqPEiFH">
+                    <field name="CONSTANT">2/200</field>
+                  </block>
+                </value>
+                <value name="B">
+                  <shadow type="math_number">
+                    <field name="NUM">1</field>
+                  </shadow>
+                  <block type="math_number" id="Rlx/]#9E=9hS2X8r6{1a">
+                    <field name="NUM">20</field>
+                  </block>
+                </value>
+              </block>
+            </value>
+          </block>
+        </value>
+        <next>
+          <block type="variables_set" id="Bf-AZ8Q+%@X^3m,lWQ]m">
+            <field name="VAR" id="Yq1qN0)adlwIRz,J~})m">發球方向</field>
+            <value name="VALUE">
+              <block type="math_modulo" id="ST{0BDoQ+}Ex_rm:]B@f">
+                <value name="DIVIDEND">
+                  <shadow type="math_number">
+                    <field name="NUM">64</field>
+                  </shadow>
+                  <block type="math_random_int" id="rvul#/xm[gx*8A`.b+Q~">
+                    <value name="FROM">
+                      <shadow type="math_number">
+                        <field name="NUM">1</field>
+                      </shadow>
+                      <block type="math_number" id="]^Vz2nLPph@6nM64z*k$">
+                        <field name="NUM">1</field>
+                      </block>
+                    </value>
+                    <value name="TO">
+                      <shadow type="math_number">
+                        <field name="NUM">100</field>
+                      </shadow>
+                      <block type="math_number" id="@;tuF94zAMGO@6CUPHg7">
+                        <field name="NUM">100</field>
+                      </block>
+                    </value>
+                  </block>
+                </value>
+                <value name="DIVISOR">
+                  <shadow type="math_number">
+                    <field name="NUM">10</field>
+                  </shadow>
+                  <block type="math_number" id="TL{]lyiaG,J{Sc.oj1U2">
+                    <field name="NUM">2</field>
+                  </block>
+                </value>
+              </block>
+            </value>
+          </block>
+        </next>
+      </block>
+    </statement>
+  </block>
+</xml>

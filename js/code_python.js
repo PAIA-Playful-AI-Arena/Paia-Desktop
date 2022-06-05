@@ -373,23 +373,25 @@ Code.initLanguage = function() {
   $('#library').empty();
   var index = 0;
   var libraryDir = path.join(__dirname, 'examples', Code.GAME.toLowerCase(), 'python');
-  fs.readdirSync(libraryDir, { withFileTypes: true }).forEach(dirent => {
-    if (dirent.isDirectory()) {
-      var filesetDir = path.join(libraryDir, dirent.name);
-      $('#library').append($(`<a href="#library-${index}" data-toggle="collapse" aria-expanded="false" class="group mt-2" title="${filesetDir}"><i class="bi bi-caret-right-fill pointer mr-1"></i>${dirent.name}</a>`))
-      var $list = $(`<ul class="collapse list-unstyled" id="library-${index}"></ul>`)
-      $('#library').append($list);
-      index++;
-      fs.readdirSync(filesetDir).forEach(file => {
-        if (file.endsWith(".py")) {
-          var filePath = path.join(filesetDir, file);
-          $list.append($(`<li class="ml-3 mt-1"><a href="#" id="${filePath}" title="${filePath}">${file}</a></li>`));
-          Code.bindClick(filePath,
-            function() {Code.loadPython(filePath);});
-        }
-      });
-    }
-  });
+  if (fs.existsSync(libraryDir)) {
+    fs.readdirSync(libraryDir, { withFileTypes: true }).forEach(dirent => {
+      if (dirent.isDirectory()) {
+        var filesetDir = path.join(libraryDir, dirent.name);
+        $('#library').append($(`<a href="#library-${index}" data-toggle="collapse" aria-expanded="false" class="group mt-2" title="${filesetDir}"><i class="bi bi-caret-right-fill pointer mr-1"></i>${dirent.name}</a>`))
+        var $list = $(`<ul class="collapse list-unstyled" id="library-${index}"></ul>`)
+        $('#library').append($list);
+        index++;
+        fs.readdirSync(filesetDir).forEach(file => {
+          if (file.endsWith(".py")) {
+            var filePath = path.join(filesetDir, file);
+            $list.append($(`<li class="ml-3 mt-1"><a href="#" id="${filePath}" title="${filePath}">${file}</a></li>`));
+            Code.bindClick(filePath,
+              function() {Code.loadPython(filePath);});
+          }
+        });
+      }
+    });
+  }
 
   var libraryDir = path.join(__dirname, 'library', Code.GAME.toLowerCase()).replace('app.asar', 'app.asar.unpacked');
   fs.readdirSync(libraryDir, { withFileTypes: true }).forEach(dirent => {
@@ -692,11 +694,15 @@ Code.afterLogin = function() {
   } else {
     var pythonText = Code.editor.getValue();
     window.writeFile(pythonPath, pythonText);
-    Code.OPENED_PYTHONS[Code.FOCUSED_PYTHON].$link.find('.not-saved').html('');
-    if (pythonPath == Code.OPENED_PYTHONS[Code.FOCUSED_PYTHON].path) {
-      Code.OPENED_PYTHONS[Code.FOCUSED_PYTHON].pythonText = pythonText;
+    if (Code.FOCUSED_PYTHON != '') {
+      Code.OPENED_PYTHONS[Code.FOCUSED_PYTHON].$link.find('.not-saved').html('');
+      if (pythonPath == Code.OPENED_PYTHONS[Code.FOCUSED_PYTHON].path) {
+        Code.OPENED_PYTHONS[Code.FOCUSED_PYTHON].pythonText = pythonText;
+      } else {
+        Code.closePython(Code.OPENED_PYTHONS[Code.FOCUSED_PYTHON].path);
+        Code.loadPython(pythonPath);
+      }
     } else {
-      Code.closePython(Code.OPENED_PYTHONS[Code.FOCUSED_PYTHON].path);
       Code.loadPython(pythonPath);
     }
     // Add log
@@ -838,7 +844,7 @@ Code.newProject = function() {
       $('#project_name').html(Code.PROJECT);
       if(fs.existsSync(path.join(dir, 'ml_play.py'))) {
         Code.loadPython(path.join(dir, 'ml_play.py'));
-      } else {
+      } else if (fs.existsSync(start)) {
         Code.loadPython(start);
       }
       $('#project-dialog').modal('hide');

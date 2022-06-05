@@ -319,6 +319,11 @@ pre.content {
   max-width: 800px;
 }
 
+.card img {
+  width: 100%;
+  max-width: 250px;
+}
+
 .CodeMirror {
   font-family: Consolas, "Courier New", monospace;
   border: 1px solid #ccc;

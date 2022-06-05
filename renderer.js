@@ -265,4 +265,20 @@ window.paiaAPI = function(method, url, data, async, auth, response, error) {
   }
 };
 
+window.githubAPI = function(method, url, data, async, response, error) {
+  var headers = {};
+  headers['Content-Type'] = 'application/json';
+  headers['Accept'] = 'application/vnd.github.v3+json';
+  $.ajax({
+    url: `https://api.github.com/${url}`,
+    headers: headers,
+    method: method,
+    async: async,
+    timeout: 0,
+    data: JSON.stringify(data),
+    success: response,
+    error: error
+  });
+};
+
 const intervalID = setInterval(window.sendLog, 60000);

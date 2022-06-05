@@ -226,17 +226,23 @@
       }
     });
   };
-  function git_download(url, destination, button) {
+  function git_download(game, button) {
+    var path = require('path');
+    var fs = require('fs');
+    var gameDir = path.join(__dirname, 'MLGame', 'games', game).replace('app.asar', 'app.asar.unpacked');;
+    var config = JSON.parse(window.readFile(path.join(gameDir, 'game_config.json')));
+    var url = (config.url !== undefined)? config.url : "None";
+    var version = $(`#${game}-tags`).val();
+    var data = url.substring(url.indexOf("github.com") + 11).split('/');
+    var owner = data[0];
+    var repo = data[1];
     if (window.confirm('下載後會覆蓋此遊戲資料夾下的所有檔案，確定執行？')) {
       button.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> 下載 / 更新';
       document.querySelectorAll('a.btn').forEach(e => {
         e.classList.add("disabled");
       });
-      var path = require('path');
-      var fs = require('fs');
-      destination = path.join(__dirname, destination).replace('app.asar', 'app.asar.unpacked');
       var download = require('download-git-repo');
-      download(url, destination, function (err) {
+      download(`direct:https://github.com/${owner}/${repo}/archive/refs/tags/${version}.zip`, gameDir, function (err) {
         button.innerHTML = '<i class="bi bi-download"></i> 下載 / 更新';
         document.querySelectorAll('a.btn').forEach(e => {
           e.classList.remove("disabled");
@@ -245,7 +251,7 @@
           window.alert(err);
         } else {
           update_version_name();
-          var config = JSON.parse(window.readFile(path.join(destination, 'game_config.json')));
+          var config = JSON.parse(window.readFile(path.join(gameDir, 'game_config.json')));
           window.alert(config['game_name'] + '-' + config['version'] + ' 下載成功');
         }
       });

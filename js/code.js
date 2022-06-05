@@ -368,9 +368,17 @@ Code.init = function() {
   Code.initMlgameBlocks();
 
   // Construct the toolbox XML, replacing translated variable names.
-  var toolboxText = window.readFile(path.join(__dirname, 'js', 'toolbox', `${Code.GAME}_${"desktop"}.xml`));
+  var toolboxPath = path.join(__dirname, 'js', 'toolbox', `${Code.GAME}_${"desktop"}.xml`);
+  if (!fs.existsSync(toolboxPath)) {
+    toolboxPath = path.join(__dirname, 'js', 'toolbox', 'default.xml');
+  }
+  var toolboxText = window.readFile(toolboxPath);
   window.paiaAPI("GET", `toolbox?game=${Code.GAME}&env=desktop`, {}, false, null, (res) => {
-    toolboxText = res.data;
+    if (res.status == 'error') {
+      console.log(`Get toolbox error: ${res.detail}`);
+    } else {
+      toolboxText = res.data;
+    }
   }, (jqXHR, exception) => {
     var msg = '';
     if (jqXHR.status === 0) {
@@ -725,23 +733,25 @@ Code.initMlgameBlocks = function() {
   } else {
     var libraryDir = path.join(__dirname, 'examples', Code.GAME.toLowerCase(), 'xml');
   }
-  fs.readdirSync(libraryDir, { withFileTypes: true }).forEach(dirent => {
-    if (dirent.isDirectory()) {
-      var filesetDir = path.join(libraryDir, dirent.name);
-      $('#library').append($(`<a href="#library-${index}" data-toggle="collapse" aria-expanded="false" class="group mt-2" title="${filesetDir}"><i class="bi bi-caret-right-fill pointer mr-1"></i>${dirent.name}</a>`))
-      var $list = $(`<ul class="collapse list-unstyled" id="library-${index}"></ul>`)
-      $('#library').append($list);
-      index++;
-      fs.readdirSync(filesetDir).forEach(file => {
-        if (file.endsWith(".xml")) {
-          var filePath = path.join(filesetDir, file);
-          $list.append($(`<li class="ml-3 mt-1"><a href="#" id="${filePath}" title="${filePath}">${file}</a></li>`));
-          Code.bindClick(filePath,
-            function() {Code.loadXml(filePath); Code.renderContent();});
-        }
-      });
-    }
-  });
+  if (fs.existsSync(libraryDir)) {
+    fs.readdirSync(libraryDir, { withFileTypes: true }).forEach(dirent => {
+      if (dirent.isDirectory()) {
+        var filesetDir = path.join(libraryDir, dirent.name);
+        $('#library').append($(`<a href="#library-${index}" data-toggle="collapse" aria-expanded="false" class="group mt-2" title="${filesetDir}"><i class="bi bi-caret-right-fill pointer mr-1"></i>${dirent.name}</a>`))
+        var $list = $(`<ul class="collapse list-unstyled" id="library-${index}"></ul>`)
+        $('#library').append($list);
+        index++;
+        fs.readdirSync(filesetDir).forEach(file => {
+          if (file.endsWith(".xml")) {
+            var filePath = path.join(filesetDir, file);
+            $list.append($(`<li class="ml-3 mt-1"><a href="#" id="${filePath}" title="${filePath}">${file}</a></li>`));
+            Code.bindClick(filePath,
+              function() {Code.loadXml(filePath); Code.renderContent();});
+          }
+        });
+      }
+    });
+  }
 
   var libraryDir = path.join(__dirname, 'library', Code.GAME.toLowerCase()).replace('app.asar', 'app.asar.unpacked');
   fs.readdirSync(libraryDir, { withFileTypes: true }).forEach(dirent => {
@@ -1076,11 +1086,15 @@ Code.saveXml = function() {
     var xml = Blockly.Xml.workspaceToDom(Code.workspace);
     var xmlText = Blockly.Xml.domToPrettyText(xml);
     window.writeFile(xmlPath, xmlText);
-    Code.OPENED_XMLS[Code.FOCUSED_XML].$link.find('.not-saved').html('');
-    if (xmlPath == Code.OPENED_XMLS[Code.FOCUSED_XML].path) {
-      Code.OPENED_XMLS[Code.FOCUSED_XML].xmlText = xmlText;
+    if (Code.FOCUSED_XML != "") {
+      Code.OPENED_XMLS[Code.FOCUSED_XML].$link.find('.not-saved').html('');
+      if (xmlPath == Code.OPENED_XMLS[Code.FOCUSED_XML].path) {
+        Code.OPENED_XMLS[Code.FOCUSED_XML].xmlText = xmlText;
+      } else {
+        Code.closeXml(Code.OPENED_XMLS[Code.FOCUSED_XML].path);
+        Code.loadXml(xmlPath);
+      }
     } else {
-      Code.closeXml(Code.OPENED_XMLS[Code.FOCUSED_XML].path);
       Code.loadXml(xmlPath);
     }
     // Add log
@@ -1725,7 +1739,5 @@ Code.deleteFilesetFile = function(index, filename) {
 document.write('<script src="js/ui_msg/' + Code.LANG + '.js"></script>\n');
 // Load Blockly's language strings.
 document.write('<script src="node_modules/@paia-arena/blockly/msg/' + Code.LANG + '.js"></script>\n');
-// Load game messages.
-document.write('<script src="node_modules/@paia-arena/blockly/msg/mlgame/' + Code.GAME.toLowerCase() + '.js"></script>\n');
 
 window.addEventListener('load', Code.init);

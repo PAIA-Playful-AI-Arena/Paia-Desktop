@@ -65,12 +65,16 @@ window.pythonRun = function(options, script, file, cwd) {
     document.getElementById('content_console').textContent += '> Python program finished\n';
     var e = document.getElementById('console-body');
     e.scrollTo(0, e.scrollHeight);
-    fs.unlinkSync(file);
+    if (fs.existsSync(file)) {
+      fs.unlinkSync(file);
+    }
     process.chdir(old_cwd);
   });
   python.on('error', function () {
     window.alert('Error: process exited with code ' + python.exitCode);
-    fs.unlinkSync(file);
+    if (fs.existsSync(file)) {
+      fs.unlinkSync(file);
+    }
     process.chdir(old_cwd);
   });
 };
@@ -124,11 +128,11 @@ window.copyDir = function(src, dest) {
 };
 
 window.getAccessToken = function() {
-  return store.get('access')
+  return store.get('access');
 };
 
 window.getRefreshToken = function() {
-  return store.get('refresh')
+  return store.get('refresh');
 };
 
 window.setToken = function(access, refresh) {

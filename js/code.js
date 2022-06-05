@@ -776,7 +776,7 @@ Code.initMlgameBlocks = function() {
 /**
  * Update project files dropdown list.
  */
- Code.updateProjectList = function() {
+Code.updateProjectList = function() {
   $('#project-files').empty();
   var projectDir = path.join(__dirname, 'MLGame', 'games', Code.GAME, 'ml', Code.PROJECT).replace('app.asar', 'app.asar.unpacked');
   fs.readdirSync(projectDir).forEach(file => {
@@ -880,7 +880,6 @@ Code.google_login = function() {
 };
 
 Code.token_login = function() {
-  console.log(window.getAccessToken(), window.getRefreshToken())
   if (window.getAccessToken() == "no token") {
     return;
   } else {
@@ -1167,7 +1166,7 @@ Code.savePython = function() {
  */
 Code.run = function() {
   if (Code.MODE == 'play') {
-    $('#run-mlgame-dialog').modal('show')
+    $('#run-mlgame-dialog').modal('show');
   } else {
     Code.execute();
   }

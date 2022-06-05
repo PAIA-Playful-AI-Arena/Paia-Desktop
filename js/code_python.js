@@ -506,7 +506,6 @@ Code.google_login = function() {
 };
 
 Code.token_login = function() {
-  console.log(window.getAccessToken(), window.getRefreshToken())
   if (window.getAccessToken() == "no token") {
     return;
   } else {

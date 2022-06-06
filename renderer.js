@@ -36,6 +36,14 @@ const schema = {
       type: "object",
     },
     default: []
+  },
+  custom_python: {
+    type: "boolean",
+    default: false
+  },
+  custom_python_path: {
+    type: "string",
+    default: ""
   }
 };
 const store = new Store({schema});
@@ -146,6 +154,18 @@ window.clearToken = function() {
 
 window.resetStore = function() {
   store.clear();
+};
+
+window.getCustomPython = function() {
+  return {
+    custom_python: store.get('custom_python'),
+    custom_python_path: store.get('custom_python_path'),
+  };
+};
+
+window.setCustomPython = function(custom_python, custom_python_path) {
+  store.set('custom_python', custom_python);
+  store.set('custom_python_path', custom_python_path);
 };
 
 window.addLog = function(action, obj) {

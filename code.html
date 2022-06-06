@@ -106,6 +106,31 @@
         </div>
       </div>
     </div>
+    <!-- Custom Python dialog -->
+    <div class="modal fade" id="custom-python-dialog" tabindex="-1" aria-hidden="true"  data-backdrop="static" data-keyboard="false">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="custom-python-title">執行環境設定</h5>
+          </div>
+          <form name="save" action="javascript:Code.saveCustomPython()">
+            <div class="modal-body my-2" id="game-args">
+              <div class="form-group form-check">
+                <input type="checkbox" class="form-check-input" id="custom-python-check">
+                <label class="form-check-label" for="custom-python-check">使用自訂 Python 環境</label>
+              </div>
+              <div class="form-group">
+                <label for="">Python 直譯器位置：<span id='custom-python-path'></span></label>
+                <button type="button" id="custom_python_button">選擇</button>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="submit" class="btn btn-outline-primary">確定</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
     <!-- Console dialog -->
     <div class="modal fade" id="console-dialog" tabindex="-1" aria-labelledby="exampleModalLabel" data-backdrop="static" aria-hidden="true">
       <div class="modal-dialog">
@@ -271,6 +296,7 @@
             <div class="dropdown-menu dropdown-menu-right">
               <a class="dropdown-item" href="#" id="show_readme">遊戲說明</a>
               <a class="dropdown-item" href="#" id="run">執行程式</a>
+              <a class="dropdown-item" href="#" id="custom_python">執行環境設定</a>
               <div class="dropdown-divider"></div>
               <a class="dropdown-item" href="#" id='open_xml'>開啟 XML 檔</a>
               <a class="dropdown-item" href="#" id='save_xml'>儲存 XML 檔</a>

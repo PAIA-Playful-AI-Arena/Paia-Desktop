@@ -272,6 +272,10 @@ Code.init = function() {
       function() {$('#run-mlgame-dialog').modal('show');});
   Code.bindClick('run_python',
       function() {Code.execute();});
+  Code.bindClick('custom_python',
+      function() {Code.showCustomPython(); Code.renderContent();});
+  Code.bindClick('custom_python_button',
+      function() {Code.selectCustomPython(); Code.renderContent();});
   Code.bindClick('login_logout',
       function() {Code.loginout();});
   Code.bindClick('show_filesets',
@@ -367,9 +371,45 @@ Code.initLanguage = function() {
 };
 
 /**
+ * Show dialog for custom Python.
+ */
+Code.showCustomPython = function() {
+  var state = window.getCustomPython();
+  $("#custom-python-check").prop('checked', state.custom_python);
+  $("#custom-python-path").html(state.custom_python_path);
+  $('#custom-python-dialog').modal('show');
+};
+
+/**
+ * Select path for custom Python.
+ */
+Code.selectCustomPython = function() {
+  var curPath = window.getCustomPython().custom_python_path;
+  if (curPath == "" || !fs.existsSync(curPath)) {
+    curPath = path.join(require('os').homedir(), 'Desktop');
+  }
+  var pythonPath = window.selectPath({
+    title: "選擇 Python 直譯器",
+    defaultPath: curPath,
+    properties: ["openFile"]
+  });
+  if (pythonPath !== undefined) {
+    $("#custom-python-path").html(pythonPath[0]);
+  }
+};
+
+/**
+ * Save custom Python.
+ */
+Code.saveCustomPython = function() {
+  window.setCustomPython($("#custom-python-check").prop('checked'), $("#custom-python-path").html());
+  $('#custom-python-dialog').modal('hide');
+};
+
+/**
  * Update library dropdown list.
  */
- Code.updateLibraryList = function() {
+Code.updateLibraryList = function() {
   $('#library').empty();
   var index = 0;
   var libraryDir = path.join(__dirname, 'examples', Code.GAME.toLowerCase(), 'python');
@@ -757,9 +797,15 @@ Code.play = function() {
     total_args = total_args.concat(['-i', `${Code.PROJECT}/${file_name}`])
   }
   total_args = total_args.concat(['-f', fps, Code.GAME]).concat(args);
+  var state = window.getCustomPython();
+  if (state.custom_python) {
+    var python_path = state.custom_python_path;
+  } else {
+    var python_path = path.join(__dirname, 'python', 'dist', 'interpreter', 'interpreter').replace('app.asar', 'app.asar.unpacked');
+  }
   var options = {
     mode: 'text',
-    pythonPath: path.join(__dirname, 'python', 'dist', 'interpreter', 'interpreter').replace('app.asar', 'app.asar.unpacked'),
+    pythonPath: python_path,
     scriptPath: path.join(__dirname, 'MLGame').replace('app.asar', 'app.asar.unpacked'),
     args: total_args
   };
@@ -785,9 +831,15 @@ Code.execute = function() {
   var project_path = path.join(__dirname, 'MLGame', 'games', Code.GAME, 'ml', Code.PROJECT).replace('app.asar', 'app.asar.unpacked');
   var file_name = Code.saveTmpPython(project_path);
   var file_path = path.join(project_path, file_name);
+  var state = window.getCustomPython();
+  if (state.custom_python) {
+    var python_path = state.custom_python_path;
+  } else {
+    var python_path = path.join(__dirname, 'python', 'dist', 'interpreter', 'interpreter').replace('app.asar', 'app.asar.unpacked');
+  }
   var options = {
     mode: 'text',
-    pythonPath: path.join(__dirname, 'python', 'dist', 'interpreter', 'interpreter').replace('app.asar', 'app.asar.unpacked'),
+    pythonPath: python_path,
     scriptPath: project_path,
     args: []
   };

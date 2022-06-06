@@ -1,3 +1,6 @@
 [submodule "MLGame"]
 	path = MLGame
 	url = https://github.com/jason53415/MLGame.git
+[submodule "tutorial"]
+	path = tutorial
+	url = https://github.com/datuiji/PAIA-Desktop-Tutorial.git

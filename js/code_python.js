@@ -273,9 +273,9 @@ Code.init = function() {
   Code.bindClick('run_python',
       function() {Code.execute();});
   Code.bindClick('custom_python',
-      function() {Code.showCustomPython(); Code.renderContent();});
+      function() {Code.showCustomPython();});
   Code.bindClick('custom_python_button',
-      function() {Code.selectCustomPython(); Code.renderContent();});
+      function() {Code.selectCustomPython();});
   Code.bindClick('login_logout',
       function() {Code.loginout();});
   Code.bindClick('show_filesets',

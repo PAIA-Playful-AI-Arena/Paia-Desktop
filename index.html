@@ -43,7 +43,7 @@
     <div class="card m-3 mx-auto">
       <div class="card-body">
         <h3 class="card-title">加入新遊戲</h3>
-        <button class="btn btn-primary" onclick="window.openPath(path.join(__dirname, 'MLGame', 'games').replace('app.asar', 'app.asar.unpacked'));">開啟遊戲位置</button>
+        <button class="btn btn-primary" onclick="window.openPath(path.join(__dirname, 'games').replace('app.asar', 'app.asar.unpacked'));">開啟遊戲位置</button>
         <!-- <form name="add-game" action="javascript:download_game()">
           <div class="form-group py-1">
             <div class="input-group input-group-sm">
@@ -143,7 +143,7 @@
   };
   function update_game_list() {
     $('#game_list').empty();
-    var gameListDir = path.join(__dirname, 'MLGame', 'games').replace('app.asar', 'app.asar.unpacked');
+    var gameListDir = path.join(__dirname, 'games').replace('app.asar', 'app.asar.unpacked');
     fs.readdirSync(gameListDir, { withFileTypes: true }).forEach(dirent => {
       if (dirent.isDirectory()) {
         var gameDir = path.join(gameListDir, dirent.name);
@@ -206,7 +206,7 @@
   function update_version_name() {
     Array.from(document.getElementsByClassName('verison')).forEach(e => {
       var fs = require('fs');
-      var config_path = path.join(__dirname, 'MLGame', 'games', e.getAttribute('game'), 'game_config.json');
+      var config_path = path.join(__dirname, 'games', e.getAttribute('game'), 'game_config.json');
       if (fs.existsSync(config_path)) {
         var config = JSON.parse(window.readFile(config_path));
         e.innerHTML = config['game_name'] + '-' + config['version'];
@@ -229,7 +229,7 @@
   function git_download(game, button) {
     var path = require('path');
     var fs = require('fs');
-    var gameDir = path.join(__dirname, 'MLGame', 'games', game).replace('app.asar', 'app.asar.unpacked');;
+    var gameDir = path.join(__dirname, 'games', game).replace('app.asar', 'app.asar.unpacked');;
     var config = JSON.parse(window.readFile(path.join(gameDir, 'game_config.json')));
     var url = (config.url !== undefined)? config.url : "None";
     var version = $(`#${game}-tags`).val();

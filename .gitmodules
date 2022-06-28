@@ -16,3 +16,6 @@
 [submodule "games/Maze_Car"]
 	path = games/Maze_Car
 	url = https://github.com/yen900611/Maze_Car.git
+[submodule "python"]
+	path = python
+	url = https://github.com/jason53415/PAIA-Desktop-Python

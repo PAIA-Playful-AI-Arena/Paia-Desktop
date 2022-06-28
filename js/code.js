@@ -1243,7 +1243,7 @@ Code.play = function() {
   for (var i = 0; i < user_num; i++) {
     total_args = total_args.concat(['-i', file_name])
   }
-  total_args = total_args.concat(['-f', fps, path.join(__dirname, 'games', Code.GAME)]).concat(args);
+  total_args = total_args.concat(['-f', fps, path.join(__dirname, 'games', Code.GAME).replace('app.asar', 'app.asar.unpacked')]).concat(args);
   var state = window.getCustomPython();
   if (state.custom_python) {
     var python_path = state.custom_python_path;

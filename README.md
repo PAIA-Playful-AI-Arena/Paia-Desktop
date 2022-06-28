@@ -40,7 +40,7 @@ git clone --recursive https://github.com/PAIA-Playful-AI-Arena/Paia-Desktop.git
 # Go into the repository
 cd Paia-Desktop
 # Install Python dependencies
-pip install -r requirements.txt
+pip install -r python/requirements.txt
 # Install Node.js dependencies
 npm install
 # Build Python executable
@@ -48,4 +48,20 @@ npm run make-py
 # Build PAIA Desktop executable
 npm run make
 ```
+
+For users without Python, we also provide pre-built Python executables for different system platforms. From your command line:
+```bash
+# Clone this repository
+git clone --recursive https://github.com/PAIA-Playful-AI-Arena/Paia-Desktop.git
+# Go into the repository
+cd Paia-Desktop
+# Install Node.js dependencies
+npm install
+# Download Python executable for your platform
+npm run download-py-[win32, darwin, linux]
+# Build PAIA Desktop executable
+npm run make
+```
+
+
 The built executables can be found in the `out` directory.

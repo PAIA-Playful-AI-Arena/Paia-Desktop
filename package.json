@@ -14,7 +14,10 @@
     "make-competition": "cross-var npm --no-git-tag-version version $npm_package_version-competition && electron-forge make && npm run reset-version",
     "make-competition-tn": "cross-var npm --no-git-tag-version version $npm_package_version-competition-tn && electron-forge make && npm run reset-version",
     "make-only": "electron-forge make --skip-package",
-    "make-py": "cd ./python && pyinstaller -y --collect-all=mlgame --hidden-import=cmath --hidden-import=csv --hidden-import=pathlib --hidden-import=matplotlib.pyplot --hidden-import=queue --hidden-import=pygame --hidden-import=multiprocessing --hidden-import=pickle --hidden-import=Box2D --hidden-import=sklearn.neighbors --hidden-import=sklearn.tree --hidden-import=sklearn.svm --hidden-import=sklearn.ensemble --hidden-import=sklearn.neural_network --hidden-import=sklearn.linear_model --hidden-import=sklearn.metrics --hidden-import=sklearn.model_selection --hidden-import=sklearn.utils._weight_vector --hidden-import=scipy.special.cython_special --hidden-import=pandas --hidden-import=pytmx interpreter.py"
+    "make-py": "cd ./python && pyinstaller -y --collect-all=mlgame --hidden-import=cmath --hidden-import=csv --hidden-import=pathlib --hidden-import=matplotlib.pyplot --hidden-import=queue --hidden-import=pygame --hidden-import=multiprocessing --hidden-import=pickle --hidden-import=Box2D --hidden-import=sklearn.neighbors --hidden-import=sklearn.tree --hidden-import=sklearn.svm --hidden-import=sklearn.ensemble --hidden-import=sklearn.neural_network --hidden-import=sklearn.linear_model --hidden-import=sklearn.metrics --hidden-import=sklearn.model_selection --hidden-import=sklearn.utils._weight_vector --hidden-import=scipy.special.cython_special --hidden-import=pandas --hidden-import=pytmx interpreter.py",
+    "download-py-win32": "node js/download_python.js win32",
+    "download-py-darwin": "node js/download_python.js darwin",
+    "download-py-linux": "node js/download_python.js linux"
   },
   "repository": "https://github.com/PAIA-Playful-AI-Arena/Paia-Desktop",
   "keywords": [

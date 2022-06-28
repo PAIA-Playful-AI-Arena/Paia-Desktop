@@ -66,7 +66,6 @@
           "/.gitignore",
           "/.gitmodules",
           "/.vscode",
-          "/requirements.txt",
           "/js/blocks",
           "/js/generators",
           "/js/i18n",
@@ -77,6 +76,9 @@
           "/python/build",
           "/python/interpreter.spec",
           "/python/interpreter.py",
+          "/python/.gitignore",
+          "/python/requirements.txt",
+          "/python/README.md",
           "/venv"
         ],
         "asar": {

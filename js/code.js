@@ -26,6 +26,11 @@ Code.GAME = (new URLSearchParams(window.location.search)).get('game');
 Code.PROJECT = '';
 
 /**
+ * The full path of opened project.
+ */
+Code.PROJECT_PATH = '';
+
+/**
  * The file system watcher of opened project.
  */
 Code.PROJECT_WATCHER = null;
@@ -283,6 +288,9 @@ Code.init = function() {
   if (app.getVersion().indexOf("competition") != -1) {
     $("#fileset_download_div").css("display", "none");
   }
+
+  // Init default project path.
+  $("#project-path").val(window.getProjectPath());
   
   // Load dialog body for selecting game arguments.
   Code.initGameArgs();
@@ -818,10 +826,9 @@ Code.updateLibraryList = function() {
  */
 Code.updateProjectList = function() {
   $('#project-files').empty();
-  var projectDir = path.join(__dirname, 'games', Code.GAME, 'ml', Code.PROJECT).replace('app.asar', 'app.asar.unpacked');
-  fs.readdirSync(projectDir).forEach(file => {
+  fs.readdirSync(Code.PROJECT_PATH).forEach(file => {
     if (file.endsWith(".xml")) {
-      var filePath = path.join(projectDir, file);
+      var filePath = path.join(Code.PROJECT_PATH, file);
       $('#project-files').append($(`<li class="ml-3 mt-1"><a href="#" id="${filePath}" title="${filePath}">${file}</a></li>`));
       Code.bindClick(filePath,
         function() {Code.loadXml(filePath); Code.renderContent();});
@@ -986,7 +993,7 @@ Code.afterLogin = function() {
 Code.openXml = function() {
   var xmlPath = window.selectPath({
     title: "開啟 XML 檔",
-    defaultPath: path.join(__dirname, 'games', Code.GAME, 'ml', Code.PROJECT).replace('app.asar', 'app.asar.unpacked'),
+    defaultPath: Code.PROJECT_PATH,
     filters: [
       {name: 'xml', extensions: ['xml']}
     ],
@@ -1114,7 +1121,7 @@ Code.closeXml = function(xmlPath) {
 Code.saveXml = function() {
   var xmlPath = window.savePath({
     title: "儲存 XML 檔",
-    defaultPath: path.join(__dirname, 'games', Code.GAME, 'ml', Code.PROJECT, Code.FOCUSED_XML).replace('app.asar', 'app.asar.unpacked'),
+    defaultPath: path.join(Code.PROJECT_PATH, Code.FOCUSED_XML),
     filters: [
         {name: 'XML', extensions: ['xml']}
     ]
@@ -1181,7 +1188,7 @@ Code.saveTmpPython = function(dir) {
 Code.savePython = function() {
   var pythonPath = window.savePath({
     title: "另存 Python 檔",
-    defaultPath: path.join(__dirname, 'games', Code.GAME, 'ml', Code.PROJECT, 'ml_play.py').replace('app.asar', 'app.asar.unpacked'),
+    defaultPath: path.join(Code.PROJECT_PATH, 'ml_play.py').replace('app.asar', 'app.asar.unpacked'),
     filters: [
         {name: 'Python', extensions: ['py']}
     ]
@@ -1216,9 +1223,8 @@ Code.run = function() {
  * Play the game according to the parameters. 
  */
 Code.play = function() {
-  var project_path = path.join(__dirname, 'games', Code.GAME, 'ml', Code.PROJECT).replace('app.asar', 'app.asar.unpacked');
-  var file_name = Code.saveTmpPython(project_path);
-  var file_path = path.join(project_path, file_name);
+  var file_name = Code.saveTmpPython(Code.PROJECT_PATH);
+  var file_path = path.join(Code.PROJECT_PATH, file_name);
   var fps = document.getElementById('game_fps').value;
   var args_elements = document.getElementById('game-args').getElementsByClassName('game-arg');
   var user_num = 1;
@@ -1259,7 +1265,7 @@ Code.play = function() {
   $('#run-mlgame-dialog').modal('hide');
   document.getElementById('content_console').textContent = '> Python program running\n';
   $('#console-dialog').modal('show');
-  window.pythonRun(options, "mlgame", file_path, project_path);
+  window.pythonRun(options, "mlgame", file_path, Code.PROJECT_PATH);
   // Add log
   window.addLog('play_game', {
     type: "game",
@@ -1275,9 +1281,8 @@ Code.play = function() {
  * Execute python program. 
  */
 Code.execute = function() {
-  var project_path = path.join(__dirname, 'games', Code.GAME, 'ml', Code.PROJECT).replace('app.asar', 'app.asar.unpacked');
-  var file_name = Code.saveTmpPython(project_path);
-  var file_path = path.join(project_path, file_name);
+  var file_name = Code.saveTmpPython(Code.PROJECT_PATH);
+  var file_path = path.join(Code.PROJECT_PATH, file_name);
   var state = window.getCustomPython();
   if (state.custom_python) {
     var python_path = state.custom_python_path;
@@ -1287,13 +1292,13 @@ Code.execute = function() {
   var options = {
     mode: 'text',
     pythonPath: python_path,
-    scriptPath: project_path,
+    scriptPath: Code.PROJECT_PATH,
     args: []
   };
   $('#run-python-dialog').modal('hide');
   document.getElementById('content_console').textContent = '> Python program running\n';
   $('#console-dialog').modal('show');
-  window.pythonRun(options, file_name, file_path, project_path);
+  window.pythonRun(options, file_name, file_path, Code.PROJECT_PATH);
   // Add log
   window.addLog('execute_py', {
     type: "game",
@@ -1352,19 +1357,34 @@ Code.loadProject = function() {
 };
 
 /**
+ * Select the path of project.
+ */
+Code.selectProjectPath = function() {
+  var dir = window.selectPath({
+    title: "選擇專案位置",
+    defaultPath: $("#project-path").val(),
+    properties: ["openDirectory"]
+  });
+  if (dir !== undefined) {
+    $("#project-path").val(dir[0]);
+    window.setProjectPath(dir[0]);
+  }
+};
+
+/**
  * Add new project. 
  */
 Code.newProject = function() {
   Code.PROJECT = $('#project-name').val();
-  var dir = path.join(__dirname, 'games', Code.GAME, 'ml', Code.PROJECT).replace('app.asar', 'app.asar.unpacked');
+  Code.PROJECT_PATH = path.join($('#project-path').val(), $('#project-name').val());
   if (app.getVersion().indexOf("competition-tn") != -1 && Code.GAME != "easy_game") {
     var start = path.join(__dirname, 'examples', Code.GAME.toLowerCase(), 'tainan', '範例程式', 'manual.xml');
   } else {
     var start = path.join(__dirname, 'examples', Code.GAME.toLowerCase(), 'xml', '範例程式 1', '1. start.xml');
   }
   try {
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir);
+    if (!fs.existsSync(Code.PROJECT_PATH)) {
+      fs.mkdirSync(Code.PROJECT_PATH, { recursive: true });
       $('#project_name').html(Code.PROJECT);
       if (fs.existsSync(start)) {
         Code.loadXml(start);
@@ -1372,8 +1392,8 @@ Code.newProject = function() {
       $('#project-dialog').modal('hide');
     } else if (window.confirm(`${Code.PROJECT} 已存在，是否改為載入此專案？`)) {
       $('#project_name').html(Code.PROJECT);
-      if(fs.existsSync(path.join(dir, 'ml_play.xml'))) {
-        Code.loadXml(path.join(dir, 'ml_play.xml'))
+      if(fs.existsSync(path.join(Code.PROJECT_PATH, 'ml_play.xml'))) {
+        Code.loadXml(path.join(Code.PROJECT_PATH, 'ml_play.xml'))
       } else if (fs.existsSync(start)) {
         Code.loadXml(start);
       }
@@ -1391,11 +1411,11 @@ Code.newProject = function() {
   } catch(err) {
     window.alert(err);
   }
-  $("#project-link").attr("title", dir);
+  $("#project-link").attr("title", Code.PROJECT_PATH);
   if (Code.PROJECT_WATCHER !== null) {
     Code.PROJECT_WATCHER.close();
   }
-  Code.PROJECT_WATCHER = fs.watch(dir, (eventType, filename) => {
+  Code.PROJECT_WATCHER = fs.watch(Code.PROJECT_PATH, (eventType, filename) => {
     Code.updateProjectList();
   });
   Code.updateProjectList();
@@ -1405,44 +1425,25 @@ Code.newProject = function() {
  * Load existing project.
  */
 Code.openProject = function() {
-  var mlPath = path.join(__dirname, 'games', Code.GAME, 'ml').replace('app.asar', 'app.asar.unpacked');
   var dir = window.selectPath({
     title: "開啟專案資料夾",
-    defaultPath: mlPath,
+    defaultPath: window.getProjectPath(),
     properties: ["openDirectory"]
   });
   if (dir === undefined) {
     return;
   } else {
-    dir = dir[0];
+    Code.PROJECT_PATH = dir[0];
   }
-  var projectDir = path.join(mlPath, path.basename(dir));
   if (app.getVersion().indexOf("competition-tn") != -1 && Code.GAME != "easy_game") {
     var start = path.join(__dirname, 'examples', Code.GAME.toLowerCase(), 'tainan', '範例程式', 'manual.xml');
   } else {
     var start = path.join(__dirname, 'examples', Code.GAME.toLowerCase(), 'xml', '範例程式 1', '1. start.xml');
   }
-  if (path.normalize(path.dirname(dir)) != path.normalize(mlPath)) {
-    if (window.confirm('將複製此專案至遊戲資料夾下，是否繼續？')) {
-      if (!fs.existsSync(projectDir)) {
-        try {
-          window.copyDir(dir, mlPath);
-        } catch(err) {
-          window.alert(err);
-          return;
-        }
-      } else {
-        window.alert(`無法複製專案：${projectDir} 已存在`);
-        return;
-      }
-    } else {
-      return;
-    }
-  }
-  Code.PROJECT = path.basename(dir);
+  Code.PROJECT = path.basename(Code.PROJECT_PATH);
   $('#project_name').html(Code.PROJECT);
-  if(fs.existsSync(path.join(projectDir, 'ml_play.xml'))) {
-    Code.loadXml(path.join(projectDir, 'ml_play.xml'))
+  if(fs.existsSync(path.join(Code.PROJECT_PATH, 'ml_play.xml'))) {
+    Code.loadXml(path.join(Code.PROJECT_PATH, 'ml_play.xml'))
   } else if (fs.existsSync(start)) {
     Code.loadXml(start);
   }
@@ -1456,11 +1457,11 @@ Code.openProject = function() {
       game_id: 1
     }
   });
-  $("#project-link").attr("title", dir);
+  $("#project-link").attr("title", Code.PROJECT_PATH);
   if (Code.PROJECT_WATCHER !== null) {
     Code.PROJECT_WATCHER.close();
   }
-  Code.PROJECT_WATCHER = fs.watch(dir, (eventType, filename) => {
+  Code.PROJECT_WATCHER = fs.watch(Code.PROJECT_PATH, (eventType, filename) => {
     Code.updateProjectList();
   });
   Code.updateProjectList();
@@ -1470,17 +1471,16 @@ Code.openProject = function() {
  * Reveal project directory.
  */
 Code.revealProject = function() {
-  window.openPath(path.join(__dirname, 'games', Code.GAME, 'ml', Code.PROJECT).replace('app.asar', 'app.asar.unpacked'));
+  window.openPath(Code.PROJECT_PATH);
 };
 
 /**
  * Export project directory.
  */
 Code.exportProject = function() {
-  var desktop = path.join(require('os').homedir(), 'Desktop');
   var dest = window.selectPath({
     title: "匯出專案資料夾",
-    defaultPath: desktop,
+    defaultPath: window.getProjectPath(),
     properties: ["openDirectory"]
   });
   if (dest === undefined) {
@@ -1490,8 +1490,7 @@ Code.exportProject = function() {
   }
   var projectDir = path.join(dest, Code.PROJECT);
   if (!fs.existsSync(projectDir) || window.confirm(`${projectDir} 已經存在，您要覆蓋它嗎？`)) {
-    var src = path.join(__dirname, 'games', Code.GAME, 'ml', Code.PROJECT).replace('app.asar', 'app.asar.unpacked');
-    window.copyDir(src, dest);
+    window.copyDir(Code.PROJECT_PATH, dest);
     // Add log
     window.addLog('export_project', {
       type: "project",
@@ -1624,7 +1623,7 @@ Code.showFilesets = function() {
 Code.updateFilesetFile = function(index) {
   var filePath = window.selectPath({
     title: "上傳檔案",
-    defaultPath: path.join(__dirname, 'games', Code.GAME, 'ml', Code.PROJECT).replace('app.asar', 'app.asar.unpacked'),
+    defaultPath: Code.PROJECT_PATH,
     properties: ["openFile", "multiSelections"]
   });
   if (filePath === undefined) {
@@ -1690,7 +1689,7 @@ Code.findFileset = function() {
 Code.downloadFileset = function() {
   var dir = path.join(__dirname, 'library', Code.GAME.toLowerCase(), `${Code.FILESET_FOUND.name}@${Code.FILESET_FOUND.token}`).replace('app.asar', 'app.asar.unpacked');
   if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir);
+    fs.mkdirSync(dir, { recursive: true });
   } else if (!window.confirm(`${dir} 已存在，是否要覆蓋此程式集？`)) {
     return;
   }

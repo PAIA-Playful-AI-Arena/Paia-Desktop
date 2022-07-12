@@ -37,6 +37,10 @@ const schema = {
     },
     default: []
   },
+  project_path: {
+    type: "string",
+    default: path.join(require('os').homedir(), 'Desktop')
+  },
   custom_python: {
     type: "boolean",
     default: false
@@ -154,6 +158,14 @@ window.clearToken = function() {
 
 window.resetStore = function() {
   store.clear();
+};
+
+window.getProjectPath = function() {
+  return store.get('project_path');
+};
+
+window.setProjectPath = function(path) {
+  store.set('project_path', path);
 };
 
 window.getCustomPython = function() {

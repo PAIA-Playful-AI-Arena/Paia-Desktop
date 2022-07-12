@@ -26,6 +26,11 @@ Code.GAME = (new URLSearchParams(window.location.search)).get('game');
 Code.PROJECT = '';
 
 /**
+ * The full path of opened project.
+ */
+Code.PROJECT_PATH = '';
+
+/**
  * The file system watcher of opened project.
  */
 Code.PROJECT_WATCHER = null;
@@ -33,7 +38,7 @@ Code.PROJECT_WATCHER = null;
 /**
  * The mode of running program.
  */
- Code.LOGIN = false;
+Code.LOGIN = false;
 
  /**
  * The mode of running program.
@@ -187,6 +192,9 @@ Code.init = function() {
     $("#fileset_download_div").css("display", "none");
   }
   
+  // Init default project path.
+  $("#project-path").val(window.getProjectPath());
+  
   // Load dialog body for selecting game arguments.
   Code.initGameArgs();
 
@@ -321,7 +329,7 @@ Code.initLanguage = function() {
 /**
  * Initialize dialog body for selecting game arguments.
  */
- Code.initGameArgs = function() {
+Code.initGameArgs = function() {
   var config = JSON.parse(window.readFile(path.join(__dirname, 'games', Code.GAME, 'game_config.json').replace('app.asar', 'app.asar.unpacked')));
   var $body = $('<div class="modal-body my-2"></div>')
   $body.append('<div class="form-group"><label for="">每秒顯示張數 (FPS)</label><input type="number" class="form-control", id="game_fps", min="1", max="300", step="1", value="30", data-bind="value:replyNumber"></div>');
@@ -456,12 +464,11 @@ Code.updateLibraryList = function() {
 /**
  * Update project files dropdown list.
  */
- Code.updateProjectList = function() {
+Code.updateProjectList = function() {
   $('#project-files').empty();
-  var projectDir = path.join(__dirname, 'games', Code.GAME, 'ml', Code.PROJECT).replace('app.asar', 'app.asar.unpacked');
-  fs.readdirSync(projectDir).forEach(file => {
+  fs.readdirSync(Code.PROJECT_PATH).forEach(file => {
     if (file.endsWith(".py")) {
-      var filePath = path.join(projectDir, file);
+      var filePath = path.join(Code.PROJECT_PATH, file);
       $('#project-files').append($(`<li class="ml-3 mt-1"><a href="#" id="${filePath}" title="${filePath}">${file}</a></li>`));
       Code.bindClick(filePath,
         function() {Code.loadPython(filePath);});
@@ -472,7 +479,7 @@ Code.updateLibraryList = function() {
 /**
  * Login or logout according to the state. 
  */
- Code.loginout = function() {
+Code.loginout = function() {
   if (Code.LOGIN) {
     Code.logout();
   } else {
@@ -609,10 +616,10 @@ Code.afterLogin = function() {
 /**
  * Let user select the path to a python file and load it. 
  */
- Code.openPython = function() {
+Code.openPython = function() {
   var pythonPath = window.selectPath({
     title: "開啟 Python 檔",
-    defaultPath: path.join(__dirname, 'games', Code.GAME, 'ml', Code.PROJECT).replace('app.asar', 'app.asar.unpacked'),
+    defaultPath: Code.PROJECT_PATH,
     filters: [
       {name: 'Python', extensions: ['py']}
     ],
@@ -629,7 +636,7 @@ Code.afterLogin = function() {
 /**
  * Load python file to editor. 
  */
- Code.loadPython = function(pythonPath) {
+Code.loadPython = function(pythonPath) {
   var name = path.basename(pythonPath);
   if (pythonPath in Code.PATH_MAP) {
     name = Code.PATH_MAP[pythonPath];
@@ -695,7 +702,7 @@ Code.afterLogin = function() {
 /**
  * Close Python file and try to load another opened Python. 
  */
- Code.closePython = function(pythonPath) {
+Code.closePython = function(pythonPath) {
   var name = Code.PATH_MAP[pythonPath];
   if (Code.OPENED_PYTHONS[name].$link.find('.not-saved').html() == '*' &&
       !window.confirm(`${name} 有尚未儲存的修改，關閉後將遺失，是否確定關閉檔案？`)) {
@@ -720,10 +727,10 @@ Code.afterLogin = function() {
 /**
  * Let user select the path to a python file and save to it. 
  */
- Code.savePython = function() {
+Code.savePython = function() {
   var pythonPath = window.savePath({
     title: "儲存 Python 檔",
-    defaultPath: path.join(__dirname, 'games', Code.GAME, 'ml', Code.PROJECT, Code.FOCUSED_PYTHON).replace('app.asar', 'app.asar.unpacked'),
+    defaultPath: path.join(Code.PROJECT_PATH, Code.FOCUSED_PYTHON),
     filters: [
         {name: 'Python', extensions: ['py']}
     ]
@@ -769,9 +776,8 @@ Code.afterLogin = function() {
  * Play the game according to the parameters. 
  */
 Code.play = function() {
-  var project_path = path.join(__dirname, 'games', Code.GAME, 'ml', Code.PROJECT).replace('app.asar', 'app.asar.unpacked');
-  var file_name = Code.saveTmpPython(project_path);
-  var file_path = path.join(project_path, file_name);
+  var file_name = Code.saveTmpPython(Code.PROJECT_PATH);
+  var file_path = path.join(Code.PROJECT_PATH, file_name);
   var fps = document.getElementById('game_fps').value;
   var args_elements = document.getElementById('game-args').getElementsByClassName('game-arg');
   var user_num = 1;
@@ -812,7 +818,7 @@ Code.play = function() {
   $('#run-mlgame-dialog').modal('hide');
   document.getElementById('content_console').textContent = '> Python program running\n';
   $('#console-dialog').modal('show');
-  window.pythonRun(options, "mlgame", file_path, project_path);
+  window.pythonRun(options, "mlgame", file_path, Code.PROJECT_PATH);
   // Add log
   window.addLog('play_game', {
     type: "game",
@@ -828,9 +834,8 @@ Code.play = function() {
  * Execute python program. 
  */
 Code.execute = function() {
-  var project_path = path.join(__dirname, 'games', Code.GAME, 'ml', Code.PROJECT).replace('app.asar', 'app.asar.unpacked');
-  var file_name = Code.saveTmpPython(project_path);
-  var file_path = path.join(project_path, file_name);
+  var file_name = Code.saveTmpPython(Code.PROJECT_PATH);
+  var file_path = path.join(Code.PROJECT_PATH, file_name);
   var state = window.getCustomPython();
   if (state.custom_python) {
     var python_path = state.custom_python_path;
@@ -840,13 +845,13 @@ Code.execute = function() {
   var options = {
     mode: 'text',
     pythonPath: python_path,
-    scriptPath: project_path,
+    scriptPath: Code.PROJECT_PATH,
     args: []
   };
   $('#run-python-dialog').modal('hide');
   document.getElementById('content_console').textContent = '> Python program running\n';
   $('#console-dialog').modal('show');
-  window.pythonRun(options, file_name, file_path, project_path);
+  window.pythonRun(options, file_name, file_path, Code.PROJECT_PATH);
   // Add log
   window.addLog('execute_py', {
     type: "game",
@@ -877,15 +882,31 @@ Code.showReadme = function() {
 };
 
 /**
+ * Select the path of project.
+ */
+Code.selectProjectPath = function() {
+  var dir = window.selectPath({
+    title: "選擇專案位置",
+    defaultPath: $("#project-path").val(),
+    properties: ["openDirectory"]
+  });
+  if (dir !== undefined) {
+    $("#project-path").val(dir[0]);
+    window.setProjectPath(dir[0]);
+  }
+};
+
+/**
  * Add new project. 
  */
 Code.newProject = function() {
   Code.PROJECT = $('#project-name').val();
+  Code.PROJECT_PATH = path.join($('#project-path').val(), $('#project-name').val());
   var dir = path.join(__dirname, 'games', Code.GAME, 'ml', Code.PROJECT).replace('app.asar', 'app.asar.unpacked');
   var start = path.join(__dirname, 'examples', Code.GAME.toLowerCase(), 'python', '範例程式', '1. start.py');
   try {
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir);
+    if (!fs.existsSync(Code.PROJECT_PATH)) {
+      fs.mkdirSync(Code.PROJECT_PATH, { recursive: true });
       $('#project_name').html(Code.PROJECT);
       if (fs.existsSync(start)) {
         Code.loadPython(start);
@@ -893,8 +914,8 @@ Code.newProject = function() {
       $('#project-dialog').modal('hide');
     } else if (window.confirm(`${Code.PROJECT} 已存在，是否改為載入此專案？`)) {
       $('#project_name').html(Code.PROJECT);
-      if(fs.existsSync(path.join(dir, 'ml_play.py'))) {
-        Code.loadPython(path.join(dir, 'ml_play.py'));
+      if(fs.existsSync(path.join(Code.PROJECT_PATH, 'ml_play.py'))) {
+        Code.loadPython(path.join(Code.PROJECT_PATH, 'ml_play.py'));
       } else if (fs.existsSync(start)) {
         Code.loadPython(start);
       }
@@ -912,11 +933,11 @@ Code.newProject = function() {
   } catch(err) {
     window.alert(err);
   }
-  $("#project-link").attr("title", dir);
+  $("#project-link").attr("title", Code.PROJECT_PATH);
   if (Code.PROJECT_WATCHER !== null) {
     Code.PROJECT_WATCHER.close();
   }
-  Code.PROJECT_WATCHER = fs.watch(dir, (eventType, filename) => {
+  Code.PROJECT_WATCHER = fs.watch(Code.PROJECT_PATH, (eventType, filename) => {
     Code.updateProjectList();
   });
   Code.updateProjectList();
@@ -929,37 +950,19 @@ Code.openProject = function() {
   var mlPath = path.join(__dirname, 'games', Code.GAME, 'ml').replace('app.asar', 'app.asar.unpacked');
   var dir = window.selectPath({
     title: "開啟專案資料夾",
-    defaultPath: mlPath,
+    defaultPath: window.getProjectPath(),
     properties: ["openDirectory"]
   });
   if (dir === undefined) {
     return;
   } else {
-    dir = dir[0];
+    Code.PROJECT_PATH = dir[0];
   }
-  var projectDir = path.join(mlPath, path.basename(dir));
   var start = path.join(__dirname, 'examples', Code.GAME.toLowerCase(), 'python', '範例程式', '1. start.py');
-  if (path.normalize(path.dirname(dir)) != path.normalize(mlPath)) {
-    if (window.confirm('將複製此專案至遊戲資料夾下，是否繼續？')) {
-      if (!fs.existsSync(projectDir)) {
-        try {
-          window.copyDir(dir, mlPath);
-        } catch(err) {
-          window.alert(err);
-          return;
-        }
-      } else {
-        window.alert(`無法複製專案：${projectDir} 已存在`);
-        return;
-      }
-    } else {
-      return;
-    }
-  }
-  Code.PROJECT = path.basename(dir);
+  Code.PROJECT = path.basename(Code.PROJECT_PATH);
   $('#project_name').html(Code.PROJECT);
-  if(fs.existsSync(path.join(dir, 'ml_play.py'))) {
-    Code.loadPython(path.join(dir, 'ml_play.py'));
+  if(fs.existsSync(path.join(Code.PROJECT_PATH, 'ml_play.py'))) {
+    Code.loadPython(path.join(Code.PROJECT_PATH, 'ml_play.py'));
   } else {
     Code.loadPython(start);
   }
@@ -973,11 +976,11 @@ Code.openProject = function() {
       game_id: 1
     }
   });
-  $("#project-link").attr("title", dir);
+  $("#project-link").attr("title", Code.PROJECT_PATH);
   if (Code.PROJECT_WATCHER !== null) {
     Code.PROJECT_WATCHER.close();
   }
-  Code.PROJECT_WATCHER = fs.watch(dir, (eventType, filename) => {
+  Code.PROJECT_WATCHER = fs.watch(Code.PROJECT_PATH, (eventType, filename) => {
     Code.updateProjectList();
   });
   Code.updateProjectList();
@@ -987,17 +990,16 @@ Code.openProject = function() {
  * Reveal project directory.
  */
 Code.revealProject = function() {
-  window.openPath(path.join(__dirname, 'games', Code.GAME, 'ml', Code.PROJECT).replace('app.asar', 'app.asar.unpacked'));
+  window.openPath(Code.PROJECT_PATH);
 };
 
 /**
  * Export project directory.
  */
 Code.exportProject = function() {
-  var desktop = path.join(require('os').homedir(), 'Desktop');
   var dest = window.selectPath({
     title: "匯出專案資料夾",
-    defaultPath: desktop,
+    defaultPath: window.getProjectPath(),
     properties: ["openDirectory"]
   });
   if (dest === undefined) {
@@ -1007,8 +1009,7 @@ Code.exportProject = function() {
   }
   var projectDir = path.join(dest, Code.PROJECT);
   if (!fs.existsSync(projectDir) || window.confirm(`${projectDir} 已經存在，您要覆蓋它嗎？`)) {
-    var src = path.join(__dirname, 'games', Code.GAME, 'ml', Code.PROJECT).replace('app.asar', 'app.asar.unpacked');
-    window.copyDir(src, dest);
+    window.copyDir(Code.PROJECT_PATH, dest);
     // Add log
     window.addLog('export_project', {
       type: "project",
@@ -1141,7 +1142,7 @@ Code.showFilesets = function() {
 Code.updateFilesetFile = function(index) {
   var filePath = window.selectPath({
     title: "上傳檔案",
-    defaultPath: path.join(__dirname, 'games', Code.GAME, 'ml', Code.PROJECT).replace('app.asar', 'app.asar.unpacked'),
+    defaultPath: Code.PROJECT_PATH,
     properties: ["openFile", "multiSelections"]
   });
   if (filePath === undefined) {
@@ -1207,7 +1208,7 @@ Code.findFileset = function() {
 Code.downloadFileset = function() {
   var dir = path.join(__dirname, 'library', Code.GAME.toLowerCase(), `${Code.FILESET_FOUND.name}@${Code.FILESET_FOUND.token}`).replace('app.asar', 'app.asar.unpacked');
   if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir);
+    fs.mkdirSync(dir, { recursive: true });
   } else if (!window.confirm(`${dir} 已存在，是否要覆蓋此程式集？`)) {
     return;
   }

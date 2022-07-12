@@ -72,7 +72,11 @@
           <form name="project" action="javascript:Code.newProject()">
             <div class="modal-body my-2">
               <div class="form-group">
-                <label for="">新建專案名稱</label>
+                <label for="">專案位置</label>
+                <input type="text" class="form-control" id="project-path" onclick="Code.selectProjectPath()" readonly required>
+              </div>
+              <div class="form-group">
+                <label for="">專案名稱</label>
                 <input type="text" class="form-control" id="project-name" placeholder="My awesome project"
                 pattern="[\w\- ]{1,64}" title="長度限制為 64，只能包含英文、數字、空格、「_」或「-」。" required>
               </div>

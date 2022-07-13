@@ -3,7 +3,7 @@ import os
 import pygame
 
 class MLPlay:
-    def __init__(self, player, *args, **kwargs):
+    def __init__(self, ai_name, *args, **kwargs):
         self.f_sensor_value = 0
         self.r_sensor_value = 0
         self.l_sensor_value = 0
@@ -34,6 +34,6 @@ class MLPlay:
             self.right_PWM = 0
         self.feature.append([scene_info['F_sensor'], scene_info['L_sensor'], scene_info['R_sensor']])
         self.target.append([self.left_PWM, self.right_PWM])
-        return [{'left_PWM': self.left_PWM, 'right_PWM': self.right_PWM}]
+        return {'left_PWM': self.left_PWM, 'right_PWM': self.right_PWM}
     def reset(self):
         pass

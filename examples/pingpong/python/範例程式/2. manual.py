@@ -3,9 +3,9 @@ import os
 import pygame
 
 class MLPlay:
-    def __init__(self, side, *args, **kwargs):
+    def __init__(self, ai_name, *args, **kwargs):
         self.ball_served = False
-        self.side = side
+        self.side = ai_name
         self.action = []
         self.ball_position = []
     def update(self, scene_info, keyboard=[], *args, **kwargs):

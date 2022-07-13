@@ -2,7 +2,7 @@ import pickle
 import os
 
 class MLPlay:
-    def __init__(self, player, *args, **kwargs):
+    def __init__(self, ai_name, *args, **kwargs):
         self.f_sensor_value = 0
         self.r_sensor_value = 0
         self.l_sensor_value = 0
@@ -21,6 +21,6 @@ class MLPlay:
 
         self.left_PWM = self.PWMs[0][0]
         self.right_PWM = self.PWMs[0][1]
-        return [{'left_PWM': self.left_PWM, 'right_PWM': self.right_PWM}]
+        return {'left_PWM': self.left_PWM, 'right_PWM': self.right_PWM}
     def reset(self):
         pass

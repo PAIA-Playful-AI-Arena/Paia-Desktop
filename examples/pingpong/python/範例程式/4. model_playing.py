@@ -2,9 +2,9 @@ import pickle
 import os
 
 class MLPlay:
-    def __init__(self, side, *args, **kwargs):
+    def __init__(self, ai_name, *args, **kwargs):
         self.ball_served = False
-        self.side = side
+        self.side = ai_name
         with open(os.path.join(os.path.dirname(__file__), 'model.pickle'), 'rb') as f:
             self.model = pickle.load(f)
     def update(self, scene_info, keyboard=[], *args, **kwargs):

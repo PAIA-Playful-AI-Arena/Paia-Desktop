@@ -3,7 +3,7 @@ The template of the script for the machine learning process in game pingpong
 """
 
 class MLPlay:
-    def __init__(self, side, *args, **kwargs):
+    def __init__(self, ai_name, *args, **kwargs):
         """
         Constructor
 
@@ -11,7 +11,7 @@ class MLPlay:
                which side.
         """
         self.ball_served = False
-        self.side = side
+        self.side = ai_name
 
     def update(self, scene_info, keyboard=[], *args, **kwargs):
         """

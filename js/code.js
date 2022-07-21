@@ -372,35 +372,8 @@ Code.init = function() {
     }
   }
 
-  // Initialize block msg
-  Code.initMlgameBlocks();
-
-  // Construct the toolbox XML, replacing translated variable names.
-  var toolboxPath = path.join(__dirname, 'js', 'toolbox', `${Code.GAME}_${"desktop"}.xml`);
-  if (!fs.existsSync(toolboxPath)) {
-    toolboxPath = path.join(__dirname, 'js', 'toolbox', 'default.xml');
-  }
-  var toolboxText = window.readFile(toolboxPath);
-  window.paiaAPI("GET", `toolbox?game=${Code.GAME}&env=desktop`, {}, false, null, (res) => {
-    if (res.status == 'error') {
-      console.log(`Get toolbox error: ${res.detail}`);
-    } else {
-      toolboxText = res.data;
-    }
-  }, (jqXHR, exception) => {
-    var msg = '';
-    if (jqXHR.status === 0) {
-        msg = '請確認網路連線，以取得最新的遊戲資訊';
-    } else if (exception === 'abort') {
-        msg = 'Ajax request aborted.';
-    } else {
-        msg = 'Uncaught Error.\n' + jqXHR.responseText;
-    }
-    window.alert(msg);
-  });
-  toolboxText = toolboxText.replace(/(^|[^%]){(\w+)}/g,
-      function(m, p1, p2) {return p1 + MSG[p2];});
-  var toolboxXml = Blockly.Xml.textToDom(toolboxText);
+  // Initialize block msg and generate toolbox
+  var toolboxXml = Code.initMlgameBlocks();
   
   // Initialize blockly workspace.
   Code.workspace = Blockly.inject('content_blocks',
@@ -518,6 +491,8 @@ Code.init = function() {
       function() {Code.discard(); Code.renderContent();});
   Code.bindClick('clean_trashcan',
       function() {Code.workspace.trashcan.emptyContents(); Code.renderContent();});
+  Code.bindClick('custom_blocks',
+      function() {window.openPath(path.join(__dirname, 'custom_blocks').replace('app.asar', 'app.asar.unpacked')); Code.renderContent();});
   Code.bindClick('toggle_python',
       function() {Code.togglePython(); Code.renderContent();});
   Code.bindClick('login_logout',
@@ -641,6 +616,14 @@ Code.initGameArgs = function() {
  * Use blockly.json to initialize options of MLGame blocks.
  */
 Code.initMlgameBlocks = function() {
+  // Construct the toolbox XML, replacing translated variable names.
+  var toolboxPath = toolboxPath = path.join(__dirname, 'js', 'toolbox', 'default.xml');
+  var toolboxText = window.readFile(toolboxPath);
+  toolboxText = toolboxText.replace(/(^|[^%]){(\w+)}/g,
+      function(m, p1, p2) {return p1 + MSG[p2];});
+  var toolboxXml = Blockly.Xml.textToDom(toolboxText);
+  var mlgameCat = toolboxXml.getElementsByClassName('MLGame_blocks')[0];
+  
   var configPath = path.join(__dirname, 'games', Code.GAME, 'blockly.json').replace('app.asar', 'app.asar.unpacked');
   if (fs.existsSync(configPath)) {
     var gameOptions = JSON.parse(window.readFile(configPath));
@@ -658,20 +641,10 @@ Code.initMlgameBlocks = function() {
         }
       });
       Blockly.Msg["MLPLAY_INIT_INFO_OPTIONS"] = options;
-    }
 
-    if ("PLAYER_STATUS" in gameOptions) {
-      var options = [];
-      gameOptions["PLAYER_STATUS"].forEach((op, index) => {
-        var opName = `${Code.GAME.toUpperCase()}_PLAYER_STATUS_${index+1}`;
-        options.push([`%{BKY_${opName}}`, op[0]]);
-        if (Code.LANG == 'en') {
-          Blockly.Msg[opName] = op[1];
-        } else if (Code.LANG == 'zh-hant') {
-          Blockly.Msg[opName] = op[2];
-        }
-      });
-      Blockly.Msg["MLPLAY_PLAYER_STATUS_OPTIONS"] = options;
+      var block = document.createElement("block");
+      block.setAttribute("type", "mlplay_init_info");
+      mlgameCat.appendChild(block);
     }
 
     if ("GAME_STATUS" in gameOptions) {
@@ -686,6 +659,10 @@ Code.initMlgameBlocks = function() {
         }
       });
       Blockly.Msg["MLPLAY_GAME_STATUS_OPTIONS"] = options;
+
+      var block = document.createElement("block");
+      block.setAttribute("type", "mlplay_game_status");
+      mlgameCat.appendChild(block);
     }
 
     if ("SCENE_INFO" in gameOptions) {
@@ -700,6 +677,10 @@ Code.initMlgameBlocks = function() {
         }
       });
       Blockly.Msg["MLPLAY_GET_INFO_OPTIONS"] = options;
+
+      var block = document.createElement("block");
+      block.setAttribute("type", "mlplay_get_info");
+      mlgameCat.appendChild(block);
     }
 
     if ("CONSTANT" in gameOptions) {
@@ -714,6 +695,10 @@ Code.initMlgameBlocks = function() {
         }
       });
       Blockly.Msg["MLPLAY_GET_CONSTANT_OPTIONS"] = options;
+
+      var block = document.createElement("block");
+      block.setAttribute("type", "mlplay_get_constant");
+      mlgameCat.appendChild(block);
     }
 
     if ("ACTION" in gameOptions) {
@@ -728,10 +713,79 @@ Code.initMlgameBlocks = function() {
         }
       });
       Blockly.Msg["MLPLAY_RETURN_ACTION_OPTIONS"] = options;
+
+      var block = document.createElement("block");
+      block.setAttribute("type", "mlplay_return_action");
+      mlgameCat.appendChild(block);
+    }
+
+    if ("ACTION_VALUE" in gameOptions) {
+      Blockly.Blocks['mlplay_return_value'].init = function() {
+        this.inputCount_ = 0;
+        this.inputKey_ = [];
+        gameOptions["ACTION_VALUE"].forEach((op, index) => {
+          this.inputCount_++;
+          this.inputKey_.push(op[0]);
+          var text = (index == 0)? Blockly.Msg["MLPLAY_RETURN_VALUE"] + " " : "";
+          if (Code.LANG == 'en') {
+            text += op[3] + ':';
+          } else if (Code.LANG == 'zh-hant') {
+            text += op[4] + '：';
+          }
+          this.appendValueInput('INPUT' + index)
+              .setAlign(Blockly.ALIGN_RIGHT)
+              .appendField(text);;
+        });
+        this.init_settings_();
+      }
+
+      var block = document.createElement("block");
+      block.setAttribute("type", "mlplay_return_value");
+      gameOptions["ACTION_VALUE"].forEach((op, index) => {
+        if (op[1] == "NUMBER") {
+          var field = document.createElement("field");
+          field.setAttribute("name", "NUM");
+          field.appendChild(document.createTextNode(op[2]));
+          var shadow = document.createElement("shadow");
+          shadow.setAttribute("type", "math_number");
+          shadow.appendChild(field);
+          var value = document.createElement("value");
+          value.setAttribute("name", 'INPUT' + index);
+          value.appendChild(shadow);
+          block.appendChild(value);
+        } else if (op[1] == "STRING") {
+          var field = document.createElement("field");
+          field.setAttribute("name", "TEXT");
+          field.appendChild(document.createTextNode(op[2]));
+          var shadow = document.createElement("shadow");
+          shadow.setAttribute("type", "text");
+          shadow.appendChild(field);
+          var value = document.createElement("value");
+          value.setAttribute("name", 'INPUT' + index);
+          value.appendChild(shadow);
+          block.appendChild(value);
+        }
+      });
+      mlgameCat.appendChild(block);
     }
 
     Blockly.Python.addReservedWords(reservedWords.join());
   }
+
+  var customBlocksPath = path.join(__dirname, 'custom_blocks', Code.GAME).replace('app.asar', 'app.asar.unpacked');
+  if (fs.existsSync(customBlocksPath)) {
+    fs.readdirSync(customBlocksPath).forEach(file => {
+      if (file.endsWith(".xml")) {
+        var customToolboxPath = toolboxPath = path.join(customBlocksPath, file);
+        var customToolboxText = window.readFile(customToolboxPath);
+        var customToolboxXml = Blockly.Xml.textToDom(customToolboxText);
+        toolboxXml.appendChild(document.createElement("sep"));
+        toolboxXml.appendChild(customToolboxXml.getElementsByTagName("category")[0]);
+      }
+    });
+  }
+
+  return toolboxXml;
 };
 
 /**
@@ -1787,5 +1841,14 @@ Code.deleteFilesetFile = function(index, filename) {
 document.write('<script src="js/ui_msg/' + Code.LANG + '.js"></script>\n');
 // Load Blockly's language strings.
 document.write('<script src="node_modules/@paia-arena/blockly/msg/' + Code.LANG + '.js"></script>\n');
+
+var customBlocksPath = path.join(__dirname, 'custom_blocks', Code.GAME).replace('app.asar', 'app.asar.unpacked');
+if (fs.existsSync(customBlocksPath)) {
+  fs.readdirSync(customBlocksPath).forEach(file => {
+    if (file.endsWith(".js")) {
+      document.write(`<script src="${path.join(customBlocksPath, file)}"></script>\n`);
+    }
+  });
+}
 
 window.addEventListener('load', Code.init);

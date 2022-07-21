@@ -993,7 +993,6 @@ Code.afterLogin = function() {
 Code.openXml = function() {
   var xmlPath = window.selectPath({
     title: "開啟 XML 檔",
-    defaultPath: Code.PROJECT_PATH,
     filters: [
       {name: 'xml', extensions: ['xml']}
     ],
@@ -1188,7 +1187,7 @@ Code.saveTmpPython = function(dir) {
 Code.savePython = function() {
   var pythonPath = window.savePath({
     title: "另存 Python 檔",
-    defaultPath: path.join(Code.PROJECT_PATH, 'ml_play.py').replace('app.asar', 'app.asar.unpacked'),
+    defaultPath: path.join(Code.PROJECT_PATH, 'ml_play.py'),
     filters: [
         {name: 'Python', extensions: ['py']}
     ]
@@ -1480,7 +1479,6 @@ Code.revealProject = function() {
 Code.exportProject = function() {
   var dest = window.selectPath({
     title: "匯出專案資料夾",
-    defaultPath: window.getProjectPath(),
     properties: ["openDirectory"]
   });
   if (dest === undefined) {

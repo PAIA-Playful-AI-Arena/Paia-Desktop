@@ -619,7 +619,6 @@ Code.afterLogin = function() {
 Code.openPython = function() {
   var pythonPath = window.selectPath({
     title: "開啟 Python 檔",
-    defaultPath: Code.PROJECT_PATH,
     filters: [
       {name: 'Python', extensions: ['py']}
     ],
@@ -999,7 +998,6 @@ Code.revealProject = function() {
 Code.exportProject = function() {
   var dest = window.selectPath({
     title: "匯出專案資料夾",
-    defaultPath: window.getProjectPath(),
     properties: ["openDirectory"]
   });
   if (dest === undefined) {

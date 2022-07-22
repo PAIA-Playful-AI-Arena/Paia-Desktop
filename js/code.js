@@ -1431,7 +1431,7 @@ Code.newProject = function() {
   Code.PROJECT = $('#project-name').val();
   Code.PROJECT_PATH = path.join($('#project-path').val(), $('#project-name').val());
   if (app.getVersion().indexOf("competition-tn") != -1 && Code.GAME != "easy_game") {
-    var start = path.join(__dirname, 'examples', Code.GAME.toLowerCase(), 'tainan', '範例程式', 'manual.xml');
+    var start = path.join(__dirname, 'examples', Code.GAME.toLowerCase(), 'tainan', '範例程式', '1. auto.xml');
   } else {
     var start = path.join(__dirname, 'examples', Code.GAME.toLowerCase(), 'xml', '範例程式 1', '1. start.xml');
   }
@@ -1489,7 +1489,7 @@ Code.openProject = function() {
     Code.PROJECT_PATH = dir[0];
   }
   if (app.getVersion().indexOf("competition-tn") != -1 && Code.GAME != "easy_game") {
-    var start = path.join(__dirname, 'examples', Code.GAME.toLowerCase(), 'tainan', '範例程式', 'manual.xml');
+    var start = path.join(__dirname, 'examples', Code.GAME.toLowerCase(), 'tainan', '範例程式', '1. auto.xml');
   } else {
     var start = path.join(__dirname, 'examples', Code.GAME.toLowerCase(), 'xml', '範例程式 1', '1. start.xml');
   }

@@ -1,7 +1,7 @@
 <xml xmlns="https://developers.google.com/blockly/xml">
   <variables>
     <variable id="bZF*G~d.@0t%P5b4kn6Y">特徵資料</variable>
-    <variable id="*G.u3bGoAmejpXzu1}a*">移動結果</variable>
+    <variable id="*G.u3bGoAmejpXzu1}a*">目標答案</variable>
     <variable id="DG@*IB3[oDadjIT~Con+">i</variable>
     <variable id="K1vm[r{hzXZ8$f9{(]4Z">資料</variable>
     <variable id=";)wb[FYrY41+9YxciN_~">訓練資料</variable>
@@ -22,7 +22,7 @@
     </value>
     <next>
       <block type="variables_set" id="|N,um4izZK3nvqRQeNS(">
-        <field name="VAR" id="*G.u3bGoAmejpXzu1}a*">移動結果</field>
+        <field name="VAR" id="*G.u3bGoAmejpXzu1}a*">目標答案</field>
         <value name="VALUE">
           <block type="lists_create_with" id="Qng%ktL}=2II`*F.ANbc">
             <mutation items="0"></mutation>
@@ -100,7 +100,7 @@
                         </value>
                         <next>
                           <block type="lists_extend" id="|S{n7m#mJWz]yqll8+7d">
-                            <field name="VAR" id="*G.u3bGoAmejpXzu1}a*">移動結果</field>
+                            <field name="VAR" id="*G.u3bGoAmejpXzu1}a*">目標答案</field>
                             <value name="LIST">
                               <block type="variables_get" id="E`j5WW]-_40u8wHfi@Ej">
                                 <field name="VAR" id="$rPfv4ODVw{Mrhy/{.Aj">答案</field>
@@ -124,12 +124,12 @@
                 </value>
                 <value name="Y">
                   <block type="variables_get" id="#wy{F15UEKG%{jtu8I0h">
-                    <field name="VAR" id="*G.u3bGoAmejpXzu1}a*">移動結果</field>
+                    <field name="VAR" id="*G.u3bGoAmejpXzu1}a*">目標答案</field>
                   </block>
                 </value>
                 <value name="TEST_SIZE">
                   <shadow type="math_number" id="?|W~MJ7:a?X4a#uZzBbs">
-                    <field name="NUM">0.2</field>
+                    <field name="NUM">0.1</field>
                   </shadow>
                 </value>
                 <value name="TRAIN_DATA">

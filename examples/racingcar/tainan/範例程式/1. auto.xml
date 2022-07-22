@@ -1,0 +1,489 @@
+<xml xmlns="https://developers.google.com/blockly/xml">
+  <variables>
+    <variable id="oIx.;BaK{_.50T6=VIER">特徵資料</variable>
+    <variable id="$:kJ`t}pXqa-h?II}1sh">資料計數</variable>
+    <variable id=";G6xRvm*LMH2f4-^^`hb">目標答案</variable>
+    <variable id="!z2H|=5UQY9i94o_?ixa">本次特徵</variable>
+    <variable id="jnaaI8UJwzl_jou!QYOj">本車賽道</variable>
+    <variable id="VeJ!}n)p@McucWe-7a?V">目標賽道</variable>
+    <variable id="k*;.QHd3P*V5#n??8G]r">上次前進方向</variable>
+    <variable id="iEb|af4G:48`rsXKpyX$">前進方向</variable>
+  </variables>
+  <block type="mlplay_class" id=".q?9PX,j0gIuBm?GGdZ6" x="-112" y="-537">
+    <statement name="INIT">
+      <block type="variables_set" id="[aR%cZ1z9w3Ys#x6pd1@">
+        <field name="VAR" id="oIx.;BaK{_.50T6=VIER">特徵資料</field>
+        <value name="VALUE">
+          <block type="lists_create_with" id="Z!ywIzS=z}T4H{w_[[[5">
+            <mutation items="0"></mutation>
+          </block>
+        </value>
+        <next>
+          <block type="variables_set" id="pBR1:1xx[aE/ag6O^wrS">
+            <field name="VAR" id=";G6xRvm*LMH2f4-^^`hb">目標答案</field>
+            <value name="VALUE">
+              <block type="lists_create_with" id="6PrF:L+r~}Jb?N`xl}c%">
+                <mutation items="0"></mutation>
+              </block>
+            </value>
+            <next>
+              <block type="variables_set" id=")4d-=g|I~Zb9_:Yb^aG@">
+                <field name="VAR" id="jnaaI8UJwzl_jou!QYOj">本車賽道</field>
+                <value name="VALUE">
+                  <block type="math_number" id="Q#)ubqGXIk+U6l-^)n6v">
+                    <field name="NUM">-1</field>
+                  </block>
+                </value>
+                <next>
+                  <block type="variables_set" id="Os,/D_W1Anf3/;ga|L^%">
+                    <field name="VAR" id="VeJ!}n)p@McucWe-7a?V">目標賽道</field>
+                    <value name="VALUE">
+                      <block type="math_number" id="f-5DZK*YMC^C1lDFWZTW">
+                        <field name="NUM">-1</field>
+                      </block>
+                    </value>
+                    <next>
+                      <block type="variables_set" id="/QoF!SA9Db9lKk1VsO2w">
+                        <field name="VAR" id="k*;.QHd3P*V5#n??8G]r">上次前進方向</field>
+                        <value name="VALUE">
+                          <block type="math_number" id="H}#[B?}D9@nF5~c:O2I-">
+                            <field name="NUM">1</field>
+                          </block>
+                        </value>
+                        <next>
+                          <block type="variables_set" id="_*YkGy5=PR+6wN/F^HH3">
+                            <field name="VAR" id="$:kJ`t}pXqa-h?II}1sh">資料計數</field>
+                            <value name="VALUE">
+                              <block type="math_number" id="m#592x*+P$,W4cl](L3V">
+                                <field name="NUM">1</field>
+                              </block>
+                            </value>
+                          </block>
+                        </next>
+                      </block>
+                    </next>
+                  </block>
+                </next>
+              </block>
+            </next>
+          </block>
+        </next>
+      </block>
+    </statement>
+    <statement name="UPDATE">
+      <block type="controls_if" id="80BpnBz=%9gY9!hPD8Cg">
+        <mutation else="1"></mutation>
+        <value name="IF0">
+          <block type="logic_compare" id="E%%]L/9ixxrx7-ds%QyS">
+            <field name="OP">NEQ</field>
+            <value name="A">
+              <block type="mlplay_get_info" id="?W5|/1Za.At5{=whd5/b">
+                <field name="FIELD">scene_info['status']</field>
+              </block>
+            </value>
+            <value name="B">
+              <block type="mlplay_game_status" id="f%V9c9aE.KV6~mvt=G?(">
+                <field name="STATUS">GAME_ALIVE</field>
+              </block>
+            </value>
+          </block>
+        </value>
+        <statement name="DO0">
+          <block type="controls_if" id="N:nc,9Gbrx}l8mj0{|ZA">
+            <value name="IF0">
+              <block type="logic_compare" id="3^C.dM,]1(HI9E!PcqR6">
+                <field name="OP">EQ</field>
+                <value name="A">
+                  <block type="mlplay_get_info" id="y$7Nfq3V(+Vz|+ouYN6P">
+                    <field name="FIELD">scene_info['status']</field>
+                  </block>
+                </value>
+                <value name="B">
+                  <block type="mlplay_game_status" id="fLMr;XS]V,5!WYs)/]p{">
+                    <field name="STATUS">GAME_PASS</field>
+                  </block>
+                </value>
+              </block>
+            </value>
+            <statement name="DO0">
+              <block type="file_save" id="=Clk!2BrA%3?P(D%|(eU">
+                <value name="OBJECT">
+                  <block type="variables_get" id="W#Nhcs~c%6)J?A,K+foX">
+                    <field name="VAR" id="oIx.;BaK{_.50T6=VIER">特徵資料</field>
+                  </block>
+                </value>
+                <value name="FILENAME">
+                  <shadow type="text" id="B=2UbLJOrL0(F#WXr198">
+                    <field name="TEXT">檔案名稱</field>
+                  </shadow>
+                  <block type="text_join" id="t%xcu$_.Z-}5A2SR:3cS">
+                    <mutation items="2"></mutation>
+                    <value name="ADD0">
+                      <block type="text" id="vqNHG:Mji3:tsp2cgWOQ">
+                        <field name="TEXT">feature</field>
+                      </block>
+                    </value>
+                    <value name="ADD1">
+                      <block type="variables_get" id="qdjdffd~g{$9]Sn~ipGM">
+                        <field name="VAR" id="$:kJ`t}pXqa-h?II}1sh">資料計數</field>
+                      </block>
+                    </value>
+                  </block>
+                </value>
+                <next>
+                  <block type="file_save" id="!vOXouLPh#@ebLS;t3MH">
+                    <value name="OBJECT">
+                      <block type="variables_get" id="@=(dLwgTzDizXE1d{,=N">
+                        <field name="VAR" id=";G6xRvm*LMH2f4-^^`hb">目標答案</field>
+                      </block>
+                    </value>
+                    <value name="FILENAME">
+                      <shadow type="text" id="zfo-/((lafsO;5+H_e$=">
+                        <field name="TEXT">檔案名稱</field>
+                      </shadow>
+                      <block type="text_join" id="lRV%oz3#/ADuom],x`3}">
+                        <mutation items="2"></mutation>
+                        <value name="ADD0">
+                          <block type="text" id="bTZo#-}YnF_x}Z@K@o#n">
+                            <field name="TEXT">target</field>
+                          </block>
+                        </value>
+                        <value name="ADD1">
+                          <block type="variables_get" id="E.[L3=A(sJyUVzQZymro">
+                            <field name="VAR" id="$:kJ`t}pXqa-h?II}1sh">資料計數</field>
+                          </block>
+                        </value>
+                      </block>
+                    </value>
+                    <next>
+                      <block type="file_csv_save" id="Pylo|XN7UN~#+iARXC=A" disabled="true">
+                        <field name="DELIMITER">,</field>
+                        <value name="OBJECT">
+                          <block type="variables_get" id="wt$W$v#,4_}k.p)sD47P">
+                            <field name="VAR" id="oIx.;BaK{_.50T6=VIER">特徵資料</field>
+                          </block>
+                        </value>
+                        <value name="FILENAME">
+                          <shadow type="text" id="[WE_!Kk~%Pp4xxe+7t`?">
+                            <field name="TEXT">檔案名稱</field>
+                          </shadow>
+                          <block type="text_join" id="u{pyyymO{*}FU_O*D2Fk">
+                            <mutation items="2"></mutation>
+                            <value name="ADD0">
+                              <block type="text" id="+,obFZsLJk0GI^cD!#+G">
+                                <field name="TEXT">feature</field>
+                              </block>
+                            </value>
+                            <value name="ADD1">
+                              <block type="variables_get" id="liiYb_E;!00_)hFuQLJI">
+                                <field name="VAR" id="$:kJ`t}pXqa-h?II}1sh">資料計數</field>
+                              </block>
+                            </value>
+                          </block>
+                        </value>
+                        <next>
+                          <block type="file_csv_save" id="=}]zlsKd7la?Woj^lr+X" disabled="true">
+                            <field name="DELIMITER">,</field>
+                            <value name="OBJECT">
+                              <block type="lists_create_with" id="xwJ7Kheo]HN2D$RTw.0K">
+                                <mutation items="1"></mutation>
+                                <value name="ADD0">
+                                  <block type="variables_get" id="pQFEc2nj:nssDvo6{ySi">
+                                    <field name="VAR" id=";G6xRvm*LMH2f4-^^`hb">目標答案</field>
+                                  </block>
+                                </value>
+                              </block>
+                            </value>
+                            <value name="FILENAME">
+                              <shadow type="text" id="]K7hutG`;V:0013G2{_I">
+                                <field name="TEXT">檔案名稱</field>
+                              </shadow>
+                              <block type="text_join" id="I|(WiSf?s8X~chzscRKV">
+                                <mutation items="2"></mutation>
+                                <value name="ADD0">
+                                  <block type="text" id="Q}4QGW$8c^|#C)oRdPTe">
+                                    <field name="TEXT">target</field>
+                                  </block>
+                                </value>
+                                <value name="ADD1">
+                                  <block type="variables_get" id="`FLo;5a8m(h|S]2c*fuS">
+                                    <field name="VAR" id="$:kJ`t}pXqa-h?II}1sh">資料計數</field>
+                                  </block>
+                                </value>
+                              </block>
+                            </value>
+                          </block>
+                        </next>
+                      </block>
+                    </next>
+                  </block>
+                </next>
+              </block>
+            </statement>
+            <next>
+              <block type="mlplay_return_action" id=")JT?8Co!J*t[ib%2-I-Z">
+                <field name="ACTION">RESET</field>
+              </block>
+            </next>
+          </block>
+        </statement>
+        <statement name="ELSE">
+          <block type="getcarinfo" id="u4kU8514]A]^axEJ+TqH">
+            <field name="車距">80</field>
+            <field name="賽道數量">5</field>
+            <field name="feature" id="!z2H|=5UQY9i94o_?ixa">本次特徵</field>
+            <field name="mylane" id="jnaaI8UJwzl_jou!QYOj">本車賽道</field>
+            <next>
+              <block type="printboard" id="}.#k_Qznr*!MZmoOw!+g" disabled="true">
+                <next>
+                  <block type="controls_if" id="l?$dnhu6B1AfTA|Y9Z!f">
+                    <value name="IF0">
+                      <block type="logic_compare" id="nxD.M5JLx2hD9LsEeP)f">
+                        <field name="OP">EQ</field>
+                        <value name="A">
+                          <block type="variables_get" id=")o@X-Sj*N#Xz~c(WhxzX">
+                            <field name="VAR" id="VeJ!}n)p@McucWe-7a?V">目標賽道</field>
+                          </block>
+                        </value>
+                        <value name="B">
+                          <block type="math_number" id="Ngtfn%!Au/aHReqOzUz6">
+                            <field name="NUM">-1</field>
+                          </block>
+                        </value>
+                      </block>
+                    </value>
+                    <statement name="DO0">
+                      <block type="variables_set" id="JMx,Rgk]Q,BNe#j[9[/q">
+                        <field name="VAR" id="VeJ!}n)p@McucWe-7a?V">目標賽道</field>
+                        <value name="VALUE">
+                          <block type="variables_get" id="nf.l{@4E9Hyar+ctOK[i">
+                            <field name="VAR" id="jnaaI8UJwzl_jou!QYOj">本車賽道</field>
+                          </block>
+                        </value>
+                      </block>
+                    </statement>
+                    <next>
+                      <block type="controls_if" id="e@(sO^g{7^)nIo_#?s_?">
+                        <mutation else="1"></mutation>
+                        <value name="IF0">
+                          <block type="logic_operation" id="I!H)|ZV-D:v{;GkOGJ+9">
+                            <field name="OP">AND</field>
+                            <value name="A">
+                              <block type="logic_compare" id="|9JB,a#ww7UbxsiwLF;T">
+                                <field name="OP">NEQ</field>
+                                <value name="A">
+                                  <block type="variables_get" id="fY;1!fD[0~x@j9G1I?#y">
+                                    <field name="VAR" id="jnaaI8UJwzl_jou!QYOj">本車賽道</field>
+                                  </block>
+                                </value>
+                                <value name="B">
+                                  <block type="variables_get" id="OA;y|#c(%((*XJ=uZxcy">
+                                    <field name="VAR" id="VeJ!}n)p@McucWe-7a?V">目標賽道</field>
+                                  </block>
+                                </value>
+                              </block>
+                            </value>
+                            <value name="B">
+                              <block type="logic_negate" id="VWuQlo~~d9w7{ep;CSyH">
+                                <value name="BOOL">
+                                  <block type="iscenterlane" id="bG.r0SMxWCc*3vGwC/)A">
+                                    <field name="targetLane" id="VeJ!}n)p@McucWe-7a?V">目標賽道</field>
+                                  </block>
+                                </value>
+                              </block>
+                            </value>
+                          </block>
+                        </value>
+                        <statement name="DO0">
+                          <block type="variables_set" id="m6Fw4|zn.4WNh}zWz9=}">
+                            <field name="VAR" id="iEb|af4G:48`rsXKpyX$">前進方向</field>
+                            <value name="VALUE">
+                              <block type="variables_get" id="$)=Hq~Fsw[m5Oxklc#.h">
+                                <field name="VAR" id="k*;.QHd3P*V5#n??8G]r">上次前進方向</field>
+                              </block>
+                            </value>
+                          </block>
+                        </statement>
+                        <statement name="ELSE">
+                          <block type="gettarget" id=".)kr)7nT[%gfYTg+aI)+">
+                            <field name="user_cmd" id="iEb|af4G:48`rsXKpyX$">前進方向</field>
+                            <field name="targetLane" id="VeJ!}n)p@McucWe-7a?V">目標賽道</field>
+                          </block>
+                        </statement>
+                        <next>
+                          <block type="variables_set" id="FNKQ8imU{H$:xQE7J%Tv">
+                            <field name="VAR" id="k*;.QHd3P*V5#n??8G]r">上次前進方向</field>
+                            <value name="VALUE">
+                              <block type="variables_get" id="c5-*n33G^{K+$|fI$=qR">
+                                <field name="VAR" id="iEb|af4G:48`rsXKpyX$">前進方向</field>
+                              </block>
+                            </value>
+                            <next>
+                              <block type="lists_insertIndex" id="=QLynA0WaO?%)]+^b!4i">
+                                <mutation at="false"></mutation>
+                                <field name="WHERE">LAST</field>
+                                <value name="TO">
+                                  <block type="variables_get" id="}:iPu?of2F6*M=kgYE@Y">
+                                    <field name="VAR" id="!z2H|=5UQY9i94o_?ixa">本次特徵</field>
+                                  </block>
+                                </value>
+                                <value name="LIST">
+                                  <block type="variables_get" id="syPt}eX=tVoHVY{2bK2=">
+                                    <field name="VAR" id="oIx.;BaK{_.50T6=VIER">特徵資料</field>
+                                  </block>
+                                </value>
+                                <next>
+                                  <block type="lists_insertIndex" id="ITe^[+1u~O+?I2W*I{+A">
+                                    <mutation at="false"></mutation>
+                                    <field name="WHERE">LAST</field>
+                                    <value name="TO">
+                                      <block type="variables_get" id="?;(IE|g_-jY_43N3HBj[">
+                                        <field name="VAR" id="iEb|af4G:48`rsXKpyX$">前進方向</field>
+                                      </block>
+                                    </value>
+                                    <value name="LIST">
+                                      <block type="variables_get" id="Ah.Eef|5xf{=z#q/?Xc6">
+                                        <field name="VAR" id=";G6xRvm*LMH2f4-^^`hb">目標答案</field>
+                                      </block>
+                                    </value>
+                                    <next>
+                                      <block type="controls_if" id="3;+h~,==X;#WuK!fcPy]">
+                                        <mutation elseif="2" else="1"></mutation>
+                                        <value name="IF0">
+                                          <block type="logic_compare" id="n0U#hR4T?Job*IOn~/Au">
+                                            <field name="OP">EQ</field>
+                                            <value name="A">
+                                              <block type="variables_get" id="-{utQ{qEqZbSi:]CZGfo">
+                                                <field name="VAR" id="iEb|af4G:48`rsXKpyX$">前進方向</field>
+                                              </block>
+                                            </value>
+                                            <value name="B">
+                                              <block type="math_number" id="Yi(SW6SJRZP(*|=IXN@3">
+                                                <field name="NUM">-1</field>
+                                              </block>
+                                            </value>
+                                          </block>
+                                        </value>
+                                        <statement name="DO0">
+                                          <block type="mlplay_return_action" id="A9nNAa87,$:#fKpByk`(">
+                                            <field name="ACTION">['BRAKE']</field>
+                                          </block>
+                                        </statement>
+                                        <value name="IF1">
+                                          <block type="logic_compare" id="3(@*yd^To%e9u~fFBNdM">
+                                            <field name="OP">EQ</field>
+                                            <value name="A">
+                                              <block type="variables_get" id="Kz[/Q@G;E0p;33.v0Rpq">
+                                                <field name="VAR" id="iEb|af4G:48`rsXKpyX$">前進方向</field>
+                                              </block>
+                                            </value>
+                                            <value name="B">
+                                              <block type="math_number" id="m{Y1@2od7?k.l(K1-hlS">
+                                                <field name="NUM">-5</field>
+                                              </block>
+                                            </value>
+                                          </block>
+                                        </value>
+                                        <statement name="DO1">
+                                          <block type="mlplay_return_action" id="{[OY8s:Io:t4o7xdct}[">
+                                            <field name="ACTION">['SPEED', 'MOVE_LEFT']</field>
+                                          </block>
+                                        </statement>
+                                        <value name="IF2">
+                                          <block type="logic_compare" id="{$r3.wzTCy.zd[Xn8cF*">
+                                            <field name="OP">EQ</field>
+                                            <value name="A">
+                                              <block type="variables_get" id="wr%)_M{QAdBQh)b}veU~">
+                                                <field name="VAR" id="iEb|af4G:48`rsXKpyX$">前進方向</field>
+                                              </block>
+                                            </value>
+                                            <value name="B">
+                                              <block type="math_number" id="/Sj;kgf6ry;KA%Ieg4M.">
+                                                <field name="NUM">5</field>
+                                              </block>
+                                            </value>
+                                          </block>
+                                        </value>
+                                        <statement name="DO2">
+                                          <block type="mlplay_return_action" id="^tS.iJ(U0B?*?u802/~4">
+                                            <field name="ACTION">['SPEED', 'MOVE_RIGHT']</field>
+                                          </block>
+                                        </statement>
+                                        <statement name="ELSE">
+                                          <block type="mlplay_return_action" id="j0D83f+:wD%4l$ioz#s0">
+                                            <field name="ACTION">['SPEED']</field>
+                                          </block>
+                                        </statement>
+                                      </block>
+                                    </next>
+                                  </block>
+                                </next>
+                              </block>
+                            </next>
+                          </block>
+                        </next>
+                      </block>
+                    </next>
+                  </block>
+                </next>
+              </block>
+            </next>
+          </block>
+        </statement>
+      </block>
+    </statement>
+    <statement name="RESET">
+      <block type="math_change" id="EP%b4!+dGX_gh-B=M;+z">
+        <field name="VAR" id="$:kJ`t}pXqa-h?II}1sh">資料計數</field>
+        <value name="DELTA">
+          <shadow type="math_number" id="-[6lc^HXQ:n_)+.@h$vV">
+            <field name="NUM">1</field>
+          </shadow>
+          <block type="math_number" id="DqiP4VY.88yz~`Gj`V![">
+            <field name="NUM">1</field>
+          </block>
+        </value>
+        <next>
+          <block type="variables_set" id="Z?WOk+j))D|`5%.nFq--">
+            <field name="VAR" id="oIx.;BaK{_.50T6=VIER">特徵資料</field>
+            <value name="VALUE">
+              <block type="lists_create_with" id="eM*g8+XrPQ/0~1mf_enQ">
+                <mutation items="0"></mutation>
+              </block>
+            </value>
+            <next>
+              <block type="variables_set" id="9%:okvIwfmYLo{oY{Zx}">
+                <field name="VAR" id=";G6xRvm*LMH2f4-^^`hb">目標答案</field>
+                <value name="VALUE">
+                  <block type="lists_create_with" id="Czu1//P4P57V6cHr{q.-">
+                    <mutation items="0"></mutation>
+                  </block>
+                </value>
+                <next>
+                  <block type="variables_set" id="VBuj#r/_PQ`k_+hm%ZJm">
+                    <field name="VAR" id="VeJ!}n)p@McucWe-7a?V">目標賽道</field>
+                    <value name="VALUE">
+                      <block type="math_number" id="w;hR[T?q$RR[!_5xz^j6">
+                        <field name="NUM">-1</field>
+                      </block>
+                    </value>
+                    <next>
+                      <block type="variables_set" id="=`ss-}gQ~T^1Xa/BJoq=">
+                        <field name="VAR" id="k*;.QHd3P*V5#n??8G]r">上次前進方向</field>
+                        <value name="VALUE">
+                          <block type="math_number" id="Z7rMbb!h[TUJe!g-uZY3">
+                            <field name="NUM">1</field>
+                          </block>
+                        </value>
+                      </block>
+                    </next>
+                  </block>
+                </next>
+              </block>
+            </next>
+          </block>
+        </next>
+      </block>
+    </statement>
+  </block>
+</xml>

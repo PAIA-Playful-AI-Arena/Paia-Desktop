@@ -333,6 +333,8 @@ Code.initGameArgs = function() {
   var config = JSON.parse(window.readFile(path.join(__dirname, 'games', Code.GAME, 'game_config.json').replace('app.asar', 'app.asar.unpacked')));
   var $body = $('<div class="modal-body my-2"></div>')
   $body.append('<div class="form-group"><label for="">每秒顯示張數 (FPS)</label><input type="number" class="form-control", id="game_fps", min="1", max="300", step="1", value="30", data-bind="value:replyNumber"></div>');
+  var userNumConfig = config['user_num'];
+  $body.append(`<div class="form-group"><label for="">玩家人數</label><input type="number" class="form-control", id="user_num", min="${userNumConfig.min}", max="${userNumConfig.max}", step="1", value="${userNumConfig.min}", data-bind="value:replyNumber"></div>`);
   $('#game-args').append($body);
   for (var params of config['game_params']) {
     var $param = $('<div class="form-group"></div>');
@@ -779,14 +781,11 @@ Code.play = function() {
   var file_path = path.join(Code.PROJECT_PATH, file_name);
   var fps = document.getElementById('game_fps').value;
   var args_elements = document.getElementById('game-args').getElementsByClassName('game-arg');
-  var user_num = 1;
+  var user_num = document.getElementById('user_num').value;;
   var args = [];
   var params = {};
   for (var i = 0; i < args_elements.length; i++) {
     var e = args_elements[i];
-    if (e.id == "user_num") {
-      user_num = parseInt(e.value, 10);
-    }
     args.push(`--${e.id}`);
     if (e.tagName == "SELECT") {
       var value = e.options[e.selectedIndex].getAttribute("value");

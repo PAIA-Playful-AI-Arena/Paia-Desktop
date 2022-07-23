@@ -478,5 +478,6 @@
   <sep></sep>
   <category name="MLGame" colour="%{BKY_MLGAME_HUE}" class='MLGame_blocks'>
     <block type="mlplay_class"></block>
+    <block type="mlplay_is_key_pressed"></block>
   </category>
 </xml>

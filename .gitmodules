@@ -1,6 +1,9 @@
 [submodule "tutorial"]
 	path = tutorial
 	url = https://github.com/datuiji/PAIA-Desktop-Tutorial.git
+[submodule "python"]
+	path = python
+	url = https://github.com/jason53415/PAIA-Desktop-Python
 [submodule "games/easy_game"]
 	path = games/easy_game
 	url = https://github.com/PAIA-Playful-AI-Arena/easy_game.git
@@ -16,6 +19,6 @@
 [submodule "games/Maze_Car"]
 	path = games/Maze_Car
 	url = https://github.com/yen900611/Maze_Car.git
-[submodule "python"]
-	path = python
-	url = https://github.com/jason53415/PAIA-Desktop-Python
+[submodule "games/TankMan"]
+	path = games/TankMan
+	url = https://github.com/Jesse-Jumbo/TankMan.git

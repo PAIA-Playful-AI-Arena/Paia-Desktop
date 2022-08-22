@@ -16,7 +16,7 @@
     <variable id="[5R^]?=xChPKL}].ASn8">模型輸出</variable>
   </variables>
   <block type="procedures_defnoreturn" id="vV7ywliE[buCGy$38-6N" x="-388" y="12">
-    <field name="NAME">初始化遊戲成績用變數</field>
+    <field name="NAME">初始化遊戲成績變數</field>
     <comment pinned="false" h="80" w="160">描述此函式...</comment>
     <statement name="STACK">
       <block type="variables_set" id="H1NC,U3?#HzGv^[dNgnX">
@@ -62,7 +62,7 @@
   <block type="mlplay_class" id="Z*lb-wWxg7v@ss05TP[c" x="37" y="13">
     <statement name="INIT">
       <block type="procedures_callnoreturn" id="WX_x]GM`E@d{VvgusQ.`">
-        <mutation name="初始化遊戲成績用變數"></mutation>
+        <mutation name="初始化遊戲成績變數"></mutation>
         <next>
           <block type="procedures_callnoreturn" id="%pwKy.[F5CuTr$qm9iHE">
             <mutation name="初始化玩遊戲變數"></mutation>

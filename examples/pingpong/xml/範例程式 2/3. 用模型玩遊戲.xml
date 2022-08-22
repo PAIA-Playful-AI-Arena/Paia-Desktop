@@ -13,14 +13,14 @@
     <variable id="2qGIIUtOmEIUbrsIO$W:">球的x方向速度</variable>
     <variable id="VQ6f[whz1UsLU0vvfOAI">AI模型</variable>
     <variable id="uj:c?Ni8*q5VJNF3L;0`">球的y方向速度</variable>
-    <variable id="_3hhF$j5Mwi!vLNCbz@q">過關次數</variable>
     <variable id="F(}$gYIZmGj]36wPr5TS">平台的x座標</variable>
+    <variable id="_3hhF$j5Mwi!vLNCbz@q">過關次數</variable>
     <variable id="$ETyp1[P7ZU7vzE=ngla">平台行動</variable>
     <variable id="@rBG=grKZC_^7zs=7]{x">模型輸入</variable>
     <variable id="[5R^]?=xChPKL}].ASn8">模型輸出</variable>
   </variables>
   <block type="procedures_defnoreturn" id="vV7ywliE[buCGy$38-6N" x="-487" y="13">
-    <field name="NAME">初始化遊戲成績用變數</field>
+    <field name="NAME">初始化遊戲成績變數</field>
     <comment pinned="false" h="80" w="160">描述此函式...</comment>
     <statement name="STACK">
       <block type="variables_set" id="glv*YI{+)z`L3:_+U=Q!">
@@ -142,7 +142,7 @@
   <block type="mlplay_class" id="Z*lb-wWxg7v@ss05TP[c" x="51" y="69">
     <statement name="INIT">
       <block type="procedures_callnoreturn" id="WX_x]GM`E@d{VvgusQ.`">
-        <mutation name="初始化遊戲成績用變數"></mutation>
+        <mutation name="初始化遊戲成績變數"></mutation>
         <next>
           <block type="procedures_callnoreturn" id="%pwKy.[F5CuTr$qm9iHE">
             <mutation name="初始化玩遊戲變數"></mutation>
@@ -551,7 +551,7 @@
                             </value>
                             <statement name="DO0">
                               <block type="mlplay_return_action" id="C]7l4e{#|T2gLXy+Wz]B">
-                                <field name="ACTION">SERVE_TO_RIGHT</field>
+                                <field name="ACTION">SERVE_TO_LEFT</field>
                               </block>
                             </statement>
                             <value name="IF1">
@@ -571,7 +571,7 @@
                             </value>
                             <statement name="DO1">
                               <block type="mlplay_return_action" id="pA-k2Z-I~VVo7SYQAG%(">
-                                <field name="ACTION">SERVE_TO_LEFT</field>
+                                <field name="ACTION">SERVE_TO_RIGHT</field>
                               </block>
                             </statement>
                           </block>

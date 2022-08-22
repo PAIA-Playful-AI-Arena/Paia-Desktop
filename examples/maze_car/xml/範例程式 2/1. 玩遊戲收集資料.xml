@@ -27,7 +27,8 @@
     <variable id="n(Ds+,f]J8{y;h;[o8Qj">存檔最小幀數</variable>
     <variable id="zX}W4o7dS1S;8,0A[VtG">存檔最大幀數</variable>
     <variable id="O%0ffUq|%9lTTX[362k^">過關次數</variable>
-    <variable id="c`uRj%!LYDrlGG=Rq{I@">終點位置</variable>
+    <variable id="c`uRj%!LYDrlGG=Rq{I@">終點的x座標</variable>
+    <variable id="}M;z6qD.qv_m^{ZDM^Y_">終點的y座標</variable>
   </variables>
   <block type="procedures_defnoreturn" id="rHljCZgnX~qDbZ]TKUF," x="-1087" y="338">
     <field name="NAME">收集資料</field>
@@ -222,173 +223,179 @@
                             </value>
                             <next>
                               <block type="variables_set" id="s;r;v]2/mVnuZQ}3}Vv3">
-                                <field name="VAR" id="c`uRj%!LYDrlGG=Rq{I@">終點位置</field>
+                                <field name="VAR" id="c`uRj%!LYDrlGG=Rq{I@">終點的x座標</field>
                                 <value name="VALUE">
                                   <block type="mlplay_get_info" id="~=H%;/fFYxB/F~KfK/.c">
-                                    <field name="FIELD">scene_info['end']</field>
+                                    <field name="FIELD">scene_info['end_x']</field>
                                   </block>
                                 </value>
                                 <next>
-                                  <block type="variables_set" id="e{B_FdlmR*_@_OUHQHw3">
-                                    <field name="VAR" id="69R+bVSBfx?.^Lo}~=Y=">右側距離</field>
+                                  <block type="variables_set" id="Fg-u$LhSOmdm@URJoERG">
+                                    <field name="VAR" id="}M;z6qD.qv_m^{ZDM^Y_">終點的y座標</field>
                                     <value name="VALUE">
-                                      <block type="mlplay_get_info" id="^9Dva800:6rVjKyrHlUb">
-                                        <field name="FIELD">scene_info['R_sensor']</field>
+                                      <block type="mlplay_get_info" id="$(E2fb4+L2d5;O*nMA{R">
+                                        <field name="FIELD">scene_info['end_y']</field>
                                       </block>
                                     </value>
                                     <next>
-                                      <block type="variables_set" id="Ot`4)rAJuEs-3[mC0jAq">
-                                        <field name="VAR" id="Es,MOK^RYJ_1;u2DfG-W">前方距離</field>
+                                      <block type="variables_set" id="e{B_FdlmR*_@_OUHQHw3">
+                                        <field name="VAR" id="69R+bVSBfx?.^Lo}~=Y=">右側距離</field>
                                         <value name="VALUE">
-                                          <block type="mlplay_get_info" id="dC%eE2{j;gTy|x56Aenb">
-                                            <field name="FIELD">scene_info['F_sensor']</field>
+                                          <block type="mlplay_get_info" id="^9Dva800:6rVjKyrHlUb">
+                                            <field name="FIELD">scene_info['R_sensor']</field>
                                           </block>
                                         </value>
                                         <next>
-                                          <block type="variables_set" id="[ocaOkFN0mm*qj2d)8QK">
-                                            <field name="VAR" id="w:VS^|3qGMapmI@M!$nk">左側距離</field>
+                                          <block type="variables_set" id="Ot`4)rAJuEs-3[mC0jAq">
+                                            <field name="VAR" id="Es,MOK^RYJ_1;u2DfG-W">前方距離</field>
                                             <value name="VALUE">
-                                              <block type="mlplay_get_info" id="UN[-pzjpG-p~w[6.A[{V">
-                                                <field name="FIELD">scene_info['L_sensor']</field>
+                                              <block type="mlplay_get_info" id="dC%eE2{j;gTy|x56Aenb">
+                                                <field name="FIELD">scene_info['F_sensor']</field>
                                               </block>
                                             </value>
                                             <next>
-                                              <block type="variables_set" id="+7*t{%6D%H-#+,?tx)8!">
-                                                <field name="VAR" id="!%wpJMj(TJ=jci1zutN^">右前距離</field>
+                                              <block type="variables_set" id="[ocaOkFN0mm*qj2d)8QK">
+                                                <field name="VAR" id="w:VS^|3qGMapmI@M!$nk">左側距離</field>
                                                 <value name="VALUE">
-                                                  <block type="mlplay_get_info" id="enj+LfIptNe`7^)PMn$e">
-                                                    <field name="FIELD">scene_info['R_T_sensor']</field>
+                                                  <block type="mlplay_get_info" id="UN[-pzjpG-p~w[6.A[{V">
+                                                    <field name="FIELD">scene_info['L_sensor']</field>
                                                   </block>
                                                 </value>
                                                 <next>
-                                                  <block type="variables_set" id="GoU#tH=vh3i3N+ZR1=/+">
-                                                    <field name="VAR" id="k/cEDz]x!E4yeVis]g.W">左前距離</field>
+                                                  <block type="variables_set" id="+7*t{%6D%H-#+,?tx)8!">
+                                                    <field name="VAR" id="!%wpJMj(TJ=jci1zutN^">右前距離</field>
                                                     <value name="VALUE">
-                                                      <block type="mlplay_get_info" id="^hth~3KcH_Nrg$OYhe^(">
-                                                        <field name="FIELD">scene_info['L_T_sensor']</field>
+                                                      <block type="mlplay_get_info" id="enj+LfIptNe`7^)PMn$e">
+                                                        <field name="FIELD">scene_info['R_T_sensor']</field>
                                                       </block>
                                                     </value>
                                                     <next>
-                                                      <block type="controls_if" id="9ospP@PCL$c,YehP]p`_">
-                                                        <mutation elseif="3" else="1"></mutation>
-                                                        <value name="IF0">
-                                                          <block type="mlplay_is_key_pressed" id="nClY{!__[0q3NVN%mPY}">
-                                                            <field name="TYPE">arrow</field>
-                                                            <field name="KEY">LEFT</field>
+                                                      <block type="variables_set" id="GoU#tH=vh3i3N+ZR1=/+">
+                                                        <field name="VAR" id="k/cEDz]x!E4yeVis]g.W">左前距離</field>
+                                                        <value name="VALUE">
+                                                          <block type="mlplay_get_info" id="^hth~3KcH_Nrg$OYhe^(">
+                                                            <field name="FIELD">scene_info['L_T_sensor']</field>
                                                           </block>
                                                         </value>
-                                                        <statement name="DO0">
-                                                          <block type="procedures_callnoreturn" id="z[be9;8mV5I5y.y`T_L[">
-                                                            <mutation name="左轉"></mutation>
-                                                            <next>
-                                                              <block type="procedures_callnoreturn" id="CnZmVkk~)OW^U6)Mtt#C" disabled="true">
-                                                                <mutation name="輪速">
-                                                                  <arg name="動作"></arg>
-                                                                </mutation>
-                                                                <value name="ARG0">
-                                                                  <block type="text" id="69OzqDMWP?rW^s,4uuRN">
-                                                                    <field name="TEXT">←</field>
-                                                                  </block>
-                                                                </value>
-                                                              </block>
-                                                            </next>
-                                                          </block>
-                                                        </statement>
-                                                        <value name="IF1">
-                                                          <block type="mlplay_is_key_pressed" id="zO8(xOvk^,WUio/5.fe?">
-                                                            <field name="TYPE">arrow</field>
-                                                            <field name="KEY">RIGHT</field>
-                                                          </block>
-                                                        </value>
-                                                        <statement name="DO1">
-                                                          <block type="procedures_callnoreturn" id=";J9R7Yp3?j[FmIL(!qHf">
-                                                            <mutation name="右轉"></mutation>
-                                                            <next>
-                                                              <block type="procedures_callnoreturn" id="12~kCNhTmUib|]@%D?)|" disabled="true">
-                                                                <mutation name="輪速">
-                                                                  <arg name="動作"></arg>
-                                                                </mutation>
-                                                                <value name="ARG0">
-                                                                  <block type="text" id="}?~-zAV.zr9t~uE*~{My">
-                                                                    <field name="TEXT">→</field>
-                                                                  </block>
-                                                                </value>
-                                                              </block>
-                                                            </next>
-                                                          </block>
-                                                        </statement>
-                                                        <value name="IF2">
-                                                          <block type="mlplay_is_key_pressed" id="TdE5D~a10R7LJS[uNyjn">
-                                                            <field name="TYPE">arrow</field>
-                                                            <field name="KEY">DOWN</field>
-                                                          </block>
-                                                        </value>
-                                                        <statement name="DO2">
-                                                          <block type="procedures_callnoreturn" id="Ja|U?v^NT/0?1GvbEN6w">
-                                                            <mutation name="後退"></mutation>
-                                                            <next>
-                                                              <block type="procedures_callnoreturn" id="VLIH9?1~3%,VS%|rq7CN" disabled="true">
-                                                                <mutation name="輪速">
-                                                                  <arg name="動作"></arg>
-                                                                </mutation>
-                                                                <value name="ARG0">
-                                                                  <block type="text" id="lH4:7_xy=.(4B~6XYQ%z">
-                                                                    <field name="TEXT">↓</field>
-                                                                  </block>
-                                                                </value>
-                                                              </block>
-                                                            </next>
-                                                          </block>
-                                                        </statement>
-                                                        <value name="IF3">
-                                                          <block type="mlplay_is_key_pressed" id="kkPHQO]`_lB%q/%Pn)k!">
-                                                            <field name="TYPE">arrow</field>
-                                                            <field name="KEY">UP</field>
-                                                          </block>
-                                                        </value>
-                                                        <statement name="DO3">
-                                                          <block type="procedures_callnoreturn" id="=[k;AWQ[I(s9#ap$!AQW">
-                                                            <mutation name="快速前進"></mutation>
-                                                            <next>
-                                                              <block type="procedures_callnoreturn" id=";cLvQy^NtrK5ixX0uWk_" disabled="true">
-                                                                <mutation name="輪速">
-                                                                  <arg name="動作"></arg>
-                                                                </mutation>
-                                                                <value name="ARG0">
-                                                                  <block type="text" id="G35PQnBCZt~}:g=--xpC">
-                                                                    <field name="TEXT">↑</field>
-                                                                  </block>
-                                                                </value>
-                                                              </block>
-                                                            </next>
-                                                          </block>
-                                                        </statement>
-                                                        <statement name="ELSE">
-                                                          <block type="procedures_callnoreturn" id="6/8qO_YL%cV{#bf;fvzU">
-                                                            <mutation name="前進"></mutation>
-                                                          </block>
-                                                        </statement>
                                                         <next>
-                                                          <block type="procedures_callnoreturn" id="d-1jz:2bc{d5xJ?+J.i]">
-                                                            <mutation name="收集資料"></mutation>
+                                                          <block type="controls_if" id="9ospP@PCL$c,YehP]p`_">
+                                                            <mutation elseif="3" else="1"></mutation>
+                                                            <value name="IF0">
+                                                              <block type="logic_operation" id="[9Y@Fnf~-u(j8ri1-H8u">
+                                                                <field name="OP">OR</field>
+                                                                <value name="A">
+                                                                  <block type="mlplay_is_key_pressed" id="nClY{!__[0q3NVN%mPY}">
+                                                                    <field name="TYPE">arrow</field>
+                                                                    <field name="KEY">UP</field>
+                                                                  </block>
+                                                                </value>
+                                                                <value name="B">
+                                                                  <block type="mlplay_is_key_pressed" id="|B/GRqKwz~1_M7W9k:N/">
+                                                                    <field name="TYPE">alpha</field>
+                                                                    <field name="KEY">w</field>
+                                                                  </block>
+                                                                </value>
+                                                              </block>
+                                                            </value>
+                                                            <statement name="DO0">
+                                                              <block type="procedures_callnoreturn" id="=[k;AWQ[I(s9#ap$!AQW">
+                                                                <mutation name="快速前進"></mutation>
+                                                              </block>
+                                                            </statement>
+                                                            <value name="IF1">
+                                                              <block type="logic_operation" id="kt8$LqrR8QfLGuMQCZ2-">
+                                                                <field name="OP">OR</field>
+                                                                <value name="A">
+                                                                  <block type="mlplay_is_key_pressed" id="zO8(xOvk^,WUio/5.fe?">
+                                                                    <field name="TYPE">arrow</field>
+                                                                    <field name="KEY">DOWN</field>
+                                                                  </block>
+                                                                </value>
+                                                                <value name="B">
+                                                                  <block type="mlplay_is_key_pressed" id="@*bFApp$r/!O1BjdH/~b">
+                                                                    <field name="TYPE">alpha</field>
+                                                                    <field name="KEY">s</field>
+                                                                  </block>
+                                                                </value>
+                                                              </block>
+                                                            </value>
+                                                            <statement name="DO1">
+                                                              <block type="procedures_callnoreturn" id="Ja|U?v^NT/0?1GvbEN6w">
+                                                                <mutation name="後退"></mutation>
+                                                              </block>
+                                                            </statement>
+                                                            <value name="IF2">
+                                                              <block type="logic_operation" id="Y0KV.RQ~1neGDhOd7TML">
+                                                                <field name="OP">OR</field>
+                                                                <value name="A">
+                                                                  <block type="mlplay_is_key_pressed" id="TdE5D~a10R7LJS[uNyjn">
+                                                                    <field name="TYPE">arrow</field>
+                                                                    <field name="KEY">LEFT</field>
+                                                                  </block>
+                                                                </value>
+                                                                <value name="B">
+                                                                  <block type="mlplay_is_key_pressed" id="q39tGxO7dd=QG-=Od8v)">
+                                                                    <field name="TYPE">alpha</field>
+                                                                    <field name="KEY">a</field>
+                                                                  </block>
+                                                                </value>
+                                                              </block>
+                                                            </value>
+                                                            <statement name="DO2">
+                                                              <block type="procedures_callnoreturn" id="z[be9;8mV5I5y.y`T_L[">
+                                                                <mutation name="左轉"></mutation>
+                                                              </block>
+                                                            </statement>
+                                                            <value name="IF3">
+                                                              <block type="logic_operation" id="aLAvQ]fwy$R;]?Y%2qIo">
+                                                                <field name="OP">OR</field>
+                                                                <value name="A">
+                                                                  <block type="mlplay_is_key_pressed" id="kkPHQO]`_lB%q/%Pn)k!">
+                                                                    <field name="TYPE">arrow</field>
+                                                                    <field name="KEY">RIGHT</field>
+                                                                  </block>
+                                                                </value>
+                                                                <value name="B">
+                                                                  <block type="mlplay_is_key_pressed" id="FR+qd`~5{fj6%[oEg0`]">
+                                                                    <field name="TYPE">alpha</field>
+                                                                    <field name="KEY">d</field>
+                                                                  </block>
+                                                                </value>
+                                                              </block>
+                                                            </value>
+                                                            <statement name="DO3">
+                                                              <block type="procedures_callnoreturn" id=";J9R7Yp3?j[FmIL(!qHf">
+                                                                <mutation name="右轉"></mutation>
+                                                              </block>
+                                                            </statement>
+                                                            <statement name="ELSE">
+                                                              <block type="procedures_callnoreturn" id="6/8qO_YL%cV{#bf;fvzU">
+                                                                <mutation name="前進"></mutation>
+                                                              </block>
+                                                            </statement>
                                                             <next>
-                                                              <block type="mlplay_return_mazecar_action" id="B;/xii/!_J5VvAD~}]@g">
-                                                                <value name="LEFT_RPM">
-                                                                  <shadow type="math_number" id="k`gF9vOij#40eqpIP]{n">
-                                                                    <field name="NUM">100</field>
-                                                                  </shadow>
-                                                                  <block type="variables_get" id="9T^pYUZcIAvJ#hlSD|S,">
-                                                                    <field name="VAR" id="3mu%ock7yMNJRcn`_dyf">左輪轉速</field>
+                                                              <block type="procedures_callnoreturn" id="d-1jz:2bc{d5xJ?+J.i]">
+                                                                <mutation name="收集資料"></mutation>
+                                                                <next>
+                                                                  <block type="mlplay_return_mazecar_action" id="B;/xii/!_J5VvAD~}]@g">
+                                                                    <value name="LEFT_RPM">
+                                                                      <shadow type="math_number" id="k`gF9vOij#40eqpIP]{n">
+                                                                        <field name="NUM">100</field>
+                                                                      </shadow>
+                                                                      <block type="variables_get" id="9T^pYUZcIAvJ#hlSD|S,">
+                                                                        <field name="VAR" id="3mu%ock7yMNJRcn`_dyf">左輪轉速</field>
+                                                                      </block>
+                                                                    </value>
+                                                                    <value name="RIGHT_RPM">
+                                                                      <shadow type="math_number" id="6Wsi!C`M@K)/!k;BWmnJ">
+                                                                        <field name="NUM">100</field>
+                                                                      </shadow>
+                                                                      <block type="variables_get" id="+0$|M_XT[jN|.$YA4PZ$">
+                                                                        <field name="VAR" id="}]+AasxtgeR%@4=.s}3V">右輪轉速</field>
+                                                                      </block>
+                                                                    </value>
                                                                   </block>
-                                                                </value>
-                                                                <value name="RIGHT_RPM">
-                                                                  <shadow type="math_number" id="6Wsi!C`M@K)/!k;BWmnJ">
-                                                                    <field name="NUM">100</field>
-                                                                  </shadow>
-                                                                  <block type="variables_get" id="+0$|M_XT[jN|.$YA4PZ$">
-                                                                    <field name="VAR" id="}]+AasxtgeR%@4=.s}3V">右輪轉速</field>
-                                                                  </block>
-                                                                </value>
+                                                                </next>
                                                               </block>
                                                             </next>
                                                           </block>
@@ -617,68 +624,78 @@
                 </value>
                 <next>
                   <block type="variables_set" id="?dNsfpX~-4)j3f#*]eOm">
-                    <field name="VAR" id="c`uRj%!LYDrlGG=Rq{I@">終點位置</field>
+                    <field name="VAR" id="c`uRj%!LYDrlGG=Rq{I@">終點的x座標</field>
                     <value name="VALUE">
-                      <block type="lists_create_with" id="1g3AGhbb6iM=CLy0{LcU">
-                        <mutation items="0"></mutation>
+                      <block type="math_number" id="^cu?6IBI|=^-x(Bt]k.v">
+                        <field name="NUM">0</field>
                       </block>
                     </value>
                     <next>
-                      <block type="variables_set" id="0/1A@zU1F=,l(-%3W-07">
-                        <field name="VAR" id="69R+bVSBfx?.^Lo}~=Y=">右側距離</field>
+                      <block type="variables_set" id="X8+U.o9S}f++!.#QGW/9">
+                        <field name="VAR" id="}M;z6qD.qv_m^{ZDM^Y_">終點的y座標</field>
                         <value name="VALUE">
-                          <block type="math_number" id="tv3z+g`ud:+#c#Fs53L^">
+                          <block type="math_number" id="(AFcjoa3IX4,[K-Y(Cb8">
                             <field name="NUM">0</field>
                           </block>
                         </value>
                         <next>
-                          <block type="variables_set" id="=$e80s4CDNe%kR8ly%xA">
-                            <field name="VAR" id="Es,MOK^RYJ_1;u2DfG-W">前方距離</field>
+                          <block type="variables_set" id="0/1A@zU1F=,l(-%3W-07">
+                            <field name="VAR" id="69R+bVSBfx?.^Lo}~=Y=">右側距離</field>
                             <value name="VALUE">
-                              <block type="math_number" id="+hYirF]^!2H:a=PpydJt">
+                              <block type="math_number" id="tv3z+g`ud:+#c#Fs53L^">
                                 <field name="NUM">0</field>
                               </block>
                             </value>
                             <next>
-                              <block type="variables_set" id="LMA)1+iRL1n.2]Pp[U!W">
-                                <field name="VAR" id="w:VS^|3qGMapmI@M!$nk">左側距離</field>
+                              <block type="variables_set" id="=$e80s4CDNe%kR8ly%xA">
+                                <field name="VAR" id="Es,MOK^RYJ_1;u2DfG-W">前方距離</field>
                                 <value name="VALUE">
-                                  <block type="math_number" id="@FxaF!^gL{ds8W%u-m];">
+                                  <block type="math_number" id="+hYirF]^!2H:a=PpydJt">
                                     <field name="NUM">0</field>
                                   </block>
                                 </value>
                                 <next>
-                                  <block type="variables_set" id="1(7+5ETmJ)[Uby[05=EL">
-                                    <field name="VAR" id="!%wpJMj(TJ=jci1zutN^">右前距離</field>
+                                  <block type="variables_set" id="LMA)1+iRL1n.2]Pp[U!W">
+                                    <field name="VAR" id="w:VS^|3qGMapmI@M!$nk">左側距離</field>
                                     <value name="VALUE">
-                                      <block type="math_number" id="+tw75}nSk`@cgna4Q}?A">
+                                      <block type="math_number" id="@FxaF!^gL{ds8W%u-m];">
                                         <field name="NUM">0</field>
                                       </block>
                                     </value>
                                     <next>
-                                      <block type="variables_set" id="_AmNj;:JYfdoHP(9WjZ:">
-                                        <field name="VAR" id="k/cEDz]x!E4yeVis]g.W">左前距離</field>
+                                      <block type="variables_set" id="1(7+5ETmJ)[Uby[05=EL">
+                                        <field name="VAR" id="!%wpJMj(TJ=jci1zutN^">右前距離</field>
                                         <value name="VALUE">
-                                          <block type="math_number" id="@Jl$+xBNLeD[+@s004xU">
+                                          <block type="math_number" id="+tw75}nSk`@cgna4Q}?A">
                                             <field name="NUM">0</field>
                                           </block>
                                         </value>
                                         <next>
-                                          <block type="variables_set" id="uRdL:[^V2Vo6eaPOv}r0">
-                                            <field name="VAR" id="3mu%ock7yMNJRcn`_dyf">左輪轉速</field>
+                                          <block type="variables_set" id="_AmNj;:JYfdoHP(9WjZ:">
+                                            <field name="VAR" id="k/cEDz]x!E4yeVis]g.W">左前距離</field>
                                             <value name="VALUE">
-                                              <block type="math_number" id="*0+v2ZqOmS`0:pjFQ-m,">
+                                              <block type="math_number" id="@Jl$+xBNLeD[+@s004xU">
                                                 <field name="NUM">0</field>
                                               </block>
                                             </value>
                                             <next>
-                                              <block type="variables_set" id="?xzk-EhE}Q(Z~%frhs#I">
-                                                <field name="VAR" id="}]+AasxtgeR%@4=.s}3V">右輪轉速</field>
+                                              <block type="variables_set" id="uRdL:[^V2Vo6eaPOv}r0">
+                                                <field name="VAR" id="3mu%ock7yMNJRcn`_dyf">左輪轉速</field>
                                                 <value name="VALUE">
-                                                  <block type="math_number" id="obyuoEux6c;[tK.3Ja_Q">
+                                                  <block type="math_number" id="*0+v2ZqOmS`0:pjFQ-m,">
                                                     <field name="NUM">0</field>
                                                   </block>
                                                 </value>
+                                                <next>
+                                                  <block type="variables_set" id="?xzk-EhE}Q(Z~%frhs#I">
+                                                    <field name="VAR" id="}]+AasxtgeR%@4=.s}3V">右輪轉速</field>
+                                                    <value name="VALUE">
+                                                      <block type="math_number" id="obyuoEux6c;[tK.3Ja_Q">
+                                                        <field name="NUM">0</field>
+                                                      </block>
+                                                    </value>
+                                                  </block>
+                                                </next>
                                               </block>
                                             </next>
                                           </block>
@@ -998,7 +1015,7 @@
       </block>
     </statement>
   </block>
-  <block type="procedures_defnoreturn" id="_;Ie.zRdR$MjR1PF?R;r" x="-312" y="912">
+  <block type="procedures_defnoreturn" id="_;Ie.zRdR$MjR1PF?R;r" x="-312" y="938">
     <field name="NAME">初始化收集資料變數</field>
     <comment pinned="false" h="50" w="183">初始化收集資料變數</comment>
     <statement name="STACK">
@@ -1056,6 +1073,8 @@
                                 <field name="VAR" id="ZVHZ!Cc4nX_G1;+%HDxq">過關不存檔次數</field>
                                 <comment pinned="false" h="94" w="211">過關幀數&lt;存檔最小幀數或
 過關幀數&gt;存檔最大幀數的遊戲次數
+                                
+                                
                                 
                                 
                                 

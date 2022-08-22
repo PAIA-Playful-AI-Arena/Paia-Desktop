@@ -655,6 +655,22 @@ Code.initMlgameBlocks = function() {
       mlgameCat.appendChild(block);
     }
 
+    var gameConfigPath = path.join(__dirname, 'games', Code.GAME, 'game_config.json').replace('app.asar', 'app.asar.unpacked');
+    if (fs.existsSync(gameConfigPath)) {
+      var options = [];
+      for (var params of JSON.parse(window.readFile(gameConfigPath)).game_params) {
+        if (Code.LANG == 'en') {
+          options.push([params.name.split('_').join(' '), `kwargs['game_params']['${params.name}']`]);
+        } else if (Code.LANG == 'zh-hant') {
+          options.push([params.verbose, `kwargs['game_params']['${params.name}']`]);
+        }
+      }
+      Blockly.Msg["MLPLAY_GAME_PARAM_OPTIONS"] = options;
+      var block = document.createElement("block");
+      block.setAttribute("type", "mlplay_game_param");
+      mlgameCat.appendChild(block);
+    }
+
     if ("GAME_STATUS" in gameOptions) {
       var options = [];
       gameOptions["GAME_STATUS"].forEach((op, index) => {

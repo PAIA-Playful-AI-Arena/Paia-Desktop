@@ -335,11 +335,6 @@
                                                 <field name="ACTION">NONE</field>
                                               </block>
                                             </statement>
-                                            <next>
-                                              <block type="procedures_callnoreturn" id="lYmMr6^Dc+IJ?ahtAt_G" disabled="true">
-                                                <mutation name="顯示環境訊息"></mutation>
-                                              </block>
-                                            </next>
                                           </block>
                                         </next>
                                       </block>
@@ -903,6 +898,9 @@
                                     
                                     
                                     
+                                    
+                                    
+                                    
                                     </comment>
                                     <value name="VALUE">
                                       <block type="math_number" id="4*BILpO,.rR6Im+WE#m.">
@@ -1096,13 +1094,13 @@
             <field name="TEXT">abc</field>
           </shadow>
           <block type="text_join" id="rQKqDejuq+BxrI2sLi|F">
-            <mutation items="9"></mutation>
-            <value name="ADD1">
+            <mutation items="8"></mutation>
+            <value name="ADD0">
               <block type="text" id="2w^D,Va``,v#Z)(qU}T?">
                 <field name="TEXT">【己收集</field>
               </block>
             </value>
-            <value name="ADD2">
+            <value name="ADD1">
               <block type="logic_ternary" id=".$F}V}PR!#Iws~5CZ2SL">
                 <value name="IF">
                   <block type="logic_compare" id="!y[2L.yQ??@r.cf?,}a*">
@@ -1132,12 +1130,12 @@
                 </value>
               </block>
             </value>
-            <value name="ADD3">
+            <value name="ADD2">
               <block type="text" id="puMmp0{$k]Rpd9Xv),TU">
                 <field name="TEXT">次】</field>
               </block>
             </value>
-            <value name="ADD4">
+            <value name="ADD3">
               <block type="logic_ternary" id="mIT-v^+i:@zCdH#xME2=">
                 <value name="IF">
                   <block type="logic_compare" id="l~S1Ctn%l,9K%o~fWzul">
@@ -1181,22 +1179,22 @@
                 </value>
               </block>
             </value>
-            <value name="ADD5">
+            <value name="ADD4">
               <block type="text" id="Ht?k6f4!rO$6Ugog#e}N">
                 <field name="TEXT">(總幀數=</field>
               </block>
             </value>
-            <value name="ADD6">
+            <value name="ADD5">
               <block type="variables_get" id="ayGdk?p4FpPh@E6OZ!C7">
                 <field name="VAR" id="%n[ZfEKQWJo~7i{5PO4b">幀數</field>
               </block>
             </value>
-            <value name="ADD7">
+            <value name="ADD6">
               <block type="text" id="KXl,XZy#q#~N]tbT.eal">
                 <field name="TEXT">)</field>
               </block>
             </value>
-            <value name="ADD8">
+            <value name="ADD7">
               <block type="procedures_callreturn" id="RmcNeA~6ixCkpYaco[ke">
                 <mutation name="正確率">
                   <arg name="分子"></arg>

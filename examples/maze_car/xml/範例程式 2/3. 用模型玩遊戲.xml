@@ -13,10 +13,11 @@
     <variable id="Es,MOK^RYJ_1;u2DfG-W">前方距離</variable>
     <variable id="69R+bVSBfx?.^Lo}~=Y=">右側距離</variable>
     <variable id="F(}$gYIZmGj]36wPr5TS">車子角度</variable>
-    <variable id="0HLfG{UPNo-tcwXk2eW~">終點位置</variable>
+    <variable id="0HLfG{UPNo-tcwXk2eW~">終點的x座標</variable>
     <variable id="e87*dvh7G.gleOg[j49s">車子最近動作</variable>
     <variable id="_3hhF$j5Mwi!vLNCbz@q">過關次數</variable>
     <variable id="VQ6f[whz1UsLU0vvfOAI">AI模型</variable>
+    <variable id="Qh?tvpLD%|h(~zK,pi7*">終點的y座標</variable>
     <variable id="!c.A/|`s6Y6SQ=G.lBBK">右前距離</variable>
     <variable id="^yxt.%Dd+4#M!eY.F.*H">左前距離</variable>
     <variable id="3mu%ock7yMNJRcn`_dyf">左輪轉速</variable>
@@ -154,160 +155,165 @@
                             </value>
                             <next>
                               <block type="variables_set" id="(W!y1Ka{#zQ.GABa#XLJ">
-                                <field name="VAR" id="0HLfG{UPNo-tcwXk2eW~">終點位置</field>
+                                <field name="VAR" id="0HLfG{UPNo-tcwXk2eW~">終點的x座標</field>
                                 <value name="VALUE">
                                   <block type="mlplay_get_info" id="V,W#msgrkAq|zr@9mZRR">
-                                    <field name="FIELD">scene_info['end']</field>
+                                    <field name="FIELD">scene_info['end_x']</field>
                                   </block>
                                 </value>
                                 <next>
-                                  <block type="variables_set" id="QxKc.{5ilnn9Hsm[?yMU">
-                                    <field name="VAR" id="69R+bVSBfx?.^Lo}~=Y=">右側距離</field>
+                                  <block type="variables_set" id="8LF_f]U1NjLQ=n;`G!#)">
+                                    <field name="VAR" id="Qh?tvpLD%|h(~zK,pi7*">終點的y座標</field>
                                     <value name="VALUE">
-                                      <block type="mlplay_get_info" id="u(O4ETeQ?rqRs~`R[`S)">
-                                        <field name="FIELD">scene_info['R_sensor']</field>
+                                      <block type="mlplay_get_info" id="_qL!ZyAy9-=f6KgMaRR!">
+                                        <field name="FIELD">scene_info['end_y']</field>
                                       </block>
                                     </value>
                                     <next>
-                                      <block type="variables_set" id="~?h~-}PV.VDeK/xH5eX1">
-                                        <field name="VAR" id="Es,MOK^RYJ_1;u2DfG-W">前方距離</field>
+                                      <block type="variables_set" id="QxKc.{5ilnn9Hsm[?yMU">
+                                        <field name="VAR" id="69R+bVSBfx?.^Lo}~=Y=">右側距離</field>
                                         <value name="VALUE">
-                                          <block type="mlplay_get_info" id="_;Gdij27#|7fl4G^8g-Q">
-                                            <field name="FIELD">scene_info['F_sensor']</field>
+                                          <block type="mlplay_get_info" id="u(O4ETeQ?rqRs~`R[`S)">
+                                            <field name="FIELD">scene_info['R_sensor']</field>
                                           </block>
                                         </value>
                                         <next>
-                                          <block type="variables_set" id="Eb:T+@LBeb%uF/,(39n6">
-                                            <field name="VAR" id="w:VS^|3qGMapmI@M!$nk">左側距離</field>
+                                          <block type="variables_set" id="~?h~-}PV.VDeK/xH5eX1">
+                                            <field name="VAR" id="Es,MOK^RYJ_1;u2DfG-W">前方距離</field>
                                             <value name="VALUE">
-                                              <block type="mlplay_get_info" id="ORI#kGc0DJHsTv,3v;ln">
-                                                <field name="FIELD">scene_info['L_sensor']</field>
+                                              <block type="mlplay_get_info" id="_;Gdij27#|7fl4G^8g-Q">
+                                                <field name="FIELD">scene_info['F_sensor']</field>
                                               </block>
                                             </value>
                                             <next>
-                                              <block type="variables_set" id="bVM~B6`H`c1uM#Pb2s;G">
-                                                <field name="VAR" id="!c.A/|`s6Y6SQ=G.lBBK">右前距離</field>
+                                              <block type="variables_set" id="Eb:T+@LBeb%uF/,(39n6">
+                                                <field name="VAR" id="w:VS^|3qGMapmI@M!$nk">左側距離</field>
                                                 <value name="VALUE">
-                                                  <block type="mlplay_get_info" id="nebo`se=TnmxX$sNA)|x">
-                                                    <field name="FIELD">scene_info['R_T_sensor']</field>
+                                                  <block type="mlplay_get_info" id="ORI#kGc0DJHsTv,3v;ln">
+                                                    <field name="FIELD">scene_info['L_sensor']</field>
                                                   </block>
                                                 </value>
                                                 <next>
-                                                  <block type="variables_set" id="7`d{ueDr~kJ-6|^+zHi7">
-                                                    <field name="VAR" id="^yxt.%Dd+4#M!eY.F.*H">左前距離</field>
+                                                  <block type="variables_set" id="bVM~B6`H`c1uM#Pb2s;G">
+                                                    <field name="VAR" id="!c.A/|`s6Y6SQ=G.lBBK">右前距離</field>
                                                     <value name="VALUE">
-                                                      <block type="mlplay_get_info" id="`9.89[E~1a`z_z#%;-In">
-                                                        <field name="FIELD">scene_info['L_T_sensor']</field>
+                                                      <block type="mlplay_get_info" id="nebo`se=TnmxX$sNA)|x">
+                                                        <field name="FIELD">scene_info['R_T_sensor']</field>
                                                       </block>
                                                     </value>
                                                     <next>
-                                                      <block type="variables_set" id="0H}mwZ3b_:2CxG*miUDX">
-                                                        <field name="VAR" id="@rBG=grKZC_^7zs=7]{x">模型輸入</field>
+                                                      <block type="variables_set" id="7`d{ueDr~kJ-6|^+zHi7">
+                                                        <field name="VAR" id="^yxt.%Dd+4#M!eY.F.*H">左前距離</field>
                                                         <value name="VALUE">
-                                                          <block type="lists_create_with" id="Y5RA[3_|9t{p}F67Q=[5">
-                                                            <mutation items="1"></mutation>
-                                                            <value name="ADD0">
-                                                              <block type="lists_create_with" id="Y0D/^7=n{Pf8y3[R~:On">
-                                                                <mutation items="5"></mutation>
-                                                                <value name="ADD0">
-                                                                  <block type="variables_get" id="^,(?MTj9La?_tZ^^5#^O">
-                                                                    <field name="VAR" id="w:VS^|3qGMapmI@M!$nk">左側距離</field>
-                                                                  </block>
-                                                                </value>
-                                                                <value name="ADD1">
-                                                                  <block type="variables_get" id="Txj.fGQvq@576x-NopJg">
-                                                                    <field name="VAR" id="^yxt.%Dd+4#M!eY.F.*H">左前距離</field>
-                                                                  </block>
-                                                                </value>
-                                                                <value name="ADD2">
-                                                                  <block type="variables_get" id="kqR%am(f#hq223q%gYqB">
-                                                                    <field name="VAR" id="Es,MOK^RYJ_1;u2DfG-W">前方距離</field>
-                                                                  </block>
-                                                                </value>
-                                                                <value name="ADD3">
-                                                                  <block type="variables_get" id="DubiHMh,|*tPTuy-MYmR">
-                                                                    <field name="VAR" id="!c.A/|`s6Y6SQ=G.lBBK">右前距離</field>
-                                                                  </block>
-                                                                </value>
-                                                                <value name="ADD4">
-                                                                  <block type="variables_get" id="0,G3PbTl|K?:I5Im*}A~">
-                                                                    <field name="VAR" id="69R+bVSBfx?.^Lo}~=Y=">右側距離</field>
-                                                                  </block>
-                                                                </value>
-                                                              </block>
-                                                            </value>
+                                                          <block type="mlplay_get_info" id="`9.89[E~1a`z_z#%;-In">
+                                                            <field name="FIELD">scene_info['L_T_sensor']</field>
                                                           </block>
                                                         </value>
                                                         <next>
-                                                          <block type="variables_set" id="Dn/So:QsqXw-dp.#D_/B">
-                                                            <field name="VAR" id="[5R^]?=xChPKL}].ASn8">模型輸出</field>
-                                                            <comment pinned="false" h="80" w="160">利用AI模型預測移動方向，1代表向右移動，2代表向左移動</comment>
+                                                          <block type="variables_set" id="0H}mwZ3b_:2CxG*miUDX">
+                                                            <field name="VAR" id="@rBG=grKZC_^7zs=7]{x">模型輸入</field>
                                                             <value name="VALUE">
-                                                              <block type="model_predict" id="JuB!28KLHi4o98).$6Y:">
-                                                                <value name="MODEL">
-                                                                  <block type="variables_get" id="+?OD}@LJpqQs^gw^@E39">
-                                                                    <field name="VAR" id="VQ6f[whz1UsLU0vvfOAI">AI模型</field>
-                                                                  </block>
-                                                                </value>
-                                                                <value name="X">
-                                                                  <block type="variables_get" id="R3JRPOG)rF/nt+VuPwR-">
-                                                                    <field name="VAR" id="@rBG=grKZC_^7zs=7]{x">模型輸入</field>
+                                                              <block type="lists_create_with" id="Y5RA[3_|9t{p}F67Q=[5">
+                                                                <mutation items="1"></mutation>
+                                                                <value name="ADD0">
+                                                                  <block type="lists_create_with" id="Y0D/^7=n{Pf8y3[R~:On">
+                                                                    <mutation items="5"></mutation>
+                                                                    <value name="ADD0">
+                                                                      <block type="variables_get" id="^,(?MTj9La?_tZ^^5#^O">
+                                                                        <field name="VAR" id="w:VS^|3qGMapmI@M!$nk">左側距離</field>
+                                                                      </block>
+                                                                    </value>
+                                                                    <value name="ADD1">
+                                                                      <block type="variables_get" id="Txj.fGQvq@576x-NopJg">
+                                                                        <field name="VAR" id="^yxt.%Dd+4#M!eY.F.*H">左前距離</field>
+                                                                      </block>
+                                                                    </value>
+                                                                    <value name="ADD2">
+                                                                      <block type="variables_get" id="kqR%am(f#hq223q%gYqB">
+                                                                        <field name="VAR" id="Es,MOK^RYJ_1;u2DfG-W">前方距離</field>
+                                                                      </block>
+                                                                    </value>
+                                                                    <value name="ADD3">
+                                                                      <block type="variables_get" id="DubiHMh,|*tPTuy-MYmR">
+                                                                        <field name="VAR" id="!c.A/|`s6Y6SQ=G.lBBK">右前距離</field>
+                                                                      </block>
+                                                                    </value>
+                                                                    <value name="ADD4">
+                                                                      <block type="variables_get" id="0,G3PbTl|K?:I5Im*}A~">
+                                                                        <field name="VAR" id="69R+bVSBfx?.^Lo}~=Y=">右側距離</field>
+                                                                      </block>
+                                                                    </value>
                                                                   </block>
                                                                 </value>
                                                               </block>
                                                             </value>
                                                             <next>
-                                                              <block type="variables_set" id="_9Lr~xMS8HQJ?o!:d((_">
-                                                                <field name="VAR" id="3mu%ock7yMNJRcn`_dyf">左輪轉速</field>
+                                                              <block type="variables_set" id="Dn/So:QsqXw-dp.#D_/B">
+                                                                <field name="VAR" id="[5R^]?=xChPKL}].ASn8">模型輸出</field>
+                                                                <comment pinned="false" h="80" w="160">利用AI模型預測移動方向，1代表向右移動，2代表向左移動</comment>
                                                                 <value name="VALUE">
-                                                                  <block type="lists_getIndex" id="JE{^[V.lhG|)Av@BC(y0">
-                                                                    <mutation statement="false" at="false"></mutation>
-                                                                    <field name="MODE">GET</field>
-                                                                    <field name="WHERE">FIRST</field>
-                                                                    <value name="VALUE">
-                                                                      <block type="lists_getIndex" id="sW4GQJE^H]uh[|QHH%%*">
-                                                                        <mutation statement="false" at="false"></mutation>
-                                                                        <field name="MODE">GET</field>
-                                                                        <field name="WHERE">FIRST</field>
-                                                                        <value name="VALUE">
-                                                                          <block type="variables_get" id="DrS5/Gzp$,%t9;5*r.3!">
-                                                                            <field name="VAR" id="[5R^]?=xChPKL}].ASn8">模型輸出</field>
-                                                                          </block>
-                                                                        </value>
+                                                                  <block type="model_predict" id="JuB!28KLHi4o98).$6Y:">
+                                                                    <value name="MODEL">
+                                                                      <block type="variables_get" id="+?OD}@LJpqQs^gw^@E39">
+                                                                        <field name="VAR" id="VQ6f[whz1UsLU0vvfOAI">AI模型</field>
+                                                                      </block>
+                                                                    </value>
+                                                                    <value name="X">
+                                                                      <block type="variables_get" id="R3JRPOG)rF/nt+VuPwR-">
+                                                                        <field name="VAR" id="@rBG=grKZC_^7zs=7]{x">模型輸入</field>
                                                                       </block>
                                                                     </value>
                                                                   </block>
                                                                 </value>
                                                                 <next>
-                                                                  <block type="variables_set" id="5QezIk*{vcv~?7|DvD*@">
-                                                                    <field name="VAR" id="}]+AasxtgeR%@4=.s}3V">右輪轉速</field>
+                                                                  <block type="variables_set" id="_9Lr~xMS8HQJ?o!:d((_">
+                                                                    <field name="VAR" id="3mu%ock7yMNJRcn`_dyf">左輪轉速</field>
                                                                     <value name="VALUE">
-                                                                      <block type="lists_getIndex" id="bQ?:|Ppdks[/Wj.]aa?r">
-                                                                        <mutation statement="false" at="true"></mutation>
+                                                                      <block type="lists_getIndex" id="JE{^[V.lhG|)Av@BC(y0">
+                                                                        <mutation statement="false" at="false"></mutation>
                                                                         <field name="MODE">GET</field>
-                                                                        <field name="WHERE">FROM_START</field>
+                                                                        <field name="WHERE">FIRST</field>
                                                                         <value name="VALUE">
-                                                                          <block type="lists_getIndex" id="l8VFnVPDiBejNc!ZyUvh">
+                                                                          <block type="lists_getIndex" id="sW4GQJE^H]uh[|QHH%%*">
                                                                             <mutation statement="false" at="false"></mutation>
                                                                             <field name="MODE">GET</field>
                                                                             <field name="WHERE">FIRST</field>
                                                                             <value name="VALUE">
-                                                                              <block type="variables_get" id="p#2BAfiHa=3rH{oFP,h1">
+                                                                              <block type="variables_get" id="DrS5/Gzp$,%t9;5*r.3!">
                                                                                 <field name="VAR" id="[5R^]?=xChPKL}].ASn8">模型輸出</field>
                                                                               </block>
                                                                             </value>
                                                                           </block>
                                                                         </value>
-                                                                        <value name="AT">
-                                                                          <block type="math_number" id="mfJpF^k)ViKaNxr3eW]Z">
-                                                                            <field name="NUM">2</field>
-                                                                          </block>
-                                                                        </value>
                                                                       </block>
                                                                     </value>
                                                                     <next>
-                                                                      <block type="procedures_callnoreturn" id="!jO.^La)2|MRs;heJW~d" disabled="true">
-                                                                        <mutation name="輸出環境訊息"></mutation>
+                                                                      <block type="variables_set" id="5QezIk*{vcv~?7|DvD*@">
+                                                                        <field name="VAR" id="}]+AasxtgeR%@4=.s}3V">右輪轉速</field>
+                                                                        <value name="VALUE">
+                                                                          <block type="lists_getIndex" id="bQ?:|Ppdks[/Wj.]aa?r">
+                                                                            <mutation statement="false" at="true"></mutation>
+                                                                            <field name="MODE">GET</field>
+                                                                            <field name="WHERE">FROM_START</field>
+                                                                            <value name="VALUE">
+                                                                              <block type="lists_getIndex" id="l8VFnVPDiBejNc!ZyUvh">
+                                                                                <mutation statement="false" at="false"></mutation>
+                                                                                <field name="MODE">GET</field>
+                                                                                <field name="WHERE">FIRST</field>
+                                                                                <value name="VALUE">
+                                                                                  <block type="variables_get" id="p#2BAfiHa=3rH{oFP,h1">
+                                                                                    <field name="VAR" id="[5R^]?=xChPKL}].ASn8">模型輸出</field>
+                                                                                  </block>
+                                                                                </value>
+                                                                              </block>
+                                                                            </value>
+                                                                            <value name="AT">
+                                                                              <block type="math_number" id="mfJpF^k)ViKaNxr3eW]Z">
+                                                                                <field name="NUM">2</field>
+                                                                              </block>
+                                                                            </value>
+                                                                          </block>
+                                                                        </value>
                                                                         <next>
                                                                           <block type="mlplay_return_mazecar_action" id="B;/xii/!_J5VvAD~}]@g">
                                                                             <value name="LEFT_RPM">
@@ -559,68 +565,78 @@
                 </value>
                 <next>
                   <block type="variables_set" id="gtEJNOIn1dh%FJdU.RPA">
-                    <field name="VAR" id="0HLfG{UPNo-tcwXk2eW~">終點位置</field>
+                    <field name="VAR" id="0HLfG{UPNo-tcwXk2eW~">終點的x座標</field>
                     <value name="VALUE">
-                      <block type="lists_create_with" id="LU9eljRKRN!xmeJ`|/:N">
-                        <mutation items="0"></mutation>
+                      <block type="math_number" id="t,O,SLtaQ@*eus;rQvg@">
+                        <field name="NUM">0</field>
                       </block>
                     </value>
                     <next>
-                      <block type="variables_set" id="g!BicQ)r]!c/zw]-`tg%">
-                        <field name="VAR" id="69R+bVSBfx?.^Lo}~=Y=">右側距離</field>
+                      <block type="variables_set" id="/nS}SI#JC|c]S)uSnlzG">
+                        <field name="VAR" id="Qh?tvpLD%|h(~zK,pi7*">終點的y座標</field>
                         <value name="VALUE">
-                          <block type="math_number" id="b!uducm$w|MUlV~R;cO3">
+                          <block type="math_number" id="1nj!(%6qJ+0?-g[~E32|">
                             <field name="NUM">0</field>
                           </block>
                         </value>
                         <next>
-                          <block type="variables_set" id=",4cPk~yq_2h#dtIJqiy#">
-                            <field name="VAR" id="Es,MOK^RYJ_1;u2DfG-W">前方距離</field>
+                          <block type="variables_set" id="g!BicQ)r]!c/zw]-`tg%">
+                            <field name="VAR" id="69R+bVSBfx?.^Lo}~=Y=">右側距離</field>
                             <value name="VALUE">
-                              <block type="math_number" id="@DY?ZK(y%yIq@^@$uX01">
+                              <block type="math_number" id="b!uducm$w|MUlV~R;cO3">
                                 <field name="NUM">0</field>
                               </block>
                             </value>
                             <next>
-                              <block type="variables_set" id="2kIr)A^N]9(=iE?Lh1(e">
-                                <field name="VAR" id="w:VS^|3qGMapmI@M!$nk">左側距離</field>
+                              <block type="variables_set" id=",4cPk~yq_2h#dtIJqiy#">
+                                <field name="VAR" id="Es,MOK^RYJ_1;u2DfG-W">前方距離</field>
                                 <value name="VALUE">
-                                  <block type="math_number" id="eu0UX^ViaV?{NY0;j(`P">
+                                  <block type="math_number" id="@DY?ZK(y%yIq@^@$uX01">
                                     <field name="NUM">0</field>
                                   </block>
                                 </value>
                                 <next>
-                                  <block type="variables_set" id="Jumc=s%i?@cxYJB?!@1$">
-                                    <field name="VAR" id="!c.A/|`s6Y6SQ=G.lBBK">右前距離</field>
+                                  <block type="variables_set" id="2kIr)A^N]9(=iE?Lh1(e">
+                                    <field name="VAR" id="w:VS^|3qGMapmI@M!$nk">左側距離</field>
                                     <value name="VALUE">
-                                      <block type="math_number" id="1igG]K|v3Tg0*qdc^cEa">
+                                      <block type="math_number" id="eu0UX^ViaV?{NY0;j(`P">
                                         <field name="NUM">0</field>
                                       </block>
                                     </value>
                                     <next>
-                                      <block type="variables_set" id="W,=@g;9:i|Mky/70+E:5">
-                                        <field name="VAR" id="^yxt.%Dd+4#M!eY.F.*H">左前距離</field>
+                                      <block type="variables_set" id="Jumc=s%i?@cxYJB?!@1$">
+                                        <field name="VAR" id="!c.A/|`s6Y6SQ=G.lBBK">右前距離</field>
                                         <value name="VALUE">
-                                          <block type="math_number" id="V/[Gg6U:DS1{eL8`HjsJ">
+                                          <block type="math_number" id="1igG]K|v3Tg0*qdc^cEa">
                                             <field name="NUM">0</field>
                                           </block>
                                         </value>
                                         <next>
-                                          <block type="variables_set" id="I8t(1:|FKlM3OfqdELl-">
-                                            <field name="VAR" id="3mu%ock7yMNJRcn`_dyf">左輪轉速</field>
+                                          <block type="variables_set" id="W,=@g;9:i|Mky/70+E:5">
+                                            <field name="VAR" id="^yxt.%Dd+4#M!eY.F.*H">左前距離</field>
                                             <value name="VALUE">
-                                              <block type="math_number" id="Gp+pp+Q?)2p=qspIzFbb">
+                                              <block type="math_number" id="V/[Gg6U:DS1{eL8`HjsJ">
                                                 <field name="NUM">0</field>
                                               </block>
                                             </value>
                                             <next>
-                                              <block type="variables_set" id="n-3kznc?wsX/r@L@yC-F">
-                                                <field name="VAR" id="}]+AasxtgeR%@4=.s}3V">右輪轉速</field>
+                                              <block type="variables_set" id="I8t(1:|FKlM3OfqdELl-">
+                                                <field name="VAR" id="3mu%ock7yMNJRcn`_dyf">左輪轉速</field>
                                                 <value name="VALUE">
-                                                  <block type="math_number" id="$LN1C$sUU$fU@!yl5YL$">
+                                                  <block type="math_number" id="Gp+pp+Q?)2p=qspIzFbb">
                                                     <field name="NUM">0</field>
                                                   </block>
                                                 </value>
+                                                <next>
+                                                  <block type="variables_set" id="n-3kznc?wsX/r@L@yC-F">
+                                                    <field name="VAR" id="}]+AasxtgeR%@4=.s}3V">右輪轉速</field>
+                                                    <value name="VALUE">
+                                                      <block type="math_number" id="$LN1C$sUU$fU@!yl5YL$">
+                                                        <field name="NUM">0</field>
+                                                      </block>
+                                                    </value>
+                                                  </block>
+                                                </next>
                                               </block>
                                             </next>
                                           </block>
@@ -644,7 +660,7 @@
       </block>
     </statement>
   </block>
-  <block type="procedures_defnoreturn" id="pFeLTfP1|_yDs|NC0q)w" x="887" y="413">
+  <block type="procedures_defnoreturn" id="pFeLTfP1|_yDs|NC0q)w" x="962" y="413">
     <field name="NAME">輸出遊戲成績</field>
     <comment pinned="false" h="80" w="160">描述此函式...</comment>
     <statement name="STACK">
@@ -695,8 +711,8 @@
               </block>
             </value>
             <value name="ADD3">
-              <block type="text" id=".ql,ra4Jb95J0BiX%CC4">
-                <field name="TEXT">)正確率=</field>
+              <block type="text" id="UL4(#bw}o:VXMQ@4aN_F">
+                <field name="TEXT">)</field>
               </block>
             </value>
             <value name="ADD4">
@@ -722,7 +738,7 @@
       </block>
     </statement>
   </block>
-  <block type="procedures_defnoreturn" id="#j6Tzi~jHhUiNVb689cX" x="-387" y="613">
+  <block type="procedures_defnoreturn" id="#j6Tzi~jHhUiNVb689cX" x="-387" y="663">
     <field name="NAME">輸出環境訊息</field>
     <comment pinned="false" h="80" w="160">描述此函式...</comment>
     <statement name="STACK">
@@ -790,7 +806,7 @@
             </value>
             <value name="ADD11">
               <block type="variables_get" id="A3AB$Q9(/u*XMuDW#uY!">
-                <field name="VAR" id="0HLfG{UPNo-tcwXk2eW~">終點位置</field>
+                <field name="VAR" id="0HLfG{UPNo-tcwXk2eW~">終點的x座標</field>
               </block>
             </value>
             <value name="ADD12">

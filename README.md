@@ -6,6 +6,11 @@ PAIA Desktop is a visual programming editor based on [Blockly](https://github.co
 
 Pre-built installers of latest release can be downloaded from the links below.
 
+### 版本說明
+- 一般使用版：便於教師教學使用，包含兩套範例程式，並且使用者可以建立自己的資料集，並分享給他人使用。
+- 官方競賽版：競賽專用的版本，包含兩套範例程式，不能建立下載資料集。
+- 台南市競賽版：為了台南市競賽客製化建置，包含台南市提供之範例程式，隱藏下載資料集的功能。
+
 #### Windows 64-bit
 ##### 一般使用版
 [![](https://img.shields.io/badge/EXE%20Installer-v2.2.0-red)](https://github.com/PAIA-Playful-AI-Arena/Paia-Desktop/releases/download/v2.2.0/PAIA-Desktop-2.2.0.Setup.exe) [![](https://img.shields.io/badge/ZIP%20Portable-v2.2.0-red)](https://github.com/PAIA-Playful-AI-Arena/Paia-Desktop/releases/download/v2.2.0/PAIA-Desktop-win32-x64-2.2.0.zip)

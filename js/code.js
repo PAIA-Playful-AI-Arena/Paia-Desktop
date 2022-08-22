@@ -492,7 +492,13 @@ Code.init = function() {
   Code.bindClick('clean_trashcan',
       function() {Code.workspace.trashcan.emptyContents(); Code.renderContent();});
   Code.bindClick('custom_blocks',
-      function() {window.openPath(path.join(__dirname, 'custom_blocks').replace('app.asar', 'app.asar.unpacked')); Code.renderContent();});
+      function() {
+        var dir = path.join(__dirname, 'custom_blocks').replace('app.asar', 'app.asar.unpacked');
+        if (!fs.existsSync(dir)) {
+          fs.mkdirSync(dir, { recursive: true });
+        }
+        window.openPath(dir);
+      });
   Code.bindClick('toggle_python',
       function() {Code.togglePython(); Code.renderContent();});
   Code.bindClick('login_logout',

@@ -85,7 +85,7 @@
           "/venv"
         ],
         "asar": {
-          "unpackDir": "{python,games}"
+          "unpackDir": "{python,games,custom_blocks}"
         }
       },
       "makers": [

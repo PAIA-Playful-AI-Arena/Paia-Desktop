@@ -1,0 +1,20 @@
+<xml xmlns="https://developers.google.com/blockly/xml" id="toolbox" style="display: none">
+  <category name="autoCar" colour="230">
+    <block type="getcarinfo">
+      <field name="車距">60</field>
+      <field name="賽道數量">lane_no_3</field>
+      <field name="feature" id="oIx.;BaK{_.50T6=VIER">本次特徵</field>
+      <field name="mylane" id="jnaaI8UJwzl_jou!QYOj">本車賽道編號</field>
+    </block>
+    <block type="iscenterlane">
+      <field name="targetLane" id="2E6v2(d5-k+-4}0{y.T_">目標賽道</field>
+    </block>
+    <block type="printboard"></block>
+    <block type="gettarget">
+      <field name="user_cmd" id="iEb|af4G:48`rsXKpyX$">前進方向</field>
+      <!-- <field name="command" id="KV}5n{o=:QbJWvwQ|IQG">指令</field> -->
+      <field name="targetLane" id="2E6v2(d5-k+-4}0{y.T_">目標賽道</field>
+    </block>
+
+  </category>
+</xml>

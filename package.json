@@ -1,12 +1,12 @@
 {
   "name": "paia-desktop",
   "productName": "PAIA Desktop",
-  "version": "2.3.2",
+  "version": "2.4.0",
   "description": "A blockly application that can build AI to play games.",
   "main": "main.js",
   "scripts": {
     "start": "electron-forge start",
-    "reset-version": "npm --no-git-tag-version version 2.3.2",
+    "reset-version": "npm --no-git-tag-version version 2.4.0",
     "package": "electron-forge package",
     "package-rl": "cross-var npm --no-git-tag-version version $npm_package_version-rl && electron-forge package && npm run reset-version",
     "package-competition": "cross-var npm --no-git-tag-version version $npm_package_version-competition && electron-forge package && npm run reset-version",

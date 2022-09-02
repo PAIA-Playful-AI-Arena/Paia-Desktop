@@ -21,6 +21,11 @@ var Code = {};
 Code.GAME = (new URLSearchParams(window.location.search)).get('game');
 
 /**
+ * Get the name of the game.
+ */
+Code.GAME_VERSION = (new URLSearchParams(window.location.search)).get('ver');
+
+/**
  * The name of opened project.
  */
 Code.PROJECT = '';
@@ -1274,7 +1279,27 @@ Code.savePython = function() {
     return;
   } else {
     var pythonText = Blockly.Python.workspaceToCode(Code.workspace);
-    window.writeFile(pythonPath, pythonText);
+    var state = window.getCustomPython();
+    if (state.custom_python) {
+      var mlgameVerPath = path.join(path.dirname(state.custom_python_path), 'Lib', 'site-packages', 'mlgame', 'version.py');
+    } else {
+      var mlgameVerPath = path.join(__dirname, 'python', 'dist', 'interpreter', 'mlgame', 'version.py').replace('app.asar', 'app.asar.unpacked');
+    }
+    if (fs.existsSync(mlgameVerPath)) {
+      var mlgameVerStr = window.readFile(mlgameVerPath);
+    } else {
+      var mlgameVerStr = "version = unknown";
+    }
+    var mlgameVer = (mlgameVerStr.match(/version\s*==*\s*"([\w.]*)"/) || ['', 'unknown'])[1];
+    var verInfo = '"""\n' +
+                  `created_at_utc  : ${dateformat(new Date(), "isoUtcDateTime")}\n` +
+                  `created_at_w3c  : ${dateformat(new Date(), "yyyy-mm-dd'T'HH:MM:ssp")}\n` +
+                  `PAIA-Desktop    : ${app.getVersion()}\n` +
+                  `MLGame          : ${mlgameVer}\n` +
+                  `game            : ${Code.GAME}\n` +
+                  `game_version    : ${Code.GAME_VERSION}\n` +
+                  '"""\n\n';
+    window.writeFile(pythonPath, verInfo + pythonText);
     // Add log
     window.addLog('store_py', {
       type: "file",

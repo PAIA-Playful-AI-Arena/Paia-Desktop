@@ -191,8 +191,8 @@
                     <h6 class="card-subtitle mb-2 text-muted float-right"><span class="verison" game="${dirent.name}">${config.version}</span></h6>
                     <h3 class="card-title">${gameName}</h3>
                     <p class="card-text" style="min-height: 100px">${description}</p>
-                    <a href="code.html?game=${dirent.name}" class="btn btn-primary">積木</a>
-                    <a href="python.html?game=${dirent.name}" class="btn btn-primary">Python</a>
+                    <a href="code.html?game=${dirent.name}&ver=${config.version}" class="btn btn-primary">積木</a>
+                    <a href="python.html?game=${dirent.name}&ver=${config.version}" class="btn btn-primary">Python</a>
                     <a onclick="git_download('${dirent.name}', this)" class="btn btn-primary float-right" style="${downloadStyle}"><i class="bi bi-download"></i> 下載 / 更新</a>
                     ${$tags[0].outerHTML}
                   </div>

@@ -21,6 +21,11 @@ var Code = {};
 Code.GAME = (new URLSearchParams(window.location.search)).get('game');
 
 /**
+ * Get the name of the game.
+ */
+Code.GAME_VERSION = (new URLSearchParams(window.location.search)).get('ver');
+
+/**
  * The name of opened project.
  */
 Code.PROJECT = '';
@@ -441,7 +446,7 @@ Code.init = function() {
   Blockly.Python.INDENT = "    ";
   
   // Update library dropdown menu
-  var libraryDir = path.join(__dirname, 'library', Code.GAME.toLowerCase()).replace('app.asar', 'app.asar.unpacked');
+  var libraryDir = path.join(__dirname, 'library', Code.GAME).replace('app.asar', 'app.asar.unpacked');
   if (!fs.existsSync(libraryDir)) {
     fs.mkdirSync(libraryDir, { recursive: true });
   }
@@ -518,7 +523,7 @@ Code.init = function() {
   Code.bindClick('save_python',
       function() {Code.savePython(); Code.renderContent();});
   Code.bindClick('open_example_dir',
-      function() {window.openPath(path.join(__dirname, 'library', Code.GAME.toLowerCase()).replace('app.asar', 'app.asar.unpacked')); Code.renderContent();});
+      function() {window.openPath(path.join(__dirname, 'library', Code.GAME).replace('app.asar', 'app.asar.unpacked')); Code.renderContent();});
   Code.bindClick('en',
       function() {Code.changeLanguage('en'); Code.renderContent();});
   Code.bindClick('zh-hant',
@@ -855,9 +860,9 @@ Code.updateLibraryList = function() {
   $('#library').empty();
   var index = 0;
   if (app.getVersion().indexOf("competition-tn") != -1 && Code.GAME != "easy_game") {
-    var libraryDir = path.join(__dirname, 'examples', Code.GAME.toLowerCase(), 'tainan');
+    var libraryDir = path.join(__dirname, 'examples', Code.GAME, 'tainan');
   } else {
-    var libraryDir = path.join(__dirname, 'examples', Code.GAME.toLowerCase(), 'xml');
+    var libraryDir = path.join(__dirname, 'examples', Code.GAME, 'xml');
   }
   if (fs.existsSync(libraryDir)) {
     fs.readdirSync(libraryDir, { withFileTypes: true }).forEach(dirent => {
@@ -879,7 +884,7 @@ Code.updateLibraryList = function() {
     });
   }
 
-  var libraryDir = path.join(__dirname, 'library', Code.GAME.toLowerCase()).replace('app.asar', 'app.asar.unpacked');
+  var libraryDir = path.join(__dirname, 'library', Code.GAME).replace('app.asar', 'app.asar.unpacked');
   fs.readdirSync(libraryDir, { withFileTypes: true }).forEach(dirent => {
     if (dirent.isDirectory()) {
       var filesetDir = path.join(libraryDir, dirent.name);
@@ -1274,7 +1279,27 @@ Code.savePython = function() {
     return;
   } else {
     var pythonText = Blockly.Python.workspaceToCode(Code.workspace);
-    window.writeFile(pythonPath, pythonText);
+    var state = window.getCustomPython();
+    if (state.custom_python) {
+      var mlgameVerPath = path.join(path.dirname(state.custom_python_path), 'Lib', 'site-packages', 'mlgame', 'version.py');
+    } else {
+      var mlgameVerPath = path.join(__dirname, 'python', 'dist', 'interpreter', 'mlgame', 'version.py').replace('app.asar', 'app.asar.unpacked');
+    }
+    if (fs.existsSync(mlgameVerPath)) {
+      var mlgameVerStr = window.readFile(mlgameVerPath);
+    } else {
+      var mlgameVerStr = "version = unknown";
+    }
+    var mlgameVer = (mlgameVerStr.match(/version\s*==*\s*"([\w.]*)"/) || ['', 'unknown'])[1];
+    var verInfo = '"""\n' +
+                  `created_at_utc  : ${dateformat(new Date(), "isoUtcDateTime")}\n` +
+                  `created_at_w3c  : ${dateformat(new Date(), "yyyy-mm-dd'T'HH:MM:ssp")}\n` +
+                  `PAIA-Desktop    : ${app.getVersion()}\n` +
+                  `MLGame          : ${mlgameVer}\n` +
+                  `game            : ${Code.GAME}\n` +
+                  `game_version    : ${Code.GAME_VERSION}\n` +
+                  '"""\n\n';
+    window.writeFile(pythonPath, verInfo + pythonText);
     // Add log
     window.addLog('store_py', {
       type: "file",
@@ -1452,9 +1477,9 @@ Code.newProject = function() {
   Code.PROJECT = $('#project-name').val();
   Code.PROJECT_PATH = path.join($('#project-path').val(), $('#project-name').val());
   if (app.getVersion().indexOf("competition-tn") != -1 && Code.GAME != "easy_game") {
-    var start = path.join(__dirname, 'examples', Code.GAME.toLowerCase(), 'tainan', '範例程式', '1. auto.xml');
+    var start = path.join(__dirname, 'examples', Code.GAME, 'tainan', '範例程式', '1. auto.xml');
   } else {
-    var start = path.join(__dirname, 'examples', Code.GAME.toLowerCase(), 'xml', '範例程式 1', '1. start.xml');
+    var start = path.join(__dirname, 'examples', Code.GAME, 'xml', '範例程式 1', '1. start.xml');
   }
   try {
     if (!fs.existsSync(Code.PROJECT_PATH)) {
@@ -1510,9 +1535,9 @@ Code.openProject = function() {
     Code.PROJECT_PATH = dir[0];
   }
   if (app.getVersion().indexOf("competition-tn") != -1 && Code.GAME != "easy_game") {
-    var start = path.join(__dirname, 'examples', Code.GAME.toLowerCase(), 'tainan', '範例程式', '1. auto.xml');
+    var start = path.join(__dirname, 'examples', Code.GAME, 'tainan', '範例程式', '1. auto.xml');
   } else {
-    var start = path.join(__dirname, 'examples', Code.GAME.toLowerCase(), 'xml', '範例程式 1', '1. start.xml');
+    var start = path.join(__dirname, 'examples', Code.GAME, 'xml', '範例程式 1', '1. start.xml');
   }
   Code.PROJECT = path.basename(Code.PROJECT_PATH);
   $('#project_name').html(Code.PROJECT);
@@ -1760,7 +1785,7 @@ Code.findFileset = function() {
  * Download fileset.
  */
 Code.downloadFileset = function() {
-  var dir = path.join(__dirname, 'library', Code.GAME.toLowerCase(), `${Code.FILESET_FOUND.name}@${Code.FILESET_FOUND.token}`).replace('app.asar', 'app.asar.unpacked');
+  var dir = path.join(__dirname, 'library', Code.GAME, `${Code.FILESET_FOUND.name}@${Code.FILESET_FOUND.token}`).replace('app.asar', 'app.asar.unpacked');
   if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir, { recursive: true });
   } else if (!window.confirm(`${dir} 已存在，是否要覆蓋此程式集？`)) {

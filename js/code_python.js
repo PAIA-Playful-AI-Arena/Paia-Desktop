@@ -265,7 +265,7 @@ Code.init = function() {
   });
 
   // Update library dropdown menu
-  var libraryDir = path.join(__dirname, 'library', Code.GAME.toLowerCase()).replace('app.asar', 'app.asar.unpacked');
+  var libraryDir = path.join(__dirname, 'library', Code.GAME).replace('app.asar', 'app.asar.unpacked');
   if (!fs.existsSync(libraryDir)) {
     fs.mkdirSync(libraryDir, { recursive: true });
   }
@@ -299,7 +299,7 @@ Code.init = function() {
   Code.bindClick('open_python',
       function() {Code.openPython();});
   Code.bindClick('open_example_dir',
-      function() {window.openPath(path.join(__dirname, 'library', Code.GAME.toLowerCase()).replace('app.asar', 'app.asar.unpacked'));});
+      function() {window.openPath(path.join(__dirname, 'library', Code.GAME).replace('app.asar', 'app.asar.unpacked'));});
   Code.bindClick('en',
       function() {Code.changeLanguage('en');});
   Code.bindClick('zh-hant',
@@ -422,7 +422,7 @@ Code.saveCustomPython = function() {
 Code.updateLibraryList = function() {
   $('#library').empty();
   var index = 0;
-  var libraryDir = path.join(__dirname, 'examples', Code.GAME.toLowerCase(), 'python');
+  var libraryDir = path.join(__dirname, 'examples', Code.GAME, 'python');
   if (fs.existsSync(libraryDir)) {
     fs.readdirSync(libraryDir, { withFileTypes: true }).forEach(dirent => {
       if (dirent.isDirectory()) {
@@ -443,7 +443,7 @@ Code.updateLibraryList = function() {
     });
   }
 
-  var libraryDir = path.join(__dirname, 'library', Code.GAME.toLowerCase()).replace('app.asar', 'app.asar.unpacked');
+  var libraryDir = path.join(__dirname, 'library', Code.GAME).replace('app.asar', 'app.asar.unpacked');
   fs.readdirSync(libraryDir, { withFileTypes: true }).forEach(dirent => {
     if (dirent.isDirectory()) {
       var filesetDir = path.join(libraryDir, dirent.name);
@@ -901,7 +901,7 @@ Code.newProject = function() {
   Code.PROJECT = $('#project-name').val();
   Code.PROJECT_PATH = path.join($('#project-path').val(), $('#project-name').val());
   var dir = path.join(__dirname, 'games', Code.GAME, 'ml', Code.PROJECT).replace('app.asar', 'app.asar.unpacked');
-  var start = path.join(__dirname, 'examples', Code.GAME.toLowerCase(), 'python', '範例程式', '1. start.py');
+  var start = path.join(__dirname, 'examples', Code.GAME, 'python', '範例程式', '1. start.py');
   try {
     if (!fs.existsSync(Code.PROJECT_PATH)) {
       fs.mkdirSync(Code.PROJECT_PATH, { recursive: true });
@@ -956,7 +956,7 @@ Code.openProject = function() {
   } else {
     Code.PROJECT_PATH = dir[0];
   }
-  var start = path.join(__dirname, 'examples', Code.GAME.toLowerCase(), 'python', '範例程式', '1. start.py');
+  var start = path.join(__dirname, 'examples', Code.GAME, 'python', '範例程式', '1. start.py');
   Code.PROJECT = path.basename(Code.PROJECT_PATH);
   $('#project_name').html(Code.PROJECT);
   if(fs.existsSync(path.join(Code.PROJECT_PATH, 'ml_play.py'))) {
@@ -1203,7 +1203,7 @@ Code.findFileset = function() {
  * Download fileset.
  */
 Code.downloadFileset = function() {
-  var dir = path.join(__dirname, 'library', Code.GAME.toLowerCase(), `${Code.FILESET_FOUND.name}@${Code.FILESET_FOUND.token}`).replace('app.asar', 'app.asar.unpacked');
+  var dir = path.join(__dirname, 'library', Code.GAME, `${Code.FILESET_FOUND.name}@${Code.FILESET_FOUND.token}`).replace('app.asar', 'app.asar.unpacked');
   if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir, { recursive: true });
   } else if (!window.confirm(`${dir} 已存在，是否要覆蓋此程式集？`)) {

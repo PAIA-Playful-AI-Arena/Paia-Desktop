@@ -1,7 +1,7 @@
 const fs = require('fs');
 const { argv } = require('process');
 const download = require('download-git-repo');
-const version = 'v1.0.3'
+const version = 'v1.0.4'
 
 if (argv.length < 3 || (['win32', 'darwin', 'linux']).indexOf(argv[2]) == -1) {
   console.log('Usage: node download-python.js [win32, darwin, linux]')

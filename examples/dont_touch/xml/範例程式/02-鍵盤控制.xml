@@ -1,0 +1,258 @@
+<xml xmlns="https://developers.google.com/blockly/xml">
+  <variables>
+    <variable id="T`wgafmjX3ueH(iSyDMB">左輪轉速</variable>
+    <variable id="PpZ+]X6Y;wktmEM~yAqI">右輪轉速</variable>
+  </variables>
+  <block type="mlplay_class" id="Z*lb-wWxg7v@ss05TP[c" x="138" y="-37">
+    <statement name="INIT">
+      <block type="variables_set" id="j[Z2TZG19z%$VKz-aN)B">
+        <field name="VAR" id="T`wgafmjX3ueH(iSyDMB">左輪轉速</field>
+        <value name="VALUE">
+          <block type="math_number" id="LEPtL%7qb4=aj4lbU*=r">
+            <field name="NUM">0</field>
+          </block>
+        </value>
+        <next>
+          <block type="variables_set" id="p:;rWBq}!nLAELt{)[SU">
+            <field name="VAR" id="PpZ+]X6Y;wktmEM~yAqI">右輪轉速</field>
+            <value name="VALUE">
+              <block type="math_number" id="Sg#9fD@JEe~it6~Bz!pa">
+                <field name="NUM">0</field>
+              </block>
+            </value>
+          </block>
+        </next>
+      </block>
+    </statement>
+    <statement name="UPDATE">
+      <block type="controls_if" id="%fBu!|?}6Xq1^rDO[Y,$">
+        <mutation else="1"></mutation>
+        <value name="IF0">
+          <block type="logic_compare" id="/x@rsh0y11g/O8nTF{}N">
+            <field name="OP">NEQ</field>
+            <value name="A">
+              <block type="mlplay_get_info" id="QTBe6o{3#i5e.bv*KGcM">
+                <field name="FIELD">scene_info['status']</field>
+              </block>
+            </value>
+            <value name="B">
+              <block type="mlplay_game_status" id="ce8tQZVb8x/d+u%NcPAu">
+                <field name="STATUS">GAME_ALIVE</field>
+              </block>
+            </value>
+          </block>
+        </value>
+        <statement name="DO0">
+          <block type="mlplay_return_action" id="^snNt*rtEm=Q(dMD?wic">
+            <field name="ACTION">RESET</field>
+          </block>
+        </statement>
+        <statement name="ELSE">
+          <block type="controls_if" id="*@9*1N+ogLLf8dz5|(yE">
+            <mutation elseif="3" else="1"></mutation>
+            <value name="IF0">
+              <block type="logic_operation" id="g5E~3r3s==4)Gm?tn{g)">
+                <field name="OP">OR</field>
+                <value name="A">
+                  <block type="mlplay_is_key_pressed" id="]A-p7qPy]^EhCuAAfXd_">
+                    <field name="TYPE">arrow</field>
+                    <field name="KEY">UP</field>
+                  </block>
+                </value>
+                <value name="B">
+                  <block type="mlplay_is_key_pressed" id="Ze.qMKuPne}#gjlzYqru">
+                    <field name="TYPE">alpha</field>
+                    <field name="KEY">w</field>
+                  </block>
+                </value>
+              </block>
+            </value>
+            <statement name="DO0">
+              <block type="variables_set" id="(`IGp;%jLw.@~c.b5D^(">
+                <field name="VAR" id="T`wgafmjX3ueH(iSyDMB">左輪轉速</field>
+                <value name="VALUE">
+                  <block type="math_number" id="Ob;CcE/oFZ2)P,/MkmH,">
+                    <field name="NUM">255</field>
+                  </block>
+                </value>
+                <next>
+                  <block type="variables_set" id="I}=2Q^LH?o2M9LK}9[[~">
+                    <field name="VAR" id="PpZ+]X6Y;wktmEM~yAqI">右輪轉速</field>
+                    <value name="VALUE">
+                      <block type="math_number" id="L?Y.hjVP4uW8nh^STJKW">
+                        <field name="NUM">255</field>
+                      </block>
+                    </value>
+                  </block>
+                </next>
+              </block>
+            </statement>
+            <value name="IF1">
+              <block type="logic_operation" id="XOJ.ZYU]!8GC{E{Zx)6n">
+                <field name="OP">OR</field>
+                <value name="A">
+                  <block type="mlplay_is_key_pressed" id="qy0nZ^iSdjMofr|5/TyN">
+                    <field name="TYPE">arrow</field>
+                    <field name="KEY">DOWN</field>
+                  </block>
+                </value>
+                <value name="B">
+                  <block type="mlplay_is_key_pressed" id="iP{QNudQ!VCc:Q2B@r^:">
+                    <field name="TYPE">alpha</field>
+                    <field name="KEY">s</field>
+                  </block>
+                </value>
+              </block>
+            </value>
+            <statement name="DO1">
+              <block type="variables_set" id="/tr/}nPij8Lq7ou~#EG@">
+                <field name="VAR" id="T`wgafmjX3ueH(iSyDMB">左輪轉速</field>
+                <value name="VALUE">
+                  <block type="math_number" id="A6*|FuB^yAPEq7!IC|eZ">
+                    <field name="NUM">-100</field>
+                  </block>
+                </value>
+                <next>
+                  <block type="variables_set" id="1yg7[}mC$cn/tPu7KeH@">
+                    <field name="VAR" id="PpZ+]X6Y;wktmEM~yAqI">右輪轉速</field>
+                    <value name="VALUE">
+                      <block type="math_number" id="gwb8:NIFu55SbRS!eZ^_">
+                        <field name="NUM">-100</field>
+                      </block>
+                    </value>
+                  </block>
+                </next>
+              </block>
+            </statement>
+            <value name="IF2">
+              <block type="logic_operation" id="$AQmG^3@Mw76iSk4qbvI">
+                <field name="OP">OR</field>
+                <value name="A">
+                  <block type="mlplay_is_key_pressed" id="0$xH4CI7V6eAvVG4}GA]">
+                    <field name="TYPE">arrow</field>
+                    <field name="KEY">RIGHT</field>
+                  </block>
+                </value>
+                <value name="B">
+                  <block type="mlplay_is_key_pressed" id="=O;)BAg[Oh0j.o@OQWHU">
+                    <field name="TYPE">alpha</field>
+                    <field name="KEY">d</field>
+                  </block>
+                </value>
+              </block>
+            </value>
+            <statement name="DO2">
+              <block type="variables_set" id="+z;W!U!vutX6_gGfe!g`">
+                <field name="VAR" id="T`wgafmjX3ueH(iSyDMB">左輪轉速</field>
+                <value name="VALUE">
+                  <block type="math_number" id="~`02YQXZrD$9adYrQ4ns">
+                    <field name="NUM">50</field>
+                  </block>
+                </value>
+                <next>
+                  <block type="variables_set" id="^NgfZ7$rkB8@z0,g[}o}">
+                    <field name="VAR" id="PpZ+]X6Y;wktmEM~yAqI">右輪轉速</field>
+                    <value name="VALUE">
+                      <block type="math_number" id="]LVCpcAb,Y[T~#*p-D[4">
+                        <field name="NUM">-50</field>
+                      </block>
+                    </value>
+                  </block>
+                </next>
+              </block>
+            </statement>
+            <value name="IF3">
+              <block type="logic_operation" id="=P{!{ag`)+))=~kYV;)w">
+                <field name="OP">OR</field>
+                <value name="A">
+                  <block type="mlplay_is_key_pressed" id="+IHm`%ZnXcI@;e|U`=]Z">
+                    <field name="TYPE">arrow</field>
+                    <field name="KEY">LEFT</field>
+                  </block>
+                </value>
+                <value name="B">
+                  <block type="mlplay_is_key_pressed" id="b!/$qKGEwOd/_Ih@)PW_">
+                    <field name="TYPE">alpha</field>
+                    <field name="KEY">a</field>
+                  </block>
+                </value>
+              </block>
+            </value>
+            <statement name="DO3">
+              <block type="variables_set" id=",rLkqvrRtDQfIiuK#ez+">
+                <field name="VAR" id="T`wgafmjX3ueH(iSyDMB">左輪轉速</field>
+                <value name="VALUE">
+                  <block type="math_number" id="%T!hhE*@b-KC=N|qP{P9">
+                    <field name="NUM">-50</field>
+                  </block>
+                </value>
+                <next>
+                  <block type="variables_set" id="dEf:jYfZ[a;3o,wk*6wU">
+                    <field name="VAR" id="PpZ+]X6Y;wktmEM~yAqI">右輪轉速</field>
+                    <value name="VALUE">
+                      <block type="math_number" id="Id;iDpu8bybRF-lY[R0e">
+                        <field name="NUM">50</field>
+                      </block>
+                    </value>
+                  </block>
+                </next>
+              </block>
+            </statement>
+            <statement name="ELSE">
+              <block type="variables_set" id="di#}?kc5UUr]$P?#q{U)">
+                <field name="VAR" id="T`wgafmjX3ueH(iSyDMB">左輪轉速</field>
+                <value name="VALUE">
+                  <block type="math_number" id="FfmW*E+gEnRTs`!7(22|">
+                    <field name="NUM">150</field>
+                  </block>
+                </value>
+                <next>
+                  <block type="variables_set" id="M($8gbVw_GheXC5x[BKA">
+                    <field name="VAR" id="PpZ+]X6Y;wktmEM~yAqI">右輪轉速</field>
+                    <value name="VALUE">
+                      <block type="math_number" id="l)TvRk4rA=rJ^I(X5e8!">
+                        <field name="NUM">150</field>
+                      </block>
+                    </value>
+                  </block>
+                </next>
+              </block>
+            </statement>
+          </block>
+        </statement>
+        <next>
+          <block type="mlplay_return_mazecar_action" id="EsbLq/Don#i6zc+gBlJ6">
+            <value name="LEFT_RPM">
+              <shadow type="math_number" id="!hH)@~w3!a}*2#T?Rwhm">
+                <field name="NUM">50</field>
+              </shadow>
+              <block type="variables_get" id=",0%ZT=`+^9mt|,,luhRV">
+                <field name="VAR" id="T`wgafmjX3ueH(iSyDMB">左輪轉速</field>
+              </block>
+            </value>
+            <value name="RIGHT_RPM">
+              <shadow type="math_number" id="zP/O-iD.X~@Fv)RS*vk`">
+                <field name="NUM">50</field>
+              </shadow>
+              <block type="variables_get" id="y*%lXh(dvv6;_(=|kN@C">
+                <field name="VAR" id="PpZ+]X6Y;wktmEM~yAqI">右輪轉速</field>
+              </block>
+            </value>
+          </block>
+        </next>
+      </block>
+    </statement>
+    <statement name="RESET">
+      <block type="text_print" id="6+J(T$Y0MEr_BUxnFKAM">
+        <value name="TEXT">
+          <shadow type="text">
+            <field name="TEXT">abc</field>
+          </shadow>
+          <block type="text" id="~yT]/4%7pnPU8YxF)X}{">
+            <field name="TEXT">遊戲重置</field>
+          </block>
+        </value>
+      </block>
+    </statement>
+  </block>
+</xml>

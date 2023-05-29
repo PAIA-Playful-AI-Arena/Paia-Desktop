@@ -22,3 +22,6 @@
 [submodule "games/TankMan"]
 	path = games/TankMan
 	url = https://github.com/Jesse-Jumbo/TankMan.git
+[submodule "games/dont_touch"]
+	path = games/dont_touch
+	url = https://github.com/yen900611/dont_touch

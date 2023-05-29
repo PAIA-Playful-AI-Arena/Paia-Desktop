@@ -1,7 +1,7 @@
 {
   "name": "paia-desktop",
   "productName": "PAIA Desktop",
-  "version": "2.4.3-competition",
+  "version": "2.4.4-competition",
   "description": "A blockly application that can build AI to play games.",
   "main": "main.js",
   "scripts": {

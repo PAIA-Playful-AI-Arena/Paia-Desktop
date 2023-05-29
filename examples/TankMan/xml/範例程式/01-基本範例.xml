@@ -1,0 +1,400 @@
+<xml xmlns="https://developers.google.com/blockly/xml">
+  <variables>
+    <variable id="bZ+|PJdVbiuFw3KO=ry7">遊戲次數</variable>
+    <variable id="8b4^G{Y-TW!l|1OmCp:W">1P</variable>
+    <variable id="pOY$_k7}^}@b2EVBF*Iz">shoot_cd</variable>
+    <variable id="R:P3x9rFhhJn3r!c)$]+">act</variable>
+    <variable id="?M5Iy-OBl_dbq,Q_y26#">is_shoot</variable>
+  </variables>
+  <block type="mlplay_class" id="kT4*=I#)Jm$C=[8p0q4r" x="-937" y="-1712">
+    <statement name="INIT">
+      <block type="variables_set" id="421^z]sV^enY}zg$Kd/i">
+        <field name="VAR" id="bZ+|PJdVbiuFw3KO=ry7">遊戲次數</field>
+        <value name="VALUE">
+          <block type="math_number" id="`TNM0yRv-/$#d0#Q=ugQ">
+            <field name="NUM">0</field>
+          </block>
+        </value>
+        <next>
+          <block type="variables_set" id="fWGF,I}2q%%u(,9Nbvk)">
+            <field name="VAR" id="pOY$_k7}^}@b2EVBF*Iz">shoot_cd</field>
+            <value name="VALUE">
+              <block type="math_random_int" id="TsEK(h6bl.Z0wYg{BAz*">
+                <value name="FROM">
+                  <shadow type="math_number" id="O]V+*zs)JfVh(U=Y}8dx">
+                    <field name="NUM">15</field>
+                  </shadow>
+                </value>
+                <value name="TO">
+                  <shadow type="math_number" id="`(^L1O%q%npyqPE,e1C1">
+                    <field name="NUM">30</field>
+                  </shadow>
+                </value>
+              </block>
+            </value>
+          </block>
+        </next>
+      </block>
+    </statement>
+    <statement name="UPDATE">
+      <block type="variables_set" id="26Grm6*yXJ=[aM$x^}|?">
+        <field name="VAR" id="8b4^G{Y-TW!l|1OmCp:W">1P</field>
+        <value name="VALUE">
+          <block type="mlplay_get_info" id=",w)^L)U;M.N.cTIEmMV~">
+            <field name="FIELD">scene_info['id']</field>
+          </block>
+        </value>
+        <next>
+          <block type="controls_if" id="eW5Cj*74TXph?RinvVue">
+            <mutation else="1"></mutation>
+            <value name="IF0">
+              <block type="math_number_property" id="MY=`oQPk],8PKxIaN*%[">
+                <mutation divisor_input="true"></mutation>
+                <field name="PROPERTY">DIVISIBLE_BY</field>
+                <value name="NUMBER_TO_CHECK">
+                  <shadow type="math_number" id="QYXJ/Q3tuH*roKrjs^Ks">
+                    <field name="NUM">0</field>
+                  </shadow>
+                  <block type="mlplay_get_info" id=";MO;F4toyr?3gdy99ynI">
+                    <field name="FIELD">scene_info['used_frame']</field>
+                  </block>
+                </value>
+                <value name="DIVISOR">
+                  <block type="variables_get" id="hq/zm@L7NiuS+~orJG1^">
+                    <field name="VAR" id="pOY$_k7}^}@b2EVBF*Iz">shoot_cd</field>
+                  </block>
+                </value>
+              </block>
+            </value>
+            <statement name="DO0">
+              <block type="variables_set" id="In+5WJu+Lh79sVdov[9=">
+                <field name="VAR" id="R:P3x9rFhhJn3r!c)$]+">act</field>
+                <value name="VALUE">
+                  <block type="math_random_int" id="|0[oxHe8r8qph.my^?L,">
+                    <value name="FROM">
+                      <shadow type="math_number" id=")f][{eC0E?7}mc7@/yF_">
+                        <field name="NUM">0</field>
+                      </shadow>
+                    </value>
+                    <value name="TO">
+                      <shadow type="math_number" id="ghtNn`lz2$q7o~$TYT9n">
+                        <field name="NUM">4</field>
+                      </shadow>
+                    </value>
+                  </block>
+                </value>
+                <next>
+                  <block type="variables_set" id="dy}XU^m4B6GCQ}Urp!Gz">
+                    <field name="VAR" id="?M5Iy-OBl_dbq,Q_y26#">is_shoot</field>
+                    <value name="VALUE">
+                      <block type="math_random_int" id="^3t;Trb@;{_iV)rL/$(]">
+                        <value name="FROM">
+                          <shadow type="math_number" id="_6KWt^z{jzY5Yc/u=jT)">
+                            <field name="NUM">0</field>
+                          </shadow>
+                        </value>
+                        <value name="TO">
+                          <shadow type="math_number" id="7a#;w{H[bjb5BSPe#DV$">
+                            <field name="NUM">1</field>
+                          </shadow>
+                        </value>
+                      </block>
+                    </value>
+                    <next>
+                      <block type="variables_set" id="HP#{UFRBLfkiV.!~%UO]">
+                        <field name="VAR" id="pOY$_k7}^}@b2EVBF*Iz">shoot_cd</field>
+                        <value name="VALUE">
+                          <block type="math_random_int" id="OXyNwh5674ILz/t9])Fo">
+                            <value name="FROM">
+                              <shadow type="math_number" id="X{g6nNp^9)`u]$7[aZK=">
+                                <field name="NUM">15</field>
+                              </shadow>
+                            </value>
+                            <value name="TO">
+                              <shadow type="math_number" id="9^Zi`(A%k6`GUldIBpbq">
+                                <field name="NUM">30</field>
+                              </shadow>
+                            </value>
+                          </block>
+                        </value>
+                      </block>
+                    </next>
+                  </block>
+                </next>
+              </block>
+            </statement>
+            <statement name="ELSE">
+              <block type="variables_set" id="?VJUl9H*b=3eb866|mG6">
+                <field name="VAR" id="R:P3x9rFhhJn3r!c)$]+">act</field>
+                <value name="VALUE">
+                  <block type="math_number" id="MVks-cF|=:K3`h#lVC_.">
+                    <field name="NUM">0</field>
+                  </block>
+                </value>
+                <next>
+                  <block type="variables_set" id="G$q}=gEb);DY??6+k3gM">
+                    <field name="VAR" id="?M5Iy-OBl_dbq,Q_y26#">is_shoot</field>
+                    <value name="VALUE">
+                      <block type="math_number" id="$LzaC4;QAx`mRCaqCK)4">
+                        <field name="NUM">0</field>
+                      </block>
+                    </value>
+                  </block>
+                </next>
+              </block>
+            </statement>
+            <next>
+              <block type="controls_if" id="t_K1#Oa%I%k%u}a4G$S*">
+                <mutation else="1"></mutation>
+                <value name="IF0">
+                  <block type="variables_get" id="?E_N,YZ2jgLC|yG.K)Xk">
+                    <field name="VAR" id="?M5Iy-OBl_dbq,Q_y26#">is_shoot</field>
+                  </block>
+                </value>
+                <statement name="DO0">
+                  <block type="controls_if" id="(B{v9C|u*:WLTE|@x#S!">
+                    <mutation elseif="3" else="1"></mutation>
+                    <value name="IF0">
+                      <block type="logic_compare" id="Y*c;5@-m0$[*M?hm^jW2">
+                        <field name="OP">EQ</field>
+                        <value name="A">
+                          <block type="variables_get" id="cueGG%CSO_K`r@PVorH2">
+                            <field name="VAR" id="R:P3x9rFhhJn3r!c)$]+">act</field>
+                          </block>
+                        </value>
+                        <value name="B">
+                          <block type="math_number" id="rDA?.B$?]}AWU}.Q`fK#">
+                            <field name="NUM">1</field>
+                          </block>
+                        </value>
+                      </block>
+                    </value>
+                    <statement name="DO0">
+                      <block type="mlplay_return_action" id="m!8dP(%8-0X((#6kagWc">
+                        <field name="ACTION">['FORWARD', 'SHOOT']</field>
+                      </block>
+                    </statement>
+                    <value name="IF1">
+                      <block type="logic_compare" id="xWqpogTuLU|M?,)M@_Vx">
+                        <field name="OP">EQ</field>
+                        <value name="A">
+                          <block type="variables_get" id="`_WgHd2I[,snp+SUS.h|">
+                            <field name="VAR" id="R:P3x9rFhhJn3r!c)$]+">act</field>
+                          </block>
+                        </value>
+                        <value name="B">
+                          <block type="math_number" id="9$B`D#zDCMBc;%cfiG9]">
+                            <field name="NUM">2</field>
+                          </block>
+                        </value>
+                      </block>
+                    </value>
+                    <statement name="DO1">
+                      <block type="mlplay_return_action" id="{va4u#8Sfd:5YXVPV@uF">
+                        <field name="ACTION">['BACKWARD', 'SHOOT']</field>
+                      </block>
+                    </statement>
+                    <value name="IF2">
+                      <block type="logic_compare" id="2WP)+#sS1gQ#p)OBiiki">
+                        <field name="OP">EQ</field>
+                        <value name="A">
+                          <block type="variables_get" id="1@a757#a)s.I=#oD%puy">
+                            <field name="VAR" id="R:P3x9rFhhJn3r!c)$]+">act</field>
+                          </block>
+                        </value>
+                        <value name="B">
+                          <block type="math_number" id="K?izngX;3DL`nScRGMP,">
+                            <field name="NUM">3</field>
+                          </block>
+                        </value>
+                      </block>
+                    </value>
+                    <statement name="DO2">
+                      <block type="mlplay_return_action" id="6k1)`$8dhfJ%6oV4CR5S">
+                        <field name="ACTION">['TURN_LEFT', 'SHOOT']</field>
+                      </block>
+                    </statement>
+                    <value name="IF3">
+                      <block type="logic_compare" id="cV]5`_d^{a%BCb;xsLP*">
+                        <field name="OP">EQ</field>
+                        <value name="A">
+                          <block type="variables_get" id="#5xOk-SI}XeAZf]=;-0$">
+                            <field name="VAR" id="R:P3x9rFhhJn3r!c)$]+">act</field>
+                          </block>
+                        </value>
+                        <value name="B">
+                          <block type="math_number" id="d|4jtk_(0*m9TXs#W?m{">
+                            <field name="NUM">4</field>
+                          </block>
+                        </value>
+                      </block>
+                    </value>
+                    <statement name="DO3">
+                      <block type="mlplay_return_action" id="!V|!p.,.k;5}$u`v:N*`">
+                        <field name="ACTION">['TURN_RIGHT', 'SHOOT']</field>
+                      </block>
+                    </statement>
+                    <statement name="ELSE">
+                      <block type="mlplay_return_action" id="mt87CPm6O5x~[h,5^fM,">
+                        <field name="ACTION">['SHOOT']</field>
+                      </block>
+                    </statement>
+                  </block>
+                </statement>
+                <statement name="ELSE">
+                  <block type="controls_if" id="|d=P5x_5bLhdXx%RqL`o">
+                    <mutation elseif="3" else="1"></mutation>
+                    <value name="IF0">
+                      <block type="logic_compare" id="noL.a^ZOccO|!a][Q+*6">
+                        <field name="OP">EQ</field>
+                        <value name="A">
+                          <block type="variables_get" id=")IvA}N:}rx-@`!VKug`(">
+                            <field name="VAR" id="R:P3x9rFhhJn3r!c)$]+">act</field>
+                          </block>
+                        </value>
+                        <value name="B">
+                          <block type="math_number" id="2)X+`9;g4k,;SlJ3[M-:">
+                            <field name="NUM">1</field>
+                          </block>
+                        </value>
+                      </block>
+                    </value>
+                    <statement name="DO0">
+                      <block type="mlplay_return_action" id="LA5v/3g@_:jXS93:ZhW_">
+                        <field name="ACTION">['FORWARD']</field>
+                      </block>
+                    </statement>
+                    <value name="IF1">
+                      <block type="logic_compare" id="g3.6wFU!~HP?{*]U!DfY">
+                        <field name="OP">EQ</field>
+                        <value name="A">
+                          <block type="variables_get" id="}+4f,f=Ri[Jc,j)-6(v`">
+                            <field name="VAR" id="R:P3x9rFhhJn3r!c)$]+">act</field>
+                          </block>
+                        </value>
+                        <value name="B">
+                          <block type="math_number" id="~geot.1,I*cGzB7/z9qX">
+                            <field name="NUM">2</field>
+                          </block>
+                        </value>
+                      </block>
+                    </value>
+                    <statement name="DO1">
+                      <block type="mlplay_return_action" id="gl@q$|B0QQo`]nHWhcKr">
+                        <field name="ACTION">['BACKWARD']</field>
+                      </block>
+                    </statement>
+                    <value name="IF2">
+                      <block type="logic_compare" id="u^U$1B5ZxkquuZFc0aI}">
+                        <field name="OP">EQ</field>
+                        <value name="A">
+                          <block type="variables_get" id="!Y@R6#U%I8GQc-2mF(Zt">
+                            <field name="VAR" id="R:P3x9rFhhJn3r!c)$]+">act</field>
+                          </block>
+                        </value>
+                        <value name="B">
+                          <block type="math_number" id="U1K;aQ?Zj5/[{YSWO2!e">
+                            <field name="NUM">3</field>
+                          </block>
+                        </value>
+                      </block>
+                    </value>
+                    <statement name="DO2">
+                      <block type="mlplay_return_action" id="]pN:T8-e,dy{}1oQfW2)">
+                        <field name="ACTION">['TURN_LEFT']</field>
+                      </block>
+                    </statement>
+                    <value name="IF3">
+                      <block type="logic_compare" id="(D=Hx_icw-fW5Uy1e/c,">
+                        <field name="OP">EQ</field>
+                        <value name="A">
+                          <block type="variables_get" id="p#u#IF@3T/pMLmQ]8oRg">
+                            <field name="VAR" id="R:P3x9rFhhJn3r!c)$]+">act</field>
+                          </block>
+                        </value>
+                        <value name="B">
+                          <block type="math_number" id="BaZ|ra1[rv6B5aC4K.0$">
+                            <field name="NUM">4</field>
+                          </block>
+                        </value>
+                      </block>
+                    </value>
+                    <statement name="DO3">
+                      <block type="mlplay_return_action" id="7V~pXDzZ0#ZuanovfJb%">
+                        <field name="ACTION">['TURN_RIGHT']</field>
+                      </block>
+                    </statement>
+                    <statement name="ELSE">
+                      <block type="mlplay_return_action" id="f?0GZb-)B4L*wya-fh7z">
+                        <field name="ACTION">['NONE']</field>
+                      </block>
+                    </statement>
+                  </block>
+                </statement>
+              </block>
+            </next>
+          </block>
+        </next>
+      </block>
+    </statement>
+    <statement name="RESET">
+      <block type="controls_if" id="SG-=)rh8]#(QW)UQ4-,f">
+        <value name="IF0">
+          <block type="logic_compare" id="qx[mgkcibfX`A)kd[Mm/">
+            <field name="OP">EQ</field>
+            <value name="A">
+              <block type="variables_get" id="hpcW0OlRoEvS]vs`yO7W">
+                <field name="VAR" id="8b4^G{Y-TW!l|1OmCp:W">1P</field>
+              </block>
+            </value>
+            <value name="B">
+              <block type="text" id="B:(u54@h8u*6630[](l]">
+                <field name="TEXT">1P</field>
+              </block>
+            </value>
+          </block>
+        </value>
+        <statement name="DO0">
+          <block type="math_change" id="%y@op,]uAK5L9/GS2/(i">
+            <field name="VAR" id="bZ+|PJdVbiuFw3KO=ry7">遊戲次數</field>
+            <value name="DELTA">
+              <shadow type="math_number" id=",3LH5TQ85fEo+fM/03tn">
+                <field name="NUM">1</field>
+              </shadow>
+              <block type="math_number" id="QXNt$E[0L~0oS$/KJ9!A">
+                <field name="NUM">1</field>
+              </block>
+            </value>
+            <next>
+              <block type="text_print" id="/()DhF=+LTmwwB2xJN]g">
+                <value name="TEXT">
+                  <shadow type="text" id="1sL}8=Lw%w0uA1:VLwx!">
+                    <field name="TEXT">abc</field>
+                  </shadow>
+                  <block type="text_join" id="3,-%iTU6v!Oe8[@h}Svz">
+                    <mutation items="3"></mutation>
+                    <value name="ADD0">
+                      <block type="text" id="Nn!~{~N5fe,pJV9IX;U8">
+                        <field name="TEXT">第 </field>
+                      </block>
+                    </value>
+                    <value name="ADD1">
+                      <block type="variables_get" id="T@:sd_tU_UQqp^1F%@~m">
+                        <field name="VAR" id="bZ+|PJdVbiuFw3KO=ry7">遊戲次數</field>
+                      </block>
+                    </value>
+                    <value name="ADD2">
+                      <block type="text" id="*d$z/|sT~SZQMyYP0Iq,">
+                        <field name="TEXT"> 次遊玩結果：</field>
+                      </block>
+                    </value>
+                  </block>
+                </value>
+              </block>
+            </next>
+          </block>
+        </statement>
+      </block>
+    </statement>
+  </block>
+</xml>

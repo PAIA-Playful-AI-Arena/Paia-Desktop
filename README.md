@@ -13,26 +13,26 @@ Pre-built installers of latest release can be downloaded from the links below.
 
 #### Windows 64-bit
 ##### 一般使用版
-[![](https://img.shields.io/badge/EXE%20Installer-v2.4.4-red)](https://github.com/PAIA-Playful-AI-Arena/Paia-Desktop/releases/download/v2.4.4/PAIA-Desktop-2.4.4.Setup.exe) [![](https://img.shields.io/badge/ZIP%20Portable-v2.4.4-red)](https://github.com/PAIA-Playful-AI-Arena/Paia-Desktop/releases/download/v2.4.4/PAIA-Desktop-win32-x64-2.4.4.zip)
+[![](https://img.shields.io/badge/EXE%20Installer-v2.4.5-red)](https://github.com/PAIA-Playful-AI-Arena/Paia-Desktop/releases/download/v2.4.5/PAIA-Desktop-2.4.5.Setup.exe) [![](https://img.shields.io/badge/ZIP%20Portable-v2.4.5-red)](https://github.com/PAIA-Playful-AI-Arena/Paia-Desktop/releases/download/v2.4.5/PAIA-Desktop-win32-x64-2.4.5.zip)
 ##### 官方競賽版
-[![](https://img.shields.io/badge/EXE%20Installer-v2.4.4--competition-blue)](https://github.com/PAIA-Playful-AI-Arena/Paia-Desktop/releases/download/v2.4.4/PAIA-Desktop-2.4.4-competition.Setup.exe) [![](https://img.shields.io/badge/ZIP%20Portable-v2.4.4--competition-blue)](https://github.com/PAIA-Playful-AI-Arena/Paia-Desktop/releases/download/v2.4.4/PAIA-Desktop-win32-x64-2.4.4-competition.zip)
+[![](https://img.shields.io/badge/EXE%20Installer-v2.4.5--competition-blue)](https://github.com/PAIA-Playful-AI-Arena/Paia-Desktop/releases/download/v2.4.5/PAIA-Desktop-2.4.5-competition.Setup.exe) [![](https://img.shields.io/badge/ZIP%20Portable-v2.4.5--competition-blue)](https://github.com/PAIA-Playful-AI-Arena/Paia-Desktop/releases/download/v2.4.5/PAIA-Desktop-win32-x64-2.4.5-competition.zip)
 ##### 台南競賽版
-[![](https://img.shields.io/badge/EXE%20Installer-v2.4.4--competition--tn-green)](https://github.com/PAIA-Playful-AI-Arena/Paia-Desktop/releases/download/v2.4.4/PAIA-Desktop-2.4.4-competition-tn.Setup.exe) [![](https://img.shields.io/badge/ZIP%20Portable-v2.4.4--competition--tn-green)](https://github.com/PAIA-Playful-AI-Arena/Paia-Desktop/releases/download/v2.4.4/PAIA-Desktop-win32-x64-2.4.4-competition-tn.zip)
+[![](https://img.shields.io/badge/EXE%20Installer-v2.4.5--competition--tn-green)](https://github.com/PAIA-Playful-AI-Arena/Paia-Desktop/releases/download/v2.4.5/PAIA-Desktop-2.4.5-competition-tn.Setup.exe) [![](https://img.shields.io/badge/ZIP%20Portable-v2.4.5--competition--tn-green)](https://github.com/PAIA-Playful-AI-Arena/Paia-Desktop/releases/download/v2.4.5/PAIA-Desktop-win32-x64-2.4.5-competition-tn.zip)
 #### macOS 64-bit
 ##### 一般使用版
-[![](https://img.shields.io/badge/DMG%20Installer-v2.4.4-red)](https://github.com/PAIA-Playful-AI-Arena/Paia-Desktop/releases/download/v2.4.4/PAIA-Desktop-2.4.4.dmg) [![](https://img.shields.io/badge/ZIP%20Portable-v2.4.4-red)](https://github.com/PAIA-Playful-AI-Arena/Paia-Desktop/releases/download/v2.4.4/PAIA-Desktop-darwin-x64-2.4.4.zip)
+[![](https://img.shields.io/badge/DMG%20Installer-v2.4.5-red)](https://github.com/PAIA-Playful-AI-Arena/Paia-Desktop/releases/download/v2.4.5/PAIA-Desktop-2.4.5.dmg) [![](https://img.shields.io/badge/ZIP%20Portable-v2.4.5-red)](https://github.com/PAIA-Playful-AI-Arena/Paia-Desktop/releases/download/v2.4.5/PAIA-Desktop-darwin-x64-2.4.5.zip)
 ##### 官方競賽版
-[![](https://img.shields.io/badge/DMG%20Installer-v2.4.4--competition-blue)](https://github.com/PAIA-Playful-AI-Arena/Paia-Desktop/releases/download/v2.4.4/PAIA-Desktop-2.4.4-competition.dmg) [![](https://img.shields.io/badge/ZIP%20Portable-v2.4.4--competition-blue)](https://github.com/PAIA-Playful-AI-Arena/Paia-Desktop/releases/download/v2.4.4/PAIA-Desktop-darwin-x64-2.4.4-competition.zip)
+[![](https://img.shields.io/badge/DMG%20Installer-v2.4.5--competition-blue)](https://github.com/PAIA-Playful-AI-Arena/Paia-Desktop/releases/download/v2.4.5/PAIA-Desktop-2.4.5-competition.dmg) [![](https://img.shields.io/badge/ZIP%20Portable-v2.4.5--competition-blue)](https://github.com/PAIA-Playful-AI-Arena/Paia-Desktop/releases/download/v2.4.5/PAIA-Desktop-darwin-x64-2.4.5-competition.zip)
 ##### 台南競賽版
-[![](https://img.shields.io/badge/DMG%20Installer-v2.4.4--competition--tn-green)](https://github.com/PAIA-Playful-AI-Arena/Paia-Desktop/releases/download/v2.4.4/PAIA-Desktop-2.4.4-competition-tn.dmg) [![](https://img.shields.io/badge/ZIP%20Portable-v2.4.4--competition--tn-green)](https://github.com/PAIA-Playful-AI-Arena/Paia-Desktop/releases/download/v2.4.4/PAIA-Desktop-darwin-x64-2.4.4-competition-tn.zip)
+[![](https://img.shields.io/badge/DMG%20Installer-v2.4.5--competition--tn-green)](https://github.com/PAIA-Playful-AI-Arena/Paia-Desktop/releases/download/v2.4.5/PAIA-Desktop-2.4.5-competition-tn.dmg) [![](https://img.shields.io/badge/ZIP%20Portable-v2.4.5--competition--tn-green)](https://github.com/PAIA-Playful-AI-Arena/Paia-Desktop/releases/download/v2.4.5/PAIA-Desktop-darwin-x64-2.4.5-competition-tn.zip)
 
 #### Linux 64-bit
 ##### 一般使用版
-[![](https://img.shields.io/badge/DEB%20Installer-v2.4.4-red)](https://github.com/PAIA-Playful-AI-Arena/Paia-Desktop/releases/download/v2.4.4/PAIA-Desktop-2.4.4.deb) [![](https://img.shields.io/badge/RPM%20Installer-v2.4.4-red)](https://github.com/PAIA-Playful-AI-Arena/Paia-Desktop/releases/download/v2.4.4/PAIA-Desktop-2.4.4.rpm) 
+[![](https://img.shields.io/badge/DEB%20Installer-v2.4.5-red)](https://github.com/PAIA-Playful-AI-Arena/Paia-Desktop/releases/download/v2.4.5/PAIA-Desktop-2.4.5.deb) [![](https://img.shields.io/badge/RPM%20Installer-v2.4.5-red)](https://github.com/PAIA-Playful-AI-Arena/Paia-Desktop/releases/download/v2.4.5/PAIA-Desktop-2.4.5.rpm) 
 ##### 官方競賽版
-[![](https://img.shields.io/badge/DEB%20Installer-v2.4.4--competition-blue)](https://github.com/PAIA-Playful-AI-Arena/Paia-Desktop/releases/download/v2.4.4/PAIA-Desktop-2.4.4-competition.deb) [![](https://img.shields.io/badge/RPM%20Installer-v2.4.4--competition-blue)](https://github.com/PAIA-Playful-AI-Arena/Paia-Desktop/releases/download/v2.4.4/PAIA-Desktop-2.4.4-competition.rpm) 
+[![](https://img.shields.io/badge/DEB%20Installer-v2.4.5--competition-blue)](https://github.com/PAIA-Playful-AI-Arena/Paia-Desktop/releases/download/v2.4.5/PAIA-Desktop-2.4.5-competition.deb) [![](https://img.shields.io/badge/RPM%20Installer-v2.4.5--competition-blue)](https://github.com/PAIA-Playful-AI-Arena/Paia-Desktop/releases/download/v2.4.5/PAIA-Desktop-2.4.5-competition.rpm) 
 ##### 台南競賽版
-[![](https://img.shields.io/badge/DEB%20Installer-v2.4.4--competition--tn-green)](https://github.com/PAIA-Playful-AI-Arena/Paia-Desktop/releases/download/v2.4.4/PAIA-Desktop-2.4.4-competition-tn.deb) [![](https://img.shields.io/badge/RPM%20Installer-v2.4.4--competition--tn-green)](https://github.com/PAIA-Playful-AI-Arena/Paia-Desktop/releases/download/v2.4.4/PAIA-Desktop-2.4.4-competition-tn.rpm) 
+[![](https://img.shields.io/badge/DEB%20Installer-v2.4.5--competition--tn-green)](https://github.com/PAIA-Playful-AI-Arena/Paia-Desktop/releases/download/v2.4.5/PAIA-Desktop-2.4.5-competition-tn.deb) [![](https://img.shields.io/badge/RPM%20Installer-v2.4.5--competition--tn-green)](https://github.com/PAIA-Playful-AI-Arena/Paia-Desktop/releases/download/v2.4.5/PAIA-Desktop-2.4.5-competition-tn.rpm) 
 
 
 ## Building

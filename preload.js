@@ -57,6 +57,14 @@ contextBridge.exposeInMainWorld('app', {
     return ipcRenderer.sendSync('getVersion');
   }
 });
+contextBridge.exposeInMainWorld('popup', {
+  alert: (msg) => {
+    fixedAlert(msg);
+  },
+  confirm: (msg) => {
+    return fixedConfirm(msg);
+  }
+});
 contextBridge.exposeInMainWorld('python_env', {
   run: (options, script, file, cwd) => {
     const old_cwd = process.cwd();
@@ -194,9 +202,9 @@ contextBridge.exposeInMainWorld('paia', {
     } else {
       if (url_token !== null && refresh_token.length != 0) {
         if (url_token === refresh_token) {
-          window.alert('您已登入此帳號');
+          fixedAlert('您已登入此帳號');
           return {ok: true, content: ''};
-        } else if (window.confirm('您正在嘗試從外部登入 PAIA，並將登出現有帳號，是否繼續執行？')) {
+        } else if (fixedConfirm('您正在嘗試從外部登入 PAIA，並將登出現有帳號，是否繼續執行？')) {
           refresh_token = url_token;
           store.set('refresh_token', url_token);
         }
@@ -306,3 +314,18 @@ const githubAPI = function(method, url, data) {
     body: (data !== null)? JSON.stringify(data) : null
   });
 };
+
+const fixedAlert = function(msg) {
+  window.alert(msg);
+  if (process.platform === 'win32') {
+    ipcRenderer.send('fixFocus');
+  }
+};
+
+const fixedConfirm = function(msg) {
+  const res = window.confirm(msg);
+  if (process.platform === 'win32') {
+    ipcRenderer.send('fixFocus');
+  }
+  return res;
+}

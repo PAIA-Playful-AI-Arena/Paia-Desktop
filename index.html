@@ -208,7 +208,7 @@
     const data = url.substring(url.indexOf("github.com") + 11).split('/');
     const owner = data[0];
     const repo = data[1];
-    if (window.confirm('下載後會覆蓋此遊戲資料夾下的所有檔案，確定執行？')) {
+    if (window.popup.confirm('下載後會覆蓋此遊戲資料夾下的所有檔案，確定執行？')) {
       button.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> 下載 / 更新';
       document.querySelectorAll('a.btn').forEach(e => {
         e.classList.add("disabled");
@@ -219,11 +219,11 @@
           e.classList.remove("disabled");
         });
         if (err) {
-          window.alert(err);
+          window.popup.alert(err);
         } else {
           update_version_name();
           const config = JSON.parse(window.file.read(path.join(gameDir, 'game_config.json')));
-          window.alert(config['game_name'] + '-' + config['version'] + ' 下載成功');
+          window.popup.alert(config['game_name'] + '-' + config['version'] + ' 下載成功');
         }
       });
     };

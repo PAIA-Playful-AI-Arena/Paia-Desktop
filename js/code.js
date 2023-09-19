@@ -907,7 +907,7 @@ Code.updateProjectList = function() {
 Code.discard = function() {
   var count = Code.workspace.getAllBlocks(false).length;
   if (count < 2 ||
-      window.confirm(Blockly.Msg['DELETE_ALL_BLOCKS'].replace('%1', count))) {
+      window.popup.confirm(Blockly.Msg['DELETE_ALL_BLOCKS'].replace('%1', count))) {
     Code.workspace.clear();
     if (window.location.hash) {
       window.location.hash = '';
@@ -1056,7 +1056,7 @@ Code.loadXml = function(xmlPath) {
     const xmlText = window.file.read(xmlPath);
     if (xmlText != Code.OPENED_XMLS[name].xmlText) {
       Code.OPENED_XMLS[name].xmlText = xmlText;
-      if (window.confirm(`${name} 已被更改過，是否重新載入？`)) {
+      if (window.popup.confirm(`${name} 已被更改過，是否重新載入？`)) {
         Code.OPENED_XMLS[name].$link.find('.not-saved').html('');
         Code.OPENED_XMLS[name].xml = Blockly.Xml.textToDom(xmlText);
       }
@@ -1113,7 +1113,7 @@ Code.loadXml = function(xmlPath) {
       Code.OPENED_XMLS[name].$link = $link;
       Code.FOCUSED_XML = name;
     } catch (err) {
-      window.alert(err);
+      window.popup.alert(err);
     }
   }
 };
@@ -1124,7 +1124,7 @@ Code.loadXml = function(xmlPath) {
 Code.closeXml = function(xmlPath) {
   var name = Code.PATH_MAP[xmlPath];
   if (Code.OPENED_XMLS[name].$link.find('.not-saved').html() == '*' &&
-      !window.confirm(`${name} 有尚未儲存的修改，關閉後將遺失，是否確定關閉檔案？`)) {
+      !window.popup.confirm(`${name} 有尚未儲存的修改，關閉後將遺失，是否確定關閉檔案？`)) {
     return;
   }
   if (Code.OPENED_XMLS[name].$link.hasClass('active')) {
@@ -1407,6 +1407,9 @@ Code.selectProjectPath = function() {
  * Add new project. 
  */
 Code.newProject = function() {
+  if (Code.PROJECT_PATH != '') {
+    window.file.unwatch(Code.PROJECT_PATH);
+  }
   Code.PROJECT = $('#project-name').val();
   Code.PROJECT_PATH = path.join($('#project-path').val(), $('#project-name').val());
   const start = (app.getVersion().indexOf("competition-tn") != -1 && Code.GAME != "easy_game")?
@@ -1420,7 +1423,7 @@ Code.newProject = function() {
         Code.loadXml(start);
       }
       $('#project-dialog').modal('hide');
-    } else if (window.confirm(`${Code.PROJECT} 已存在，是否改為載入此專案？`)) {
+    } else if (window.popup.confirm(`${Code.PROJECT} 已存在，是否改為載入此專案？`)) {
       $('#project_name').html(Code.PROJECT);
       if(window.fs.existsSync(path.join(Code.PROJECT_PATH, 'ml_play.xml'))) {
         Code.loadXml(path.join(Code.PROJECT_PATH, 'ml_play.xml'))
@@ -1439,13 +1442,10 @@ Code.newProject = function() {
       // });
     }
   } catch(err) {
-    window.alert(err);
+    window.popup.alert(err);
   }
   $("#project-link").attr("title", Code.PROJECT_PATH);
-  if (Code.PROJECT_WATCHER !== null) {
-    Code.PROJECT_WATCHER.close();
-  }
-  Code.PROJECT_WATCHER = fs.watch(Code.PROJECT_PATH, (eventType, filename) => {
+  window.file.watch(Code.PROJECT_PATH, (eventType, filename) => {
     Code.updateProjectList();
   });
   Code.updateProjectList();
@@ -1463,6 +1463,9 @@ Code.openProject = function() {
   if (dir === undefined) {
     return;
   } else {
+    if (Code.PROJECT_PATH != '') {
+      window.file.unwatch(Code.PROJECT_PATH);
+    }
     Code.PROJECT_PATH = dir[0];
   }
   const start = (app.getVersion().indexOf("competition-tn") != -1 && Code.GAME != "easy_game")?
@@ -1486,10 +1489,7 @@ Code.openProject = function() {
   //   }
   // });
   $("#project-link").attr("title", Code.PROJECT_PATH);
-  if (Code.PROJECT_WATCHER !== null) {
-    Code.PROJECT_WATCHER.close();
-  }
-  Code.PROJECT_WATCHER = window.file.watch(Code.PROJECT_PATH, (eventType, filename) => {
+  window.file.watch(Code.PROJECT_PATH, (eventType, filename) => {
     Code.updateProjectList();
   });
   Code.updateProjectList();
@@ -1516,7 +1516,7 @@ Code.exportProject = function() {
     dest = dest[0];
   }
   var projectDir = path.join(dest, Code.PROJECT);
-  if (!fs.existsSync(projectDir) || window.confirm(`${projectDir} 已經存在，您要覆蓋它嗎？`)) {
+  if (!fs.existsSync(projectDir) || window.popup.confirm(`${projectDir} 已經存在，您要覆蓋它嗎？`)) {
     window.copyDir(Code.PROJECT_PATH, dest);
     // Add log
     // window.addLog('export_project', {
@@ -1567,14 +1567,14 @@ Code.uploadFileset = function() {
     if (res.ok) {
       if (res.content.status == "success") {
         if (Code.FILESET_ID >= 0) {
-          window.alert(`檔案集更新成功`);
+          window.popup.alert(`檔案集更新成功`);
         } else {
-          window.alert(`檔案集新增成功，下載代碼：${res.content.data}`);
+          window.popup.alert(`檔案集新增成功，下載代碼：${res.content.data}`);
         }
         $("#upload-filset-dialog").modal('hide');
         Code.showFilesets();
       } else {
-        window.alert(`範例程式上傳失敗：${res.content.detail}`);
+        window.popup.alert(`範例程式上傳失敗：${res.content.detail}`);
       }
 
     } else {
@@ -1654,9 +1654,9 @@ Code.updateFilesetFile = async function(index) {
     });
   })
   if (error > 0) {
-    window.alert(`${filePath.length} 個檔案上傳完成，其中 ${error} 個發生錯誤`);
+    window.popup.alert(`${filePath.length} 個檔案上傳完成，其中 ${error} 個發生錯誤`);
   } else {
-    window.alert(`${filePath.length} 個檔案上傳完成`);
+    window.popup.alert(`${filePath.length} 個檔案上傳完成`);
   }
   $("#download-filset-dialog").modal('hide');
 };
@@ -1675,7 +1675,7 @@ Code.findFileset = function() {
     } else {
       Code.FILESET_FOUND = null;
       $("#fileset-data").collapse('hide');
-      window.alert(`${res.detail}`);
+      window.popup.alert(`${res.detail}`);
     }
   }, (jqXHR, exception) => {
     Code.FILESET_FOUND = null;
@@ -1690,7 +1690,7 @@ Code.downloadFileset = function() {
   var dir = path.join(window.path.dirname(), 'library', Code.GAME, `${Code.FILESET_FOUND.name}@${Code.FILESET_FOUND.token}`).replace('app.asar', 'app.asar.unpacked');
   if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir, { recursive: true });
-  } else if (!window.confirm(`${dir} 已存在，是否要覆蓋此程式集？`)) {
+  } else if (!window.popup.confirm(`${dir} 已存在，是否要覆蓋此程式集？`)) {
     return;
   }
   $("#saved_filesets").html(`程式庫 <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`);
@@ -1708,9 +1708,9 @@ Code.downloadFileset = function() {
         finish++;
         if (finish + error == total) {
           if (error == 0) {
-            window.alert(`${Code.FILESET_FOUND.name} 檔案集下載完成`);
+            window.popup.alert(`${Code.FILESET_FOUND.name} 檔案集下載完成`);
           } else {
-            window.alert(`${Code.FILESET_FOUND.name} 檔案集下載完成，${error} 個檔案發生錯誤`);
+            window.popup.alert(`${Code.FILESET_FOUND.name} 檔案集下載完成，${error} 個檔案發生錯誤`);
           }
           $("#saved_filesets").html(`程式庫`);
         }
@@ -1718,7 +1718,7 @@ Code.downloadFileset = function() {
     }).on('error', (e) => {
       error++;
       if (finish + error == total) {
-        window.alert(`${Code.FILESET_FOUND.name} 檔案集下載完成，${error} 個檔案發生錯誤`);
+        window.popup.alert(`${Code.FILESET_FOUND.name} 檔案集下載完成，${error} 個檔案發生錯誤`);
         $("#saved_filesets").html(`程式庫`);
       }
       console.error(e);
@@ -1730,18 +1730,18 @@ Code.downloadFileset = function() {
  * Delete fileset.
  */
 Code.deleteFileset = function(index) {
-  if (window.confirm("確定要刪除此檔案集嗎？")) {
+  if (window.popup.confirm("確定要刪除此檔案集嗎？")) {
     window.api.paia("DELETE", `fileset/${index}`, null, 'USER_TOKEN').then((res) => {
       if (res.ok) {
         if (res.content.status == "success") {
-          window.alert(`成功刪除檔案集`);
+          window.popup.alert(`成功刪除檔案集`);
         } else {
-          window.alert(`${res.content.detail}`);
+          window.popup.alert(`${res.content.detail}`);
         }
         Code.showFilesets();
       } else {
         console.log(response.content);
-        window.alert(`刪除失敗：${response.content}`);
+        window.popup.alert(`刪除失敗：${response.content}`);
       }
     });
   }
@@ -1751,15 +1751,15 @@ Code.deleteFileset = function(index) {
  * Download a file from fileset.
  */
 Code.deleteFilesetFile = function(index, filename) {
-  if (window.confirm(`確定要刪除 ${filename} 嗎？`)) {
+  if (window.popup.confirm(`確定要刪除 ${filename} 嗎？`)) {
     var data = {
       filename: filename
     }
     window.paiaAPI("DELETE", `fileset/${index}/file`, data, false, 'USER_TOKEN', (res) => {
       if (res.status == "success") {
-        window.alert(`成功刪除檔案`);
+        window.popup.alert(`成功刪除檔案`);
       } else {
-        window.alert(`${res.detail}`);
+        window.popup.alert(`${res.detail}`);
       }
       Code.showFilesets();
     }, (jqXHR, exception) => {
@@ -1773,7 +1773,7 @@ Code.deleteFilesetFile = function(index, filename) {
       } else {
           msg = 'Uncaught Error.\n' + jqXHR.responseText;
       }
-      window.alert(`刪除失敗：${msg}`);
+      window.popup.alert(`刪除失敗：${msg}`);
     });
   }
 };

@@ -179,3 +179,7 @@ ipcMain.on('getVersion', (event) => {
   event.returnValue = app.getVersion();
 });
 
+ipcMain.on('fixFocus', () => {
+  mainWindow.blur();
+  mainWindow.focus();
+});

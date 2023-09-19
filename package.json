@@ -81,7 +81,15 @@
         ],
         "asar": {
           "unpackDir": "{python,games,custom_blocks}"
-        }
+        },
+        "protocols": [
+          {
+            "name": "Electron Fiddle",
+            "schemes": [
+              "paia-dekstop"
+            ]
+          }
+        ]
       },
       "makers": [
         {

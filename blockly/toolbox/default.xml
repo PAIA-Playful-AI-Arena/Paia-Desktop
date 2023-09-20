@@ -340,7 +340,7 @@
   </category>
   <category name="%{BKY_CATNDARRAYS}" colour="%{BKY_NDARRAY_HUE}">
     <block type="ndarrays_create_with">
-      <mutation items="0"></mutation>
+      <mutation dims="0"></mutation>
     </block>
     <block type="ndarrays_create_with">
       <value name="FILL">
@@ -417,6 +417,21 @@
         </shadow>
       </value>
     </block>
+    <block type="model_dl_create"></block>
+    <block type="model_dl_train">
+      <value name="MODEL">
+        <block type="variables_get">
+          <field name="VAR">{modelVariable}</field>
+        </block>
+      </value>
+    </block>
+    <block type="model_dl_summary">
+      <value name="MODEL">
+        <block type="variables_get">
+          <field name="VAR">{modelVariable}</field>
+        </block>
+      </value>
+    </block>
   </category>
   <sep></sep>
   <category name="%{BKY_CATVARIABLES}" colour="%{BKY_VARIABLES_HUE}" custom="VARIABLE"></category>
@@ -476,12 +491,6 @@
     </block>
   </category>
   <sep></sep>
-  <category name="MLGame" colour="%{BKY_MLGAME_HUE}" id='MLGame_blocks'>
-    <block type="mlplay_class"></block>
-    <block type="mlplay_game_status"></block>
-    <block type="mlplay_get_info"></block>
-    <block type="mlplay_get_constant"></block>
-    <block type="mlplay_return_action"></block>
-    <block type="mlplay_is_key_pressed"></block>
+  <category name="MLGame" colour="%{BKY_MLGAME_HUE}" class='MLGame_blocks'>
   </category>
 </xml>

@@ -34,8 +34,8 @@
   },
   "dependencies": {
     "@getstation/electron-google-oauth2": "^2.1.0",
-    "@paia-arena/blockly": "^0.1.2",
     "about-window": "^1.15.1",
+    "blockly": "^10.1.2",
     "bootstrap": "^4.6.1",
     "bootstrap-icons": "^1.5.0",
     "codemirror": "^5.61.1",

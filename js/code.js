@@ -132,7 +132,7 @@ Code.isRtl = function() {
  * @param {string} defaultXml Text representation of default blocks.
  */
 Code.loadBlocks = function(defaultXml) {
-  var xml = Blockly.Xml.textToDom(defaultXml);
+  var xml = Blockly.utils.xml.textToDom(defaultXml);
   Blockly.Xml.domToWorkspace(xml, Code.workspace);
 };
 
@@ -233,7 +233,7 @@ Code.TABS_DISPLAY_ = [
  * Populate the currently selected pane with content generated from the blocks.
  */
 Code.renderContent = function() {
-  Code.attemptCodeGeneration(Blockly.Python);
+  Code.attemptCodeGeneration(python.pythonGenerator);
 };
 
 /**
@@ -252,22 +252,22 @@ Code.attemptCodeGeneration = function(generator) {
  * @param generator {!Blockly.Generator} The generator to use.
  */
 Code.checkAllGeneratorFunctionsDefined = function(generator) {
-  var blocks = Code.workspace.getAllBlocks(false);
-  var missingBlockGenerators = [];
-  for (var i = 0; i < blocks.length; i++) {
-    var blockType = blocks[i].type;
-    if (!generator[blockType]) {
+  const blocks = Code.workspace.getAllBlocks(false);
+  const missingBlockGenerators = [];
+  for (let i = 0; i < blocks.length; i++) {
+    const blockType = blocks[i].type;
+    if (!generator.forBlock[blockType]) {
       if (missingBlockGenerators.indexOf(blockType) == -1) {
         missingBlockGenerators.push(blockType);
       }
     }
   }
 
-  var valid = missingBlockGenerators.length == 0;
+  const valid = missingBlockGenerators.length == 0;
   if (!valid) {
-    var msg = 'The generator code for the following blocks not specified for ' +
+    const msg = 'The generator code for the following blocks not specified for ' +
         generator.name_ + ':\n - ' + missingBlockGenerators.join('\n - ');
-    Blockly.alert(msg);  // Assuming synchronous. No callback.
+    window.popup.alert(msg);  // Assuming synchronous. No callback.
   }
   return valid;
 };
@@ -373,7 +373,11 @@ Code.init = async function() {
   }
 
   // Initialize block msg and generate toolbox
-  var toolboxXml = Code.initMlgameBlocks();
+  const toolboxXml = Code.initMlgameBlocks();
+
+  // Overide the color settings.
+  Blockly.utils.colour.setHsvSaturation(0.4);
+  Blockly.utils.colour.setHsvValue(0.85);
   
   // Initialize blockly workspace.
   Code.workspace = Blockly.inject('content_blocks',
@@ -408,7 +412,7 @@ Code.init = async function() {
         if (Code.OPENED_XMLS[Code.FOCUSED_XML].trashcan === undefined || Code.OPENED_XMLS[Code.FOCUSED_XML].trashcan.length == 0) {
           Code.workspace.trashcan.emptyContents();
         } else {
-          Code.workspace.trashcan.contents_ = Code.OPENED_XMLS[Code.FOCUSED_XML].trashcan.slice();
+          Code.workspace.trashcan.contents = Code.OPENED_XMLS[Code.FOCUSED_XML].trashcan.slice();
         }
       }
       var topBlocks = Code.workspace.getTopBlocks();
@@ -438,10 +442,10 @@ Code.init = async function() {
   };
 
   // Overide the length of indent.
-  Blockly.Python.INDENT = "    ";
+  python.pythonGenerator.INDENT = "    ";
   
   // Update library dropdown menu
-  var libraryDir = path.join(window.path.dirname(), 'library', Code.GAME).replace('app.asar', 'app.asar.unpacked');
+  var libraryDir = path.join(__dirname, 'library', Code.GAME).replace('app.asar', 'app.asar.unpacked');
   if (!fs.existsSync(libraryDir)) {
     fs.mkdirSync(libraryDir, { recursive: true });
   }
@@ -461,14 +465,14 @@ Code.init = async function() {
     $('#readme-title').html('Tutorials');
     $('#readme-dialog .modal-content').append('<div class="modal-footer"><button type="button" onclick="Code.prevTutorials();" class="btn btn-outline-secondary mr-auto">&lt; 前一頁</button><button type="button" onclick="Code.nextTutorials();" class="btn btn-outline-secondary">下一頁 &gt;</button></div>')
     Code.tutorialsTotalPage = 0;
-    var dir = path.join(window.path.dirname(), 'tutorial', 'tutorials');
+    var dir = path.join(__dirname, 'tutorial', 'tutorials');
     fs.readdirSync(dir).forEach(file => {
       if (file.endsWith('.md')) {
         Code.tutorialsTotalPage++;
       };
     });
     Code.tutorialsCurPage = 1;
-    var readme_path = path.join(window.path.dirname(), 'tutorial', 'tutorials', String(Code.tutorialsCurPage) + '.md');
+    var readme_path = path.join(__dirname, 'tutorial', 'tutorials', String(Code.tutorialsCurPage) + '.md');
     var readme_text = window.file.read(readme_path);
     var showdown  = require('showdown'),
         converter = new showdown.Converter(),
@@ -493,7 +497,7 @@ Code.init = async function() {
       function() {Code.workspace.trashcan.emptyContents(); Code.renderContent();});
   Code.bindClick('custom_blocks',
       function() {
-        var dir = path.join(window.path.dirname(), 'custom_blocks').replace('app.asar', 'app.asar.unpacked');
+        var dir = path.join(__dirname, 'custom_blocks').replace('app.asar', 'app.asar.unpacked');
         if (!fs.existsSync(dir)) {
           fs.mkdirSync(dir, { recursive: true });
         }
@@ -518,7 +522,7 @@ Code.init = async function() {
   Code.bindClick('save_python',
       function() {Code.savePython(); Code.renderContent();});
   Code.bindClick('open_example_dir',
-      function() {window.path.open(window.path.join(window.path.dirname(), 'library', Code.GAME).replace('app.asar', 'app.asar.unpacked')); Code.renderContent();});
+      function() {window.path.open(window.path.join(__dirname, 'library', Code.GAME).replace('app.asar', 'app.asar.unpacked')); Code.renderContent();});
   Code.bindClick('en',
       function() {Code.changeLanguage('en'); Code.renderContent();});
   Code.bindClick('zh-hant',
@@ -563,7 +567,7 @@ Code.initLanguage = function() {
  * Initialize dialog body for selecting game arguments.
  */
 Code.initGameArgs = function() {
-  var config = JSON.parse(window.file.read(path.join(window.path.dirname(), 'games', Code.GAME, 'game_config.json').replace('app.asar', 'app.asar.unpacked')));
+  var config = JSON.parse(window.file.read(path.join(__dirname, 'games', Code.GAME, 'game_config.json').replace('app.asar', 'app.asar.unpacked')));
   var $body = $('<div class="modal-body my-2"></div>')
   $body.append('<div class="form-group"><label for="">每秒顯示張數 (FPS)</label><input type="number" class="form-control", id="game_fps", min="1", max="300", step="1", value="30", data-bind="value:replyNumber"></div>');
   var userNumConfig = config['user_num'];
@@ -618,14 +622,14 @@ Code.initGameArgs = function() {
  */
 Code.initMlgameBlocks = function() {
   // Construct the toolbox XML, replacing translated variable names.
-  var toolboxPath = toolboxPath = path.join(window.path.dirname(), 'js', 'toolbox', 'default.xml');
+  var toolboxPath = toolboxPath = path.join(__dirname, 'blockly', 'toolbox', 'default.xml');
   var toolboxText = window.file.read(toolboxPath);
   toolboxText = toolboxText.replace(/(^|[^%]){(\w+)}/g,
       function(m, p1, p2) {return p1 + MSG[p2];});
-  var toolboxXml = Blockly.Xml.textToDom(toolboxText);
+  var toolboxXml = Blockly.utils.xml.textToDom(toolboxText);
   var mlgameCat = toolboxXml.getElementsByClassName('MLGame_blocks')[0];
   
-  var configPath = path.join(window.path.dirname(), 'games', Code.GAME, 'blockly.json').replace('app.asar', 'app.asar.unpacked');
+  var configPath = path.join(__dirname, 'games', Code.GAME, 'blockly.json').replace('app.asar', 'app.asar.unpacked');
   if (fs.existsSync(configPath)) {
     var gameOptions = JSON.parse(window.file.read(configPath));
     var reservedWords = ['MLPlay', 'self', 'scene_info', 'keyboard', 'args', 'kwargs', 'os', 'cmath', 'csv', 'plt', 'pickle', 'pygame', 'neighbors', 'tree', 'svm', 'ensemble', 'neural_network', 'linear_model', 'metrics', 'model_selection'];
@@ -648,7 +652,7 @@ Code.initMlgameBlocks = function() {
       mlgameCat.appendChild(block);
     }
 
-    var gameConfigPath = path.join(window.path.dirname(), 'games', Code.GAME, 'game_config.json').replace('app.asar', 'app.asar.unpacked');
+    var gameConfigPath = path.join(__dirname, 'games', Code.GAME, 'game_config.json').replace('app.asar', 'app.asar.unpacked');
     if (fs.existsSync(gameConfigPath)) {
       var options = [];
       for (var params of JSON.parse(window.file.read(gameConfigPath)).game_params) {
@@ -786,16 +790,16 @@ Code.initMlgameBlocks = function() {
       mlgameCat.appendChild(block);
     }
 
-    Blockly.Python.addReservedWords(reservedWords.join());
+    python.pythonGenerator.addReservedWords(reservedWords.join());
   }
 
-  var customBlocksPath = path.join(window.path.dirname(), 'custom_blocks', Code.GAME).replace('app.asar', 'app.asar.unpacked');
+  var customBlocksPath = path.join(__dirname, 'custom_blocks', Code.GAME).replace('app.asar', 'app.asar.unpacked');
   if (fs.existsSync(customBlocksPath)) {
     fs.readdirSync(customBlocksPath).forEach(file => {
       if (file.endsWith(".xml")) {
         var customToolboxPath = toolboxPath = path.join(customBlocksPath, file);
         var customToolboxText = window.file.read(customToolboxPath);
-        var customToolboxXml = Blockly.Xml.textToDom(customToolboxText);
+        var customToolboxXml = Blockly.utils.xml.textToDom(customToolboxText);
         toolboxXml.appendChild(document.createElement("sep"));
         toolboxXml.appendChild(customToolboxXml.getElementsByTagName("category")[0]);
       }
@@ -848,8 +852,8 @@ Code.updateLibraryList = function() {
   $('#library').empty();
   let index = 0;
   let libraryDir = (app.getVersion().indexOf("competition-tn") != -1 && Code.GAME != "easy_game")? 
-    window.path.join(window.path.dirname(), 'examples', Code.GAME, 'tainan') :
-    window.path.join(window.path.dirname(), 'examples', Code.GAME, 'xml');
+    window.path.join(__dirname, 'examples', Code.GAME, 'tainan') :
+    window.path.join(__dirname, 'examples', Code.GAME, 'xml');
   if (window.fs.existsSync(libraryDir)) {
     window.fs.readdirSync(libraryDir).forEach(dirent => {
       const filesetDir = window.path.join(libraryDir, dirent);
@@ -868,7 +872,7 @@ Code.updateLibraryList = function() {
     });
   }
 
-  libraryDir = window.path.join(window.path.dirname(), 'library', Code.GAME).replace('app.asar', 'app.asar.unpacked');
+  libraryDir = window.path.join(__dirname, 'library', Code.GAME).replace('app.asar', 'app.asar.unpacked');
   window.fs.readdirSync(libraryDir).forEach(dirent => {
     const filesetDir = window.path.join(libraryDir, dirent);
     $('#library').append($(`<a href="#library-${index}" data-toggle="collapse" aria-expanded="false" class="group mt-2" title="${filesetDir}"><i class="bi bi-caret-right-fill pointer mr-1"></i>${dirent}</a>`))
@@ -1042,7 +1046,7 @@ Code.openXml = function() {
 Code.loadXml = function(xmlPath) {
   // Save trashcan state before open another xml.
   if (Code.FOCUSED_XML != "") {
-    Code.OPENED_XMLS[Code.FOCUSED_XML].trashcan = Code.workspace.trashcan.contents_.slice();
+    Code.OPENED_XMLS[Code.FOCUSED_XML].trashcan = Code.workspace.trashcan.contents.slice();
   }
   let name = window.path.basename(xmlPath);
   if (xmlPath in Code.PATH_MAP) {
@@ -1053,12 +1057,19 @@ Code.loadXml = function(xmlPath) {
     if (name == Code.FOCUSED_XML) {
       return;
     }
-    const xmlText = window.file.read(xmlPath);
-    if (xmlText != Code.OPENED_XMLS[name].xmlText) {
-      Code.OPENED_XMLS[name].xmlText = xmlText;
-      if (window.popup.confirm(`${name} 已被更改過，是否重新載入？`)) {
-        Code.OPENED_XMLS[name].$link.find('.not-saved').html('');
-        Code.OPENED_XMLS[name].xml = Blockly.Xml.textToDom(xmlText);
+    if (!window.fs.existsSync(xmlPath)) {
+      if (!window.popup.confirm(`${name} 已被刪除，是否繼續保留？`)) {
+        Code.closeXml(xmlPath);
+        return;
+      }
+    } else {
+      const xmlText = window.file.read(xmlPath);
+      if (xmlText != Code.OPENED_XMLS[name].xmlText) {
+        Code.OPENED_XMLS[name].xmlText = xmlText;
+        if (window.popup.confirm(`${name} 已被更改過，是否重新載入？`)) {
+          Code.OPENED_XMLS[name].$link.find('.not-saved').html('');
+          Code.OPENED_XMLS[name].xml = Blockly.utils.xml.textToDom(xmlText);
+        }
       }
     }
     Code.workspace.clear();
@@ -1081,7 +1092,7 @@ Code.loadXml = function(xmlPath) {
     }
     try {
       const xmlText = window.file.read(xmlPath);
-      const xml = Blockly.Xml.textToDom(xmlText);
+      const xml = Blockly.utils.xml.textToDom(xmlText);
       Code.workspace.clear();
       Blockly.Xml.domToWorkspace(xml, Code.workspace);
       Code.PATH_MAP[xmlPath] = name;
@@ -1204,7 +1215,7 @@ Code.togglePython = function() {
  * Save temporary python file for execution. 
  */
 Code.saveTmpPython = function(dir) {
-  const python_text = Blockly.Python.workspaceToCode(Code.workspace);
+  const python_text = python.pythonGenerator.workspaceToCode(Code.workspace);
   const file_name = 'ml_play_' + new Date().getTime() + '.py';
   const file_path = window.path.join(dir, file_name);
   window.file.write(file_path, python_text);
@@ -1225,11 +1236,11 @@ Code.savePython = function() {
   if (pythonPath === undefined) {
     return;
   } else {
-    const pythonText = Blockly.Python.workspaceToCode(Code.workspace);
+    const pythonText = python.pythonGenerator.workspaceToCode(Code.workspace);
     const state = window.python_env.getCustom();
     const mlgameVerPath = (state.custom_python)? 
       window.path.join(path.dirname(state.custom_python_path), 'Lib', 'site-packages', 'mlgame', 'version.py') :
-      window.path.join(window.path.dirname(), 'python', 'dist', 'interpreter', 'mlgame', 'version.py').replace('app.asar', 'app.asar.unpacked');
+      window.path.join(__dirname, 'python', 'dist', 'interpreter', 'mlgame', 'version.py').replace('app.asar', 'app.asar.unpacked');
     const mlgameVerStr = (window.fs.existsSync(mlgameVerPath))? window.file.read(mlgameVerPath) : "version = unknown";
     const mlgameVer = (mlgameVerStr.match(/version\s*==*\s*"([\w.]*)"/) || ['', 'unknown'])[1];
     const verInfo = '"""\n' +
@@ -1289,10 +1300,10 @@ Code.play = function() {
   for (let i = 0; i < user_num; i++) {
     total_args = total_args.concat(['-i', file_name])
   }
-  total_args = total_args.concat(['-f', fps, window.path.join(window.path.dirname(), 'games', Code.GAME).replace('app.asar', 'app.asar.unpacked')]).concat(args);
+  total_args = total_args.concat(['-f', fps, window.path.join(__dirname, 'games', Code.GAME).replace('app.asar', 'app.asar.unpacked')]).concat(args);
   const state = window.python_env.getCustom();
   const python_path = (state.custom_python)? python_path = state.custom_python_path :
-    window.path.join(window.path.dirname(), 'python', 'dist', 'interpreter', 'interpreter').replace('app.asar', 'app.asar.unpacked');
+    window.path.join(__dirname, 'python', 'dist', 'interpreter', 'interpreter').replace('app.asar', 'app.asar.unpacked');
   const options = {
     mode: 'text',
     pythonPath: python_path,
@@ -1322,7 +1333,7 @@ Code.execute = function() {
   const file_path = window.path.join(Code.PROJECT_PATH, file_name);
   const state = window.python_env.getCustom();
   const python_path = (state.custom_python)? state.custom_python_path :
-    window.path.join(window.path.dirname(), 'python', 'dist', 'interpreter', 'interpreter').replace('app.asar', 'app.asar.unpacked');
+    window.path.join(__dirname, 'python', 'dist', 'interpreter', 'interpreter').replace('app.asar', 'app.asar.unpacked');
   const options = {
     mode: 'text',
     pythonPath: python_path,
@@ -1345,7 +1356,7 @@ Code.execute = function() {
 };
 
 Code.showReadme = function() {
-  const readme_path = path.join(window.path.dirname(), 'games', Code.GAME, 'README.md').replace('app.asar', 'app.asar.unpacked');
+  const readme_path = path.join(__dirname, 'games', Code.GAME, 'README.md').replace('app.asar', 'app.asar.unpacked');
   const readme_text = window.file.read(readme_path);
   const readme = window.markdown.convert(readme_text);
   $('#readme-body').html(readme);
@@ -1360,7 +1371,7 @@ Code.nextTutorials = function() {
   if (Code.tutorialsCurPage != Code.tutorialsTotalPage) {
     Code.tutorialsCurPage += 1;
   }
-  var readme_path = path.join(window.path.dirname(), 'tutorial', 'tutorials', String(Code.tutorialsCurPage) + '.md');
+  var readme_path = path.join(__dirname, 'tutorial', 'tutorials', String(Code.tutorialsCurPage) + '.md');
   var readme_text = window.file.read(readme_path);
   var showdown  = require('showdown'),
       converter = new showdown.Converter(),
@@ -1372,7 +1383,7 @@ Code.prevTutorials = function() {
   if (Code.tutorialsCurPage != 1) {
     Code.tutorialsCurPage -= 1;
   }
-  var readme_path = path.join(window.path.dirname(), 'tutorial', 'tutorials', String(Code.tutorialsCurPage) + '.md');
+  var readme_path = path.join(__dirname, 'tutorial', 'tutorials', String(Code.tutorialsCurPage) + '.md');
   var readme_text = window.file.read(readme_path);
   var showdown  = require('showdown'),
       converter = new showdown.Converter(),
@@ -1413,8 +1424,8 @@ Code.newProject = function() {
   Code.PROJECT = $('#project-name').val();
   Code.PROJECT_PATH = path.join($('#project-path').val(), $('#project-name').val());
   const start = (app.getVersion().indexOf("competition-tn") != -1 && Code.GAME != "easy_game")?
-    window.path.join(window.path.dirname(), 'examples', Code.GAME, 'tainan', '範例程式', '1. auto.xml') :
-    window.path.join(window.path.dirname(), 'examples', Code.GAME, 'xml', '範例程式 1', '1. start.xml');
+    window.path.join(__dirname, 'examples', Code.GAME, 'tainan', '範例程式', '1. auto.xml') :
+    window.path.join(__dirname, 'examples', Code.GAME, 'xml', '範例程式 1', '1. start.xml');
   try {
     if (!window.fs.existsSync(Code.PROJECT_PATH)) {
       window.fs.mkdirSync(Code.PROJECT_PATH, { recursive: true });
@@ -1469,8 +1480,8 @@ Code.openProject = function() {
     Code.PROJECT_PATH = dir[0];
   }
   const start = (app.getVersion().indexOf("competition-tn") != -1 && Code.GAME != "easy_game")?
-    window.path.join(window.path.dirname(), 'examples', Code.GAME, 'tainan', '範例程式', '1. auto.xml') :
-    window.path.join(window.path.dirname(), 'examples', Code.GAME, 'xml', '範例程式 1', '1. start.xml');
+    window.path.join(__dirname, 'examples', Code.GAME, 'tainan', '範例程式', '1. auto.xml') :
+    window.path.join(__dirname, 'examples', Code.GAME, 'xml', '範例程式 1', '1. start.xml');
   Code.PROJECT = window.path.basename(Code.PROJECT_PATH);
   $('#project_name').html(Code.PROJECT);
   if(window.fs.existsSync(window.path.join(Code.PROJECT_PATH, 'ml_play.xml'))) {
@@ -1687,7 +1698,7 @@ Code.findFileset = function() {
  * Download fileset.
  */
 Code.downloadFileset = function() {
-  var dir = path.join(window.path.dirname(), 'library', Code.GAME, `${Code.FILESET_FOUND.name}@${Code.FILESET_FOUND.token}`).replace('app.asar', 'app.asar.unpacked');
+  var dir = path.join(__dirname, 'library', Code.GAME, `${Code.FILESET_FOUND.name}@${Code.FILESET_FOUND.token}`).replace('app.asar', 'app.asar.unpacked');
   if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir, { recursive: true });
   } else if (!window.popup.confirm(`${dir} 已存在，是否要覆蓋此程式集？`)) {
@@ -1781,9 +1792,30 @@ Code.deleteFilesetFile = function(index, filename) {
 // Load the Code demo's language strings.
 document.write('<script src="js/ui_msg/' + Code.LANG + '.js"></script>\n');
 // Load Blockly's language strings.
-document.write('<script src="node_modules/@paia-arena/blockly/msg/' + Code.LANG + '.js"></script>\n');
+document.write('<script src="node_modules/blockly/msg/' + Code.LANG + '.js"></script>\n');
+document.write('<script src="blockly/msg/' + Code.LANG + '.js"></script>\n');
 
-var customBlocksPath = path.join(window.path.dirname(), 'custom_blocks', Code.GAME).replace('app.asar', 'app.asar.unpacked');
+const __dirname = window.path.dirname();
+
+let customBlocksPath = window.path.join(__dirname, 'blockly', 'blocks').replace('app.asar', 'app.asar.unpacked');
+if (window.fs.existsSync(customBlocksPath)) {
+  window.fs.readdirSync(customBlocksPath).forEach(file => {
+    if (file.endsWith(".js")) {
+      document.write(`<script src="${window.path.join(customBlocksPath, file)}"></script>\n`);
+    }
+  });
+}
+
+customBlocksPath = window.path.join(__dirname, 'blockly', 'python').replace('app.asar', 'app.asar.unpacked');
+if (window.fs.existsSync(customBlocksPath)) {
+  window.fs.readdirSync(customBlocksPath).forEach(file => {
+    if (file.endsWith(".js")) {
+      document.write(`<script src="${window.path.join(customBlocksPath, file)}"></script>\n`);
+    }
+  });
+}
+
+customBlocksPath = path.join(__dirname, 'custom_blocks', Code.GAME).replace('app.asar', 'app.asar.unpacked');
 if (fs.existsSync(customBlocksPath)) {
   fs.readdirSync(customBlocksPath).forEach(file => {
     if (file.endsWith(".js")) {

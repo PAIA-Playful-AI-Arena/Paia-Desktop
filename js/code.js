@@ -465,18 +465,16 @@ Code.init = async function() {
     $('#readme-title').html('Tutorials');
     $('#readme-dialog .modal-content').append('<div class="modal-footer"><button type="button" onclick="Code.prevTutorials();" class="btn btn-outline-secondary mr-auto">&lt; 前一頁</button><button type="button" onclick="Code.nextTutorials();" class="btn btn-outline-secondary">下一頁 &gt;</button></div>')
     Code.tutorialsTotalPage = 0;
-    var dir = path.join(__dirname, 'tutorial', 'tutorials');
+    const dir = path.join(__dirname, 'tutorial', 'tutorials');
     fs.readdirSync(dir).forEach(file => {
       if (file.endsWith('.md')) {
         Code.tutorialsTotalPage++;
       };
     });
     Code.tutorialsCurPage = 1;
-    var readme_path = path.join(__dirname, 'tutorial', 'tutorials', String(Code.tutorialsCurPage) + '.md');
-    var readme_text = window.file.read(readme_path);
-    var showdown  = require('showdown'),
-        converter = new showdown.Converter(),
-        readme    = converter.makeHtml(readme_text);
+    const readme_path = path.join(__dirname, 'tutorial', 'tutorials', String(Code.tutorialsCurPage) + '.md');
+    const readme_text = window.file.read(readme_path);
+    const readme = window.markdown.convert(readme_text);
     $('#readme-body').html(readme);
     Code.bindClick('show_readme',
       function() {Code.showTutorials(); Code.renderContent();});
@@ -823,7 +821,7 @@ Code.showCustomPython = function() {
  * Select path for custom Python.
  */
 Code.selectCustomPython = function() {
-  const curPath = window.python_env.getCustom().custom_python_path;
+  let curPath = window.python_env.getCustom().custom_python_path;
   if (curPath == "" || !window.fs.existsSync(curPath)) {
     curPath = window.path.join(window.path.homedir(), 'Desktop');
   }
@@ -1302,7 +1300,7 @@ Code.play = function() {
   }
   total_args = total_args.concat(['-f', fps, window.path.join(__dirname, 'games', Code.GAME).replace('app.asar', 'app.asar.unpacked')]).concat(args);
   const state = window.python_env.getCustom();
-  const python_path = (state.custom_python)? python_path = state.custom_python_path :
+  const python_path = (state.custom_python)? state.custom_python_path :
     window.path.join(__dirname, 'python', 'dist', 'interpreter', 'interpreter').replace('app.asar', 'app.asar.unpacked');
   const options = {
     mode: 'text',
@@ -1371,11 +1369,9 @@ Code.nextTutorials = function() {
   if (Code.tutorialsCurPage != Code.tutorialsTotalPage) {
     Code.tutorialsCurPage += 1;
   }
-  var readme_path = path.join(__dirname, 'tutorial', 'tutorials', String(Code.tutorialsCurPage) + '.md');
-  var readme_text = window.file.read(readme_path);
-  var showdown  = require('showdown'),
-      converter = new showdown.Converter(),
-      readme    = converter.makeHtml(readme_text);
+  const readme_path = path.join(__dirname, 'tutorial', 'tutorials', String(Code.tutorialsCurPage) + '.md');
+  const readme_text = window.file.read(readme_path);
+  const readme = window.markdown.convert(readme_text);
   $('#readme-body').html(readme);
 };
 
@@ -1383,11 +1379,9 @@ Code.prevTutorials = function() {
   if (Code.tutorialsCurPage != 1) {
     Code.tutorialsCurPage -= 1;
   }
-  var readme_path = path.join(__dirname, 'tutorial', 'tutorials', String(Code.tutorialsCurPage) + '.md');
-  var readme_text = window.file.read(readme_path);
-  var showdown  = require('showdown'),
-      converter = new showdown.Converter(),
-      readme    = converter.makeHtml(readme_text);
+  const readme_path = path.join(__dirname, 'tutorial', 'tutorials', String(Code.tutorialsCurPage) + '.md');
+  const readme_text = window.file.read(readme_path);
+  const readme = window.markdown.convert(readme_text);
   $('#readme-body').html(readme);
 };
 

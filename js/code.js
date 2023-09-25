@@ -541,6 +541,9 @@ Code.init = async function() {
   if (await Code.token_login())
     $('#project-dialog').modal('show');
 
+  // Set PAIA ads url
+  $("#paia-ads").attr("src", window.paia.ads());
+
   // Lazy-load the syntax-highlighting.
   window.setTimeout(Code.importPrettify, 1);
 };

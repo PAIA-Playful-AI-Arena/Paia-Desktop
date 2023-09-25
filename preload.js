@@ -260,6 +260,9 @@ contextBridge.exposeInMainWorld('paia', {
       console.error("Error:", error);
       return {ok: false, content: error};
     }
+  },
+  ads: () => {
+    return process.env.PAIA_ADS_URL
   }
 });
 contextBridge.exposeInMainWorld('api', {

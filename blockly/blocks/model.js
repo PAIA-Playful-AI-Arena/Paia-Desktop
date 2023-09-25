@@ -6,6 +6,10 @@ Blockly.Themes.Classic.blockStyles.model_dl_blocks = {
   "colourPrimary": "275"
 };
 
+Blockly.Themes.Classic.blockStyles.model_rl_blocks = {
+  "colourPrimary": "280"
+};
+
 Blockly.defineBlocksWithJsonArray([
   // Train a model.
   {
@@ -407,7 +411,58 @@ Blockly.defineBlocksWithJsonArray([
     "nextStatement": null,
     'style': 'model_dl_blocks',
     "tooltip": ""
-  }
+  },
+  // Block for training reinforcement learning modal.
+  {
+    "type": "model_rl_train",
+    "message0": "使用狀態：%1 行動：%2 獎勵：%3 下一個狀態：%4 訓練 %5",
+    "args0": [
+      {
+        "type": "input_value",
+        "name": "STATE"
+      },
+      {
+        "type": "input_value",
+        "name": "ACTION"
+      },
+      {
+        "type": "input_value",
+        "name": "REWARD"
+      },
+      {
+        "type": "input_value",
+        "name": "NEXT_STATE"
+      },
+      {
+        "type": "input_value",
+        "name": "MODEL"
+      }
+    ],
+    "inputsInline": true,
+    "previousStatement": null,
+    "nextStatement": null,
+    "style": "model_rl_blocks",
+    "tooltip": "%{BKY_MODEL_TRAIN_TOOLTIP}"
+  },
+  // Use rl model to predict.
+  {
+    "type": "model_rl_predict",
+    "message0": "使用 %1 預測狀態 %2 對應的行動",
+    "args0": [
+      {
+        "type": "input_value",
+        "name": "MODEL"
+      },
+      {
+        "type": "input_value",
+        "name": "STATE"
+      }
+    ],
+    "inputsInline": true,
+    "output": null,
+    "style": "model_rl_blocks",
+    "tooltip": "%{BKY_MODEL_PREDICT_TOOLTIP}"
+  },
 ]);
 
 Blockly.Blocks["model_create_classification"] = {
@@ -953,6 +1008,54 @@ Blockly.Blocks['model_dl_create'] = {
           layer.appendField(`- 損失函數 (${this.layers_[i].type})`);
           break;
       }
+    }
+  }
+};
+
+Blockly.Blocks["model_rl_create"] = {
+  /**
+   * Block for creating classification model.
+   * @this {Blockly.Block}
+   */
+  init: function() {
+    const MODEL =
+        [
+          ['Q-Learning', 'QLearning'],
+          ['SARSA', 'SARSA'],
+        ];
+    this.setStyle('model_rl_blocks');
+    const modelMenu = new Blockly.FieldDropdown(MODEL, function(value) {
+      this.getSourceBlock().updateParameters_(value);
+    });
+    this.appendDummyInput()
+        .appendField(Blockly.Msg['MODEL_CREATE'])
+        .appendField(modelMenu, 'MODEL')
+        .appendField('強化學習模型');
+    this.setInputsInline(true);
+    this.setOutput(true);
+    this.setTooltip(Blockly.Msg['MODEL_CREATE_CLASSIFICATION_TOOLTIP']);
+    this.paramCount_ = 0;
+  },
+  updateParameters_: function(model) {
+    for (let i = 0; i < this.paramCount_; i++) {
+      this.removeInput('PARAM' + i);
+    }
+    switch (model) {
+      case 'QLearning':
+      case 'SARSA':
+        this.appendDummyInput('PARAM0')
+            .appendField(" 狀態個數 :")
+            .appendField(new Blockly.FieldNumber(5, 1), 'PARAM_N_STATE')
+            .appendField(" " + '行動個數' + " :")
+            .appendField(new Blockly.FieldNumber(5, 1), 'PARAM_N_ACTION')
+            .appendField(" " + '折扣因子' + " :")
+            .appendField(new Blockly.FieldNumber(0.9, 0, 1, 0.01), 'PARAM_GAMMA')
+            .appendField(" " + '隨機行動機率' + " :")
+            .appendField(new Blockly.FieldNumber(0.5, 0, 1, 0.01), 'PARAM_EPSILON')
+            .appendField(" " + '學習率' + " :")
+            .appendField(new Blockly.FieldNumber(0.01, 0, 1, 0.00001), 'PARAM_LEARNING_RATE')
+        this.paramCount_ = 1;
+        break;
     }
   }
 };

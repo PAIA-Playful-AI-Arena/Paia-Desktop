@@ -432,6 +432,21 @@
         </block>
       </value>
     </block>
+    <block type="model_rl_create"></block>
+    <block type="model_rl_train">
+      <value name="MODEL">
+        <block type="variables_get">
+          <field name="VAR">{modelVariable}</field>
+        </block>
+      </value>
+    </block>
+    <block type="model_rl_predict">
+      <value name="MODEL">
+        <block type="variables_get">
+          <field name="VAR">{modelVariable}</field>
+        </block>
+      </value>
+    </block>
   </category>
   <sep></sep>
   <category name="%{BKY_CATVARIABLES}" colour="%{BKY_VARIABLES_HUE}" custom="VARIABLE"></category>

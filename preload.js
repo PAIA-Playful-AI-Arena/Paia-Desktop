@@ -215,13 +215,14 @@ contextBridge.exposeInMainWorld('paia', {
       const data = { refresh: refresh_token };
       try {
         const response = await paiaAPI("POST", "auth/refresh", data, null);
-        const content = await response.json();
         if (response.ok) {
+          const content = await response.json();
           access_token = content.access;
+          return {ok: response.ok, content: content};
         } else {
           store.set('refresh_token', '');
+          return {ok: response.ok, content: `Error: ${response.status}`};
         }
-        return {ok: response.ok, content: response.ok? content : content.detail};
       } catch (error) {
         return {ok: false, content: error};;
       }
@@ -234,12 +235,14 @@ contextBridge.exposeInMainWorld('paia', {
     };
     try {
       const response = await paiaAPI("POST", "auth/login", data, null);
-      const content = await response.json();
       if (response.ok) {
+        const content = await response.json();
         store.set('refresh_token', content.refresh);
         access_token = content.access;
+        return {ok: response.ok, content: content};
+      } else {
+        return {ok: response.ok, content: `Error: ${response.status}`};;
       }
-      return {ok: response.ok, content: response.ok? content : content.detail};;
     } catch (error) {
       console.error("Error:", error);
       return {ok: false, content: error};

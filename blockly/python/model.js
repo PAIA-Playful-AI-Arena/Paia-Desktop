@@ -255,3 +255,75 @@ python.pythonGenerator.forBlock['model_dl_summary'] = function(block, generator)
   const code = model + '.summary()\n';
   return code;
 };
+
+python.pythonGenerator.forBlock['model_rl_create'] = function(block, generator) {
+  // Create a classification model.
+  const model = block.getFieldValue('MODEL');
+  let code = '';
+  switch (model) {
+    case 'QLearning': {
+      generator.definitions_['import_QLearning'] = 'from mushroom_rl.algorithms.value.td import QLearning';
+      generator.definitions_['import_MDPInfo'] = 'from mushroom_rl.core.environment import MDPInfo';
+      generator.definitions_['import_Discrete'] = 'from mushroom_rl.utils.spaces import Discrete';
+      generator.definitions_['import_EpsGreedy'] = 'from mushroom_rl.policy.td_policy import EpsGreedy';
+      generator.definitions_['import_Parameter'] = 'from mushroom_rl.utils.parameters import Parameter';
+      const n_state = block.getFieldValue('PARAM_N_STATE');
+      const n_action = block.getFieldValue('PARAM_N_ACTION');
+      const gamma = block.getFieldValue('PARAM_GAMMA');
+      const epsilon = block.getFieldValue('PARAM_EPSILON');
+      const learning_rate = block.getFieldValue('PARAM_LEARNING_RATE');
+      code = "QLearning(\n" +
+        generator.prefixLines(
+          "MDPInfo(Discrete(" + n_state + "), Discrete(" + n_action + "), " + gamma + ",1),\n" +
+          "EpsGreedy(" + epsilon + "),\n" +
+          "Parameter(" + learning_rate +"),\n",
+          generator.INDENT
+        ) +
+      ")"
+      break;
+    }
+    case 'SARSA': {
+      generator.definitions_['import_SARSA'] = 'from mushroom_rl.algorithms.value.td import SARSA';
+      generator.definitions_['import_MDPInfo'] = 'from mushroom_rl.core.environment import MDPInfo';
+      generator.definitions_['import_Discrete'] = 'from mushroom_rl.utils.spaces import Discrete';
+      generator.definitions_['import_EpsGreedy'] = 'from mushroom_rl.policy.td_policy import EpsGreedy';
+      generator.definitions_['import_Parameter'] = 'from mushroom_rl.utils.parameters import Parameter';
+      const n_state = block.getFieldValue('PARAM_N_STATE');
+      const n_action = block.getFieldValue('PARAM_N_ACTION');
+      const gamma = block.getFieldValue('PARAM_GAMMA');
+      const epsilon = block.getFieldValue('PARAM_EPSILON');
+      const learning_rate = block.getFieldValue('PARAM_LEARNING_RATE');
+      code = "SARSA(\n" +
+        generator.prefixLines(
+          "MDPInfo(Discrete(" + n_state + "), Discrete(" + n_action + "), " + gamma + ", 1),\n" +
+          "EpsGreedy(" + epsilon + "),\n" +
+          "Parameter(" + learning_rate +"),\n",
+          generator.INDENT
+        ) +
+      ")"
+      break;
+    }
+  }
+  return [code, generator.ORDER_ATOMIC];
+};
+
+python.pythonGenerator.forBlock['model_rl_train'] = function(block, generator) {
+  // Train a model.
+  generator.definitions_['import_np'] = 'import numpy as np';
+  const state = generator.valueToCode(block, 'STATE', generator.ORDER_NONE) || 0;
+  const action = generator.valueToCode(block, 'ACTION', generator.ORDER_NONE) || 0;
+  const reward = generator.valueToCode(block, 'REWARD', generator.ORDER_NONE) || 0;
+  const next_state = generator.valueToCode(block, 'NEXT_STATE', generator.ORDER_NONE) || 0;
+  const model = generator.valueToCode(block, 'MODEL', generator.ORDER_NONE) || 'None';
+  const code = model + '.fit(np.array([' + state + ', ' + action + ', ' + reward + ', ' + next_state + ', False], ndmin=2, dtype=object))\n';
+  return code;
+};
+
+python.pythonGenerator.forBlock['model_rl_predict'] = function(block, generator) {
+  // Use model to predict.
+  generator.definitions_['import_np'] = 'import numpy as np';
+  const model = generator.valueToCode(block, 'MODEL', generator.ORDER_NONE) || 'None';
+  const state = generator.valueToCode(block, 'STATE', generator.ORDER_COLLECTION) || '[]';
+  const code = model + '.draw_action(np.array(' + state + ', ndmin=2))';
+  return [code, generator.ORDER_ATOMIC];
+};

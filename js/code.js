@@ -433,13 +433,13 @@ Code.init = async function() {
   });
   
   // Overide prompt function because prompt is not implemented in Electron.
-  Blockly.prompt = function(message, defaultValue, callback) {
+  Blockly.dialog.setPrompt((message, defaultValue, callback) => {
     vex.dialog.prompt({
       message: message,
       placeholder: defaultValue,
       callback: callback
     });
-  };
+  });
 
   // Overide the length of indent.
   python.pythonGenerator.INDENT = "    ";

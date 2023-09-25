@@ -565,55 +565,57 @@ Code.initLanguage = function() {
  * Initialize dialog body for selecting game arguments.
  */
 Code.initGameArgs = function() {
-  var config = JSON.parse(window.file.read(path.join(__dirname, 'games', Code.GAME, 'game_config.json').replace('app.asar', 'app.asar.unpacked')));
-  var $body = $('<div class="modal-body my-2"></div>')
-  $body.append('<div class="form-group"><label for="">每秒顯示張數 (FPS)</label><input type="number" class="form-control", id="game_fps", min="1", max="300", step="1", value="30", data-bind="value:replyNumber"></div>');
-  var userNumConfig = config['user_num'];
-  $body.append(`<div class="form-group"><label for="">玩家人數</label><input type="number" class="form-control", id="user_num", min="${userNumConfig.min}", max="${userNumConfig.max}", step="1", value="${userNumConfig.min}", data-bind="value:replyNumber"></div>`);
-  $('#game-args').append($body);
-  for (var params of config['game_params']) {
-    var $param = $('<div class="form-group"></div>');
-    $param.append('<label for="">' + params["verbose"] + '</label>');
+  const config = JSON.parse(window.file.read(path.join(__dirname, 'games', Code.GAME, 'game_config.json').replace('app.asar', 'app.asar.unpacked')));
+  const $div = $('<div class="m-2"></div>')
+  $div.append('<div class="form-group"><label>每秒顯示張數 (FPS)</label><input type="number" class="form-control", id="game_fps", min="1", max="300", step="1", value="30", data-bind="value:replyNumber"></div>');
+  const userNumConfig = config['user_num'];
+  $div.append(`<div class="form-group"><label>玩家人數</label><input type="number" class="form-control", id="user_num", min="${userNumConfig.min}", max="${userNumConfig.max}", step="1", value="${userNumConfig.min}", data-bind="value:replyNumber"></div>`);
+  $('#game-args').append($div);
+  for (let params of config['game_params']) {
+    const $param = $('<div class="form-group"></div>');
+    $param.append(`<label>${params["verbose"]}</label>`);
     if (params["type"] == "int") {
       if ("choices" in params) {
-        $choices = $('<select class="form-control game-arg", id="' + params["name"] + '"></select>');
-        for (var value of params['choices']) {
-          if (params["default"] == value) {
-            $choices.append('<option selected value="' + value + '">' + value + '</option>');
-          } else {
-            $choices.append('<option value="' + value + '">' + value + '</option>');
-          }
+        const $choices = $(`<select class="form-control game-arg", id="param-${params["name"]}"></select>`);
+        for (let value of params['choices']) {
+          $choices.append(`<option ${(params["default"] == value)? "selected" : ""} value="${value}">${value}</option>`);
         };
         $param.append($choices);
       } else {
-        var step = 1;
+        let step = 1;
         if ("step" in params) {
           step = params["step"];
         }
-        $param.append('<input type="number" class="form-control game-arg", id="' + params["name"] + '", min="' + params["min"] + '", max="' + params["max"] + '", step="' + step + '", value="' + params["default"] + '", data-bind="value:replyNumber">');
+        $param.append(`<input type="number" class="form-control game-arg", id="param-${params["name"]}", min="${params["min"]}", max="${params["max"]}", step="${step}", value="${params["default"]}", data-bind="value:replyNumber">`);
       }
     } else if (params["type"] == "str") {
-      var $choices = $('<select class="form-control game-arg", id="' + params["name"] + '"></select>');
-      for (var choice of params['choices']) {
+      const $choices = $(`<select class="form-control game-arg", id="${params["name"]}"></select>`);
+      for (let choice of params['choices']) {
         if (typeof(choice) === "object") {
-          if (params["default"] == choice["value"]) {
-            $choices.append('<option selected value="' + choice["value"] + '">' + choice["verbose"] + '</option>');
-          } else {
-            $choices.append('<option value="' + choice["value"] + '">' + choice["verbose"] + '</option>');
-          }
+          $choices.append(`<option ${(params["default"] == choice["value"])? "selected" : ""} value="${choice["value"]}">${choice["verbose"]}</option>`);
         } else {
-          if (params["default"] == choice) {
-            $choices.append('<option selected value="' + choice + '">' + choice + '</option>');
-          } else {
-            $choices.append('<option value="' + choice + '">' + choice + '</option>');
-          }
+          $choices.append(`<option ${(params["default"] == choice)? "selected" : ""} value="${choice}">${choice}</option>`);
         }
+        $param.append($choices);
       }
-      $param.append($choices);
+    } else if (params["type"] == "path") {
+      const $path = $(`<input type="text" class="form-control game-arg" id="param-${params["name"]}" onclick="Code.selectParamPath('param-${params["name"]}')" readonly></input>`);
+      $param.append($path);
     }
-    $body.append($param);
+    $div.append($param);
   };
 };
+
+Code.selectParamPath = function(paramId) {
+  const paramPath = window.path.select({
+    title: "選擇檔案",
+    defaultPath: $(`#${paramId}`).val(),
+    properties: ["openFile"]
+  });
+  if (paramPath !== undefined) {
+    $(`#${paramId}`).val(paramPath[0]);
+  }
+}
 
 /**
  * Use blockly.json to initialize options of MLGame blocks.
@@ -1284,7 +1286,7 @@ Code.play = function() {
   const params = {};
   for (let i = 0; i < args_elements.length; i++) {
     const e = args_elements[i];
-    args.push(`--${e.id}`);
+    args.push(`--${e.id.replace('param-', '')}`);
     if (e.tagName == "SELECT") {
       const value = e.options[e.selectedIndex].getAttribute("value");
       args.push(value);

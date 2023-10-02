@@ -262,7 +262,10 @@ contextBridge.exposeInMainWorld('paia', {
     }
   },
   ads: () => {
-    return process.env.PAIA_ADS_URL
+    return `${env.parsed.PAIA_APP_HOST}/ads`
+  },
+  redirect: () => {
+    return `${env.parsed.PAIA_APP_HOST}/login?app=true`
   }
 });
 contextBridge.exposeInMainWorld('api', {
@@ -291,18 +294,18 @@ const paiaAPI = function(method, url, data, auth) {
   if (auth == 'USER_TOKEN') {
     headers['Authorization'] = `Bearer ${access_token}`;
   } else if (auth == 'DESKTOP_TOKEN') {
-    headers['Authorization'] = `Bearer ${process.env.PAIA_DESKTOP_TOKEN}`;
+    headers['Authorization'] = `Bearer ${env.parsed.PAIA_DESKTOP_TOKEN}`;
   }
   if (Object.prototype.toString.call(data) !== "[object FormData]") {
     headers['Content-Type'] = 'application/json';
     headers['Accept'] = 'application/json';
-    return fetch(`${process.env.PAIA_API_HOST}/api/${process.env.PAIA_API_VERSION}/${url}`, {
+    return fetch(`${env.parsed.PAIA_API_HOST}/api/${env.parsed.PAIA_API_VERSION}/${url}`, {
       method: method,
       headers: headers,
       body: (data !== null)? JSON.stringify(data) : null
     });
   } else {
-    return fetch(`${process.env.PAIA_API_HOST}/api/${process.env.PAIA_API_VERSION}/${url}`, {
+    return fetch(`${env.parsed.PAIA_API_HOST}/api/${env.parsed.PAIA_API_VERSION}/${url}`, {
       method: method,
       headers: headers,
       body: (data !== null)? JSON.stringify(data) : null

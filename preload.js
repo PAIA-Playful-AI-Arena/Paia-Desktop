@@ -7,6 +7,8 @@ const Store = require('electron-store');
 const dateformat = require('dateformat');
 const download = require('download-git-repo');
 const showdown = require('showdown');
+const { v4: uuid4 } = require('uuid');
+const { machineIdSync } = require('node-machine-id');
 // const ElectronGoogleOAuth2 = require('@getstation/electron-google-oauth2').default;
 const env = require('dotenv').config({ path: path.join(__dirname, '.env') });
 if (env.error) {
@@ -38,7 +40,10 @@ const store = new Store({schema});
 //   [], { successRedirectURL: 'https://www.paia-arena.com/' }
 // );
 const fileWatchers = {};
+const session_id = uuid4();
 let access_token = "";
+let time = new Date().getTime();
+let user_id = "";
 
 contextBridge.exposeInMainWorld('deeplink', {
   onLogin: (callback) => ipcRenderer.on('login', callback)
@@ -255,7 +260,9 @@ contextBridge.exposeInMainWorld('paia', {
   user: async () => {
     try {
       const response = await paiaAPI("GET", "user/me", null, 'USER_TOKEN');
-      return {ok: response.ok, content: await response.json()};
+      const content = await response.json();
+      user_id = content.id.toString();
+      return {ok: response.ok, content: content};
     } catch(error) {
       console.error("Error:", error);
       return {ok: false, content: error};
@@ -266,6 +273,9 @@ contextBridge.exposeInMainWorld('paia', {
   },
   redirect: () => {
     return `${env.parsed.PAIA_APP_HOST}/login?app=true`
+  },
+  ga: async(name, params) => {
+    await gaAPI(name, params);
   }
 });
 contextBridge.exposeInMainWorld('api', {
@@ -323,6 +333,29 @@ const githubAPI = function(method, url, data) {
     body: (data !== null)? JSON.stringify(data) : null
   });
 };
+
+const gaAPI = function(name, params) {
+  const headers = {};
+  headers['Content-Type'] = 'application/json';
+  const prev_time = time;
+  time = new Date().getTime();
+  return fetch(`https://google-analytics.com/mp/collect?measurement_id=${env.parsed.GA_MEASUREMENT_ID}&api_secret=${env.parsed.GA_API_SECRET}`, {
+    method: "POST",
+    headers: headers,
+    body: JSON.stringify({
+      client_id: machineIdSync(),
+      user_id: user_id,
+      events: [{
+        name: name,
+        params: {
+          engagement_time_msec: (time - prev_time).toString(),
+          session_id: session_id,
+          ...params
+        }
+      }]
+    })
+  });
+}
 
 const fixedAlert = function(msg) {
   window.alert(msg);

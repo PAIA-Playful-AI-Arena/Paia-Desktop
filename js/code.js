@@ -544,6 +544,13 @@ Code.init = async function() {
   // Set PAIA ads url
   $("#paia-ads").attr("src", window.paia.ads());
 
+  // GA4
+  window.paia.ga('screen_view', {
+    app_name: "paia_desktop",
+	  app_version: window.app.getVersion(),
+    screen_name: `blockly?game=${Code.GAME}`
+  });
+
   // Lazy-load the syntax-highlighting.
   window.setTimeout(Code.importPrettify, 1);
 };
@@ -604,6 +611,9 @@ Code.initGameArgs = function() {
     } else if (params["type"] == "path") {
       const $path = $(`<input type="text" class="form-control game-arg" id="param-${params["name"]}" onclick="Code.selectParamPath('param-${params["name"]}')" readonly></input>`);
       $param.append($path);
+    } else if (params["type"] == "list") {
+      const $list = $(`<input type="text" class="form-control game-arg" id="param-${params["name"]}" value="${params["default"]}">`);
+      $param.append($list);
     }
     $div.append($param);
   };
@@ -1317,15 +1327,12 @@ Code.play = function() {
   document.getElementById('content_console').textContent = '> Python program running\n';
   $('#console-dialog').modal('show');
   window.python_env.run(options, "mlgame", file_path, Code.PROJECT_PATH);
-  // Add log
-  // window.addLog('play_game', {
-  //   type: "game",
-  //   data: {
-  //     name: Code.GAME,
-  //     id: 1,
-  //     params: params
-  //   }
-  // });
+  // GA4
+  window.paia.ga('playAI', {
+    event_category: 'playAI_desktop',
+    game_name: Code.GAME,
+    game_version: Code.GAME_VERSION
+  });
 };
 
 /**

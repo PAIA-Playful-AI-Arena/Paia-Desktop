@@ -95,7 +95,11 @@
             $('#user-name').html(res.content.username);
             $('#user-avatar').attr("src", res.content.avatar);
           }
-        })
+        });
+        window.paia.ga('login', {
+          event_category: 'general_desktop',
+          value: 'login'
+        });
     } else {
       $('#state-content').html(response.content);
     }
@@ -235,4 +239,9 @@
   token_login();
   update_game_list();
   update_version_name();
+  window.paia.ga('screen_view', {
+    app_name: "paia_desktop",
+    app_version: window.app.getVersion(),
+    screen_name: 'index'
+  });
 </script>

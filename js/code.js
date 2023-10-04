@@ -1796,7 +1796,7 @@ document.write('<script src="blockly/msg/' + Code.LANG + '.js"></script>\n');
 
 const __dirname = window.path.dirname();
 
-let customBlocksPath = window.path.join(__dirname, 'blockly', 'blocks').replace('app.asar', 'app.asar.unpacked');
+let customBlocksPath = window.path.join(__dirname, 'blockly', 'blocks');
 if (window.fs.existsSync(customBlocksPath)) {
   window.fs.readdirSync(customBlocksPath).forEach(file => {
     if (file.endsWith(".js")) {
@@ -1805,7 +1805,7 @@ if (window.fs.existsSync(customBlocksPath)) {
   });
 }
 
-customBlocksPath = window.path.join(__dirname, 'blockly', 'python').replace('app.asar', 'app.asar.unpacked');
+customBlocksPath = window.path.join(__dirname, 'blockly', 'python');
 if (window.fs.existsSync(customBlocksPath)) {
   window.fs.readdirSync(customBlocksPath).forEach(file => {
     if (file.endsWith(".js")) {

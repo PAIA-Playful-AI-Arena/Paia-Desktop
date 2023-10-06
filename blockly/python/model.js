@@ -310,12 +310,13 @@ python.pythonGenerator.forBlock['model_rl_create'] = function(block, generator) 
 python.pythonGenerator.forBlock['model_rl_train'] = function(block, generator) {
   // Train a model.
   generator.definitions_['import_np'] = 'import numpy as np';
+  generator.definitions_['import_arrays_as_dataset'] = 'from mushroom_rl.utils.dataset import arrays_as_dataset';
   const state = generator.valueToCode(block, 'STATE', generator.ORDER_NONE) || 0;
   const action = generator.valueToCode(block, 'ACTION', generator.ORDER_NONE) || 0;
   const reward = generator.valueToCode(block, 'REWARD', generator.ORDER_NONE) || 0;
   const next_state = generator.valueToCode(block, 'NEXT_STATE', generator.ORDER_NONE) || 0;
   const model = generator.valueToCode(block, 'MODEL', generator.ORDER_NONE) || 'None';
-  const code = model + '.fit(np.array([' + state + ', ' + action + ', ' + reward + ', ' + next_state + ', False], ndmin=2, dtype=object))\n';
+  const code = model + `.fit(arrays_as_dataset(np.array([[${state}]]), np.array([[${action}]]), np.array([[${reward}]]), np.array([[${next_state}]]), np.array([[False]]), np.array([[False]])))\n`;
   return code;
 };
 

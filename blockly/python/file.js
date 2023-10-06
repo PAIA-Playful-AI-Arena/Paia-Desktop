@@ -51,3 +51,12 @@ python.pythonGenerator.forBlock['file_csv_load'] = function(block, generator) {
     generator.prefixLines(obj + " = [row for row in csv.reader(f, delimiter='" + delimiter + "')]\n", generator.INDENT);
   return code;
 };
+
+python.pythonGenerator.forBlock['file_exists'] = function(block, generator) {
+  // Check if the file exists.
+  generator.definitions_['import_os'] = 'import os';
+  const name = generator.valueToCode(block, 'FILENAME',
+    generator.ORDER_NONE) || "''";
+  const code = "os.path.exists(os.path.join(os.path.dirname(__file__), " + name + "))";
+  return [code, generator.ORDER_ATOMIC];
+};

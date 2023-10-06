@@ -110,5 +110,21 @@ Blockly.defineBlocksWithJsonArray([
     "nextStatement": null,
     "style": "file_blocks",
     "tooltip": "%{BKY_FILE_LOAD_TOOLTIP}"
+  },
+  // Block for checking if the path exists.
+  {
+    "type": "file_exists",
+    "message0": "%1 存在",
+    "args0": [
+      {
+        "type": "input_value",
+        "name": "FILENAME",
+        "check": "String"
+      }
+    ],
+    "inputsInline": true,
+    "output": null,
+    "style": "file_blocks",
+    "tooltip": ""
   }
 ]);

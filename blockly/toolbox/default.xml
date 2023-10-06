@@ -504,6 +504,13 @@
         </shadow>
       </value>
     </block>
+    <block type="file_exists">
+      <value name="FILENAME">
+        <shadow type="text">
+          <field name="TEXT">{filename}</field>
+        </shadow>
+      </value>
+    </block>
   </category>
   <sep></sep>
   <category name="MLGame" colour="%{BKY_MLGAME_HUE}" class='MLGame_blocks'>

@@ -1833,4 +1833,8 @@ if (fs.existsSync(customBlocksPath)) {
 window.addEventListener('load', Code.init);
 window.deeplink.onLogin((event, token) => {
   Code.token_login(token);
+  window.paia.ga('login', {
+    event_category: 'deeplink_desktop',
+    value: 'login'
+  });
 });

@@ -235,6 +235,10 @@
   document.title += ` ${window.app.getVersion()}`;
   window.deeplink.onLogin((event, token) => {
     token_login(token);
+    window.paia.ga('login', {
+      event_category: 'deeplink_desktop',
+      value: 'login'
+    });
   });
   token_login();
   update_game_list();

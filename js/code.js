@@ -543,6 +543,10 @@ Code.init = async function() {
 
   // Set PAIA ads url
   $("#paia-ads").attr("src", window.paia.ads());
+  const webview = document.getElementById('paia-ads');
+  webview.addEventListener('dom-ready', function() {
+    webview.insertCSS('body{ overflow: hidden; }');
+  });
 
   // GA4
   window.paia.ga('screen_view', {

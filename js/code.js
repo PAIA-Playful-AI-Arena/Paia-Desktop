@@ -1559,8 +1559,10 @@ Code.copyClipboard = function(token, id) {
 /**
  * Update fileset
  */
-Code.updateFileset = function(index) {
+Code.updateFileset = function(index, name="", description="") {
   Code.FILESET_ID = index;
+  $("#filset-name").val(name)
+  $("#filset-description").val(description)
   $("#filset-dialog").modal("hide");
   $("#upload-filset-dialog").modal('show');
 };
@@ -1572,7 +1574,7 @@ Code.uploadFileset = function() {
   const data = {
     name: $("#filset-name").val(),
     description: $("#filset-description").val(),
-    game: Code.GAME
+    game: "arkanoid"
   }
   let method = "POST";
   let apiPath = "fileset";
@@ -1580,7 +1582,7 @@ Code.uploadFileset = function() {
     method = "PATCH";
     apiPath += `/${Code.FILESET_ID}`;
   }
-  window.api.paia(method, apiPath, data, 'USER_TOKEN').then((res) => {
+  window.api.paia(method, apiPath, data, 'USER_TOKEN', "v1").then((res) => {
     if (res.ok) {
       if (res.content.status == "success") {
         if (Code.FILESET_ID >= 0) {
@@ -1605,24 +1607,26 @@ Code.uploadFileset = function() {
  */
 Code.showFilesets = async function() {
   $("#fileset-list").empty();
-  const response = await window.api.paia("GET", "fileset", null, 'USER_TOKEN');
+  const response = await window.api.paia("GET", "fileset", null, 'USER_TOKEN', "v1");
   if (response.ok) {
     response.content.data.forEach((e) => {
       const $item = $('<div class="card" style="width: 100%;"></div>');
       const $header = $(`<div class="card-header" id="accordion-${e.id}"></div>`);
-      $header.append(`<h2><button class="btn btn-focus-box-shadow btn-block text-left" type="button" data-toggle="collapse" data-target="#collapse-${e.id}" aria-expanded="true" aria-controls="collapse-${e.id}"><span>${e.game} - ${e.name}</span><span class="float-right">更新時間：${e.updated_at.substring(0, 19)}</span></button></h2>`);
+      $header.append(`<h2><button class="btn btn-focus-box-shadow btn-block text-left" type="button" data-toggle="collapse" data-target="#collapse-${e.id}" aria-expanded="true" aria-controls="collapse-${e.id}"><span>${e.name}</span><span class="float-right">更新時間：${e.updated_at.substring(0, 19)}</span></button></h2>`);
       $item.append($header);
       const $body = $(`<div id="collapse-${e.id}" class="collapse" aria-labelledby="accordion-${e.id}" data-parent="#fileset-list"></div>`);
       const $card_body = $(`<div class="card-body"></div>`);
+      const $description = $(`<div class="d-flex ml-1 mb-3">描述：${e.description}</div>`)
+      $card_body.append($description);
       const $card_nav = $(`<div class="d-flex mb-3"></div>`)
       $card_nav.append(`<span class="ml-1">下載代碼：${e.token}</span>`);
       $card_nav.append(`<a onclick="Code.copyClipboard('${e.token}', '#clipboard-${e.id}');" id="clipboard-${e.id}" class="ml-3 btn btn-sm btn-secondary"><i class="bi bi-clipboard"></i></a>`);
       $card_nav.append(`<a onclick="Code.updateFilesetFile(${e.id});" class="ml-auto btn btn-sm btn-success float-right">新增檔案</a>`);
-      $card_nav.append(`<a onclick="Code.updateFileset(${e.id});" class="ml-1 btn btn-sm btn-info float-right">更新檔案集</a>`);
+      $card_nav.append(`<a onclick="Code.updateFileset(${e.id}, '${e.name}', '${e.description}');" class="ml-1 btn btn-sm btn-info float-right">更新檔案集</a>`);
       $card_nav.append(`<a onclick="Code.deleteFileset(${e.id});" class="ml-1 btn btn-sm btn-danger float-right">刪除檔案集</a>`);
       $card_body.append($card_nav);
       const $file_list = $('<ul class="list-group"><ul>');
-      window.api.paia("GET", `fileset/${e.id}`, null, 'USER_TOKEN').then((res) => {
+      window.api.paia("GET", `fileset/${e.id}`, null, 'USER_TOKEN', "v1").then((res) => {
         if (res.ok) {  
           res.content.data.files.forEach((f) => {
             const $file = $(`<li class="list-group-item d-flex justify-content-between align-items-center">${f.file_name}</li>`);
@@ -1647,7 +1651,7 @@ Code.showFilesets = async function() {
 /**
  * Upload files to fileset.
  */
-Code.updateFilesetFile = async function(index) {
+Code.updateFilesetFile = function(index) {
   const filePath = window.path.select({
     title: "上傳檔案",
     defaultPath: Code.PROJECT_PATH,
@@ -1657,82 +1661,82 @@ Code.updateFilesetFile = async function(index) {
     return;
   }
   let error = 0;
+  let finish = 0;
   filePath.forEach((f) => {
-    const data = new FormData();
-    const name = path.basename(f);
-    const file = new File([window.file.read(f)], name);
-    data.append("files", file, name);
-    window.api.paia("PUT", `fileset/${index}/file`, data, 'USER_TOKEN').then((res) => {
-      if (res.ok)
-        Code.showFilesets();
+    window.api.paia("PUT", `fileset/${index}/file`, null, 'USER_TOKEN', "v1", f).then((res) => {
+      if (res.ok) {
+        if (res.content.status == "success")  
+          finish++;
+        else 
+          console.log(res.content);
+      }
       else {
-        console.log(response.content);
+        error++;
+        console.log(res)
+      }
+      if (error + finish == filePath.length) {
+        if (error > 0) {
+          window.popup.alert(`${filePath.length} 個檔案上傳完成，其中 ${error} 個發生錯誤`);
+        } else {
+          window.popup.alert(`${filePath.length} 個檔案上傳完成`);
+        }
+        $("#download-filset-dialog").modal('hide');
+        Code.showFilesets();
       }
     });
   })
-  if (error > 0) {
-    window.popup.alert(`${filePath.length} 個檔案上傳完成，其中 ${error} 個發生錯誤`);
-  } else {
-    window.popup.alert(`${filePath.length} 個檔案上傳完成`);
-  }
-  $("#download-filset-dialog").modal('hide');
 };
 
 /**
  * Use token to find fileset.
  */
 Code.findFileset = function() {
-  window.paiaAPI("GET", `shared_fileset?token=${$("#fileset-download-token").val()}`, null, false, 'DESKTOP_TOKEN', (res) => {
-    if (res.status == "success") {
-      Code.FILESET_FOUND = res.data;
-      $("#fileset-author").html(res.data.author);  
-      $("#fileset-name").html(res.data.name);  
-      $("#fileset-updated-at").html(res.data.updated_at.substring(0, 19));  
-      $("#fileset-data").collapse('show');
+  window.api.paia("GET", `shared_fileset?token=${$("#fileset-download-token").val()}`, null, 'DESKTOP_TOKEN', "v1").then((res) => {
+    if (res.ok) {
+      if (res.content.status == "success") {
+        Code.FILESET_FOUND = res.content.data;
+        $("#fileset-author").html(res.content.data.author);  
+        $("#fileset-name").html(res.content.data.name);  
+        $("#fileset-updated-at").html(res.content.data.updated_at.substring(0, 19));  
+        $("#fileset-data").collapse('show');
+      } else {
+        Code.FILESET_FOUND = null;
+        $("#fileset-data").collapse('hide');
+        window.popup.alert(`${res.content.detail}`);
+      }
     } else {
-      Code.FILESET_FOUND = null;
-      $("#fileset-data").collapse('hide');
-      window.popup.alert(`${res.detail}`);
-    }
-  }, (jqXHR, exception) => {
-    Code.FILESET_FOUND = null;
-    console.log("取得檔案集錯誤");
-  });
+      console.log(response.content);
+    };
+  })
 };
 
 /**
  * Download fileset.
  */
 Code.downloadFileset = function() {
-  var dir = path.join(__dirname, 'library', Code.GAME, `${Code.FILESET_FOUND.name}@${Code.FILESET_FOUND.token}`).replace('app.asar', 'app.asar.unpacked');
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true });
+  const dir = window.path.join(__dirname, 'library', Code.GAME, `${Code.FILESET_FOUND.name}@${Code.FILESET_FOUND.token}`).replace('app.asar', 'app.asar.unpacked');
+  if (!window.fs.existsSync(dir)) {
+    window.fs.mkdirSync(dir, { recursive: true });
   } else if (!window.popup.confirm(`${dir} 已存在，是否要覆蓋此程式集？`)) {
     return;
   }
   $("#saved_filesets").html(`程式庫 <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`);
-  var total = Code.FILESET_FOUND.files.length;
-  var finish = 0;
-  var error = 0;
+  const total = Code.FILESET_FOUND.files.length;
+  let finish = 0;
+  let error = 0;
   Code.FILESET_FOUND.files.forEach((e) => {
-    var file = fs.createWriteStream(path.join(dir, e.file_name));
-    require('https').get(e.file_url, (response) => {
-      response.on('data', (d) => {
-        file.write(d);
-      });
-      response.on('end', () => {
-        file.close();
-        finish++;
-        if (finish + error == total) {
-          if (error == 0) {
-            window.popup.alert(`${Code.FILESET_FOUND.name} 檔案集下載完成`);
-          } else {
-            window.popup.alert(`${Code.FILESET_FOUND.name} 檔案集下載完成，${error} 個檔案發生錯誤`);
-          }
-          $("#saved_filesets").html(`程式庫`);
+    window.https.get(e.file_url, window.path.join(dir, e.file_name), (d) => {
+    }, () => {
+      finish++;
+      if (finish + error == total) {
+        if (error == 0) {
+          window.popup.alert(`${Code.FILESET_FOUND.name} 檔案集下載完成`);
+        } else {
+          window.popup.alert(`${Code.FILESET_FOUND.name} 檔案集下載完成，${error} 個檔案發生錯誤`);
         }
-      });
-    }).on('error', (e) => {
+        $("#saved_filesets").html(`程式庫`);
+      }
+    }, (e) => {
       error++;
       if (finish + error == total) {
         window.popup.alert(`${Code.FILESET_FOUND.name} 檔案集下載完成，${error} 個檔案發生錯誤`);
@@ -1748,7 +1752,7 @@ Code.downloadFileset = function() {
  */
 Code.deleteFileset = function(index) {
   if (window.popup.confirm("確定要刪除此檔案集嗎？")) {
-    window.api.paia("DELETE", `fileset/${index}`, null, 'USER_TOKEN').then((res) => {
+    window.api.paia("DELETE", `fileset/${index}`, null, 'USER_TOKEN', "v1").then((res) => {
       if (res.ok) {
         if (res.content.status == "success") {
           window.popup.alert(`成功刪除檔案集`);
@@ -1769,29 +1773,17 @@ Code.deleteFileset = function(index) {
  */
 Code.deleteFilesetFile = function(index, filename) {
   if (window.popup.confirm(`確定要刪除 ${filename} 嗎？`)) {
-    var data = {
+    const data = {
       filename: filename
     }
-    window.paiaAPI("DELETE", `fileset/${index}/file`, data, false, 'USER_TOKEN', (res) => {
-      if (res.status == "success") {
+    window.api.paia("DELETE", `fileset/${index}/file`, data, 'USER_TOKEN', "v1").then((res) => {
+      if (res.content.status == "success") {
         window.popup.alert(`成功刪除檔案`);
       } else {
-        window.popup.alert(`${res.detail}`);
+        window.popup.alert(`${res.content.detail}`);
       }
       Code.showFilesets();
-    }, (jqXHR, exception) => {
-      var msg = '';
-      if (jqXHR.status === 0) {
-          msg = '連線錯誤，請確認網路';
-      } else if (jqXHR.status == 401) {
-          msg = `${jqXHR.responseText} [401]`;
-      } else if (exception === 'abort') {
-          msg = 'Ajax request aborted.';
-      } else {
-          msg = 'Uncaught Error.\n' + jqXHR.responseText;
-      }
-      window.popup.alert(`刪除失敗：${msg}`);
-    });
+    })
   }
 };
 

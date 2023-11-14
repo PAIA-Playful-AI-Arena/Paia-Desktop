@@ -3,6 +3,7 @@ const { PythonShell } = require('python-shell');
 const path = require('path');
 const fs = require('fs');
 const os = require('os');
+const https = require('https');
 const Store = require('electron-store');
 const dateformat = require('dateformat');
 const download = require('download-git-repo');
@@ -51,6 +52,21 @@ contextBridge.exposeInMainWorld('deeplink', {
 contextBridge.exposeInMainWorld('clipboard', clipboard);
 contextBridge.exposeInMainWorld('dateformat', dateformat);
 contextBridge.exposeInMainWorld('fs', fs);
+contextBridge.exposeInMainWorld('https', {
+  get: (url, filepath, callback, end, error) => {
+    const file = fs.createWriteStream(filepath);
+    https.get(url, (res) => {
+      res.on('data', (d) => {
+        file.write(d);
+        callback(d);
+      });
+      res.on('end', () => {
+        file.close();
+        end();
+      });
+    }).on('error', error);
+  }
+});
 contextBridge.exposeInMainWorld('markdown', {
   convert: (text) => {
     const converter = new showdown.Converter();
@@ -279,9 +295,15 @@ contextBridge.exposeInMainWorld('paia', {
   }
 });
 contextBridge.exposeInMainWorld('api', {
-  paia: async (method, url, data, auth) => {
+  paia: async (method, url, data, auth, ver=env.parsed.PAIA_API_VERSION, filename=null) => {
+    if (filename !== null) {
+      data = new FormData();
+      const name = path.basename(filename);
+      const file = new File([fs.readFileSync(filename, 'utf8')], name);
+      data.append("files", file, name);
+    }
     try {
-      const response = await paiaAPI(method, url, data, auth);
+      const response = await paiaAPI(method, url, data, auth, ver);
       return {ok: response.ok, content: await response.json()};
     } catch(error) {
       console.error("Error:", error);
@@ -299,23 +321,22 @@ contextBridge.exposeInMainWorld('api', {
   }
 });
 
-const paiaAPI = function(method, url, data, auth) {
+const paiaAPI = function(method, url, data, auth, ver=env.parsed.PAIA_API_VERSION) {
   const headers = {};
   if (auth == 'USER_TOKEN') {
     headers['Authorization'] = `Bearer ${access_token}`;
   } else if (auth == 'DESKTOP_TOKEN') {
     headers['Authorization'] = `Bearer ${env.parsed.PAIA_DESKTOP_TOKEN}`;
   }
-  if (Object.prototype.toString.call(data) !== "[object FormData]") {
-    headers['Content-Type'] = 'application/json';
-    headers['Accept'] = 'application/json';
-    return fetch(`${env.parsed.PAIA_API_HOST}/api/${env.parsed.PAIA_API_VERSION}/${url}`, {
+  if (data instanceof FormData) {
+    return fetch(`${env.parsed.PAIA_API_HOST}/api/${ver}/${url}`, {
       method: method,
       headers: headers,
-      body: (data !== null)? JSON.stringify(data) : null
+      body: data
     });
   } else {
-    return fetch(`${env.parsed.PAIA_API_HOST}/api/${env.parsed.PAIA_API_VERSION}/${url}`, {
+    headers['Content-Type'] = 'application/json';
+    return fetch(`${env.parsed.PAIA_API_HOST}/api/${ver}/${url}`, {
       method: method,
       headers: headers,
       body: (data !== null)? JSON.stringify(data) : null

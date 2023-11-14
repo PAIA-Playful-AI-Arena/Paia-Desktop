@@ -459,30 +459,8 @@ Code.init = async function() {
     BlocklyStorage.backupOnUnload(Code.workspace);
   }
 
-  // Replace the README of easy_game with tutorials.
-  if (Code.GAME == 'easy_game') {
-    $('#show_readme').html('教學');
-    $('#readme-title').html('Tutorials');
-    $('#readme-dialog .modal-content').append('<div class="modal-footer"><button type="button" onclick="Code.prevTutorials();" class="btn btn-outline-secondary mr-auto">&lt; 前一頁</button><button type="button" onclick="Code.nextTutorials();" class="btn btn-outline-secondary">下一頁 &gt;</button></div>')
-    Code.tutorialsTotalPage = 0;
-    const dir = path.join(__dirname, 'tutorial', 'tutorials');
-    fs.readdirSync(dir).forEach(file => {
-      if (file.endsWith('.md')) {
-        Code.tutorialsTotalPage++;
-      };
-    });
-    Code.tutorialsCurPage = 1;
-    const readme_path = path.join(__dirname, 'tutorial', 'tutorials', String(Code.tutorialsCurPage) + '.md');
-    const readme_text = window.file.read(readme_path);
-    const readme = window.markdown.convert(readme_text);
-    $('#readme-body').html(readme);
-    Code.bindClick('show_readme',
-      function() {Code.showTutorials(); Code.renderContent();});
-  } else {
-    Code.bindClick('show_readme',
-      function() {Code.showReadme(); Code.renderContent();});
-  }
-
+  Code.bindClick('show_readme',
+    function() {Code.showReadme(); Code.renderContent();});
   Code.bindClick('run',
       function() {Code.run(); Code.renderContent();});
   Code.bindClick('custom_python',

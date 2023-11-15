@@ -294,7 +294,7 @@ Code.init = async function() {
   Code.bindClick('open_python',
       function() {Code.openPython();});
   Code.bindClick('open_example_dir',
-      function() {window.openPath(window.path.join(__dirname, 'library', Code.GAME).replace('app.asar', 'app.asar.unpacked'));});
+      function() {window.path.open(window.path.join(__dirname, 'library', Code.GAME).replace('app.asar', 'app.asar.unpacked'));});
   Code.bindClick('en',
       function() {Code.changeLanguage('en');});
   Code.bindClick('zh-hant',
@@ -564,7 +564,7 @@ Code.logout = function () {
  * Let user select the path to a python file and load it. 
  */
 Code.openPython = function() {
-  let pythonPath = window.selectPath({
+  let pythonPath = window.path.select({
     title: "開啟 Python 檔",
     filters: [
       {name: 'Python', extensions: ['py']}
@@ -674,7 +674,7 @@ Code.closePython = function(pythonPath) {
  * Let user select the path to a python file and save to it. 
  */
 Code.savePython = function() {
-  var pythonPath = window.savePath({
+  var pythonPath = window.path.save({
     title: "儲存 Python 檔",
     defaultPath: window.path.join(Code.PROJECT_PATH, Code.FOCUSED_PYTHON),
     filters: [
@@ -801,7 +801,7 @@ Code.showReadme = function() {
  * Select the path of project.
  */
 Code.selectProjectPath = function() {
-  const dir = window.selectPath({
+  const dir = window.path.select({
     title: "選擇專案位置",
     defaultPath: $("#project-path").val(),
     properties: ["openDirectory"]
@@ -853,7 +853,7 @@ Code.newProject = function() {
  * Load existing project.
  */
 Code.openProject = function() {
-  const dir = window.selectPath({
+  const dir = window.path.select({
     title: "開啟專案資料夾",
     defaultPath: window.project.getPath(),
     properties: ["openDirectory"]
@@ -893,7 +893,7 @@ Code.revealProject = function() {
  * Export project directory.
  */
 Code.exportProject = function() {
-  let dest = window.selectPath({
+  let dest = window.path.select({
     title: "匯出專案資料夾",
     properties: ["openDirectory"]
   });

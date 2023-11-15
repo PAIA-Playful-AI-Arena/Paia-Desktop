@@ -274,7 +274,7 @@ python.pythonGenerator.forBlock['model_rl_create'] = function(block, generator) 
       const learning_rate = block.getFieldValue('PARAM_LEARNING_RATE');
       code = "QLearning(\n" +
         generator.prefixLines(
-          "MDPInfo(Discrete(" + n_state + "), Discrete(" + n_action + "), " + gamma + ",1),\n" +
+          "MDPInfo(Discrete(" + n_state + "), Discrete(" + n_action + "), " + gamma + ", 1),\n" +
           "EpsGreedy(" + epsilon + "),\n" +
           "Parameter(" + learning_rate +"),\n",
           generator.INDENT
@@ -327,4 +327,24 @@ python.pythonGenerator.forBlock['model_rl_predict'] = function(block, generator)
   const state = generator.valueToCode(block, 'STATE', generator.ORDER_COLLECTION) || '[]';
   const code = model + '.draw_action(np.array(' + state + ', ndmin=2))';
   return [code, generator.ORDER_ATOMIC];
+};
+
+python.pythonGenerator.forBlock['model_rl_set_parameter'] = function(block, generator) {
+  // Set model parameter.
+  const model = generator.valueToCode(block, 'MODEL', generator.ORDER_NONE) || 'None';
+  const param = block.getFieldValue('PARAM');
+  const value = generator.valueToCode(block, 'VALUE', generator.ORDER_NONE) || 'None';
+  let code = '';
+  switch (param) {
+    case 'learning_rate': {
+      generator.definitions_['import_Parameter'] = 'from mushroom_rl.utils.parameters import Parameter';
+      code = `${model}._alpha = Parameter(${value})\n`;
+      break
+    }
+    case 'epsilon': {
+      code = `${model}.policy.set_epsilon(${value})\n`;
+      break
+    }
+  }
+  return code;
 };

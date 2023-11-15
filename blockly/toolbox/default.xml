@@ -421,14 +421,14 @@
     <block type="model_dl_train">
       <value name="MODEL">
         <block type="variables_get">
-          <field name="VAR">{modelVariable}</field>
+          <field name="VAR">{dlModelVariable}</field>
         </block>
       </value>
     </block>
     <block type="model_dl_summary">
       <value name="MODEL">
         <block type="variables_get">
-          <field name="VAR">{modelVariable}</field>
+          <field name="VAR">{dlModelVariable}</field>
         </block>
       </value>
     </block>
@@ -436,15 +436,27 @@
     <block type="model_rl_train">
       <value name="MODEL">
         <block type="variables_get">
-          <field name="VAR">{modelVariable}</field>
+          <field name="VAR">{rlModelVariable}</field>
         </block>
       </value>
     </block>
     <block type="model_rl_predict">
       <value name="MODEL">
         <block type="variables_get">
-          <field name="VAR">{modelVariable}</field>
+          <field name="VAR">{rlModelVariable}</field>
         </block>
+      </value>
+    </block>
+    <block type="model_rl_set_parameter">
+      <value name="MODEL">
+        <block type="variables_get">
+          <field name="VAR">{rlModelVariable}</field>
+        </block>
+      </value>
+      <value name="VALUE">
+        <shadow type="math_number">
+          <field name="NUM">0</field>
+        </shadow>
       </value>
     </block>
   </category>

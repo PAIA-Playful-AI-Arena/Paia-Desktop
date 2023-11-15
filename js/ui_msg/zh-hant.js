@@ -37,6 +37,8 @@ var MSG = {
   textVariable: "文字",
   dictVariable: "字典",
   modelVariable: "模型",
+  dlModelVariable: "深度學習模型",
+  rlModelVariable: "強化學習模型",
   objVariable: "物件",
   filename: "檔案名稱",
   trainData: "訓練資料",

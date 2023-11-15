@@ -3,11 +3,11 @@ Blockly.Themes.Classic.blockStyles.model_blocks = {
 };
 
 Blockly.Themes.Classic.blockStyles.model_dl_blocks = {
-  "colourPrimary": "275"
+  "colourPrimary": "#B46CD8"
 };
 
 Blockly.Themes.Classic.blockStyles.model_rl_blocks = {
-  "colourPrimary": "280"
+  "colourPrimary": "#C356D8"
 };
 
 Blockly.defineBlocksWithJsonArray([
@@ -189,7 +189,7 @@ Blockly.defineBlocksWithJsonArray([
     'nextStatement': null,
     'enableContextMenu': false,
     'style': 'model_dl_blocks',
-    'tooltip': '%{BKY_MODEL_DL_INPUT_TOOLTIP}',
+    'tooltip': '深度學習模型的輸入',
   },
   // Block representing the dense layer in deep learning modal mutator.
   {
@@ -206,7 +206,7 @@ Blockly.defineBlocksWithJsonArray([
     "previousStatement": null,
     "nextStatement": null,
     'style': 'model_dl_blocks',
-    "tooltip": ""
+    "tooltip": "在深度學習模型中加入一層全連接層"
   },
   // Block representing the recurrent layer in deep learning modal mutator.
   {
@@ -237,7 +237,7 @@ Blockly.defineBlocksWithJsonArray([
     "previousStatement": null,
     "nextStatement": null,
     'style': 'model_dl_blocks',
-    "tooltip": ""
+    "tooltip": "在深度學習模型中加入一層循環層"
   },
   // Block representing the convolution layer in deep learning modal mutator.
   {
@@ -278,7 +278,7 @@ Blockly.defineBlocksWithJsonArray([
     "previousStatement": null,
     "nextStatement": null,
     'style': 'model_dl_blocks',
-    "tooltip": ""
+    "tooltip": "在深度學習模型中加入一層卷積層"
   },
   // Block representing the pooling layer in deep learning modal mutator.
   {
@@ -327,7 +327,7 @@ Blockly.defineBlocksWithJsonArray([
     "previousStatement": null,
     "nextStatement": null,
     'style': 'model_dl_blocks',
-    "tooltip": ""
+    "tooltip": "在深度學習模型中加入一層池化層"
   },
   // Block representing the loss function layer in deep learning modal mutator.
   {
@@ -359,7 +359,7 @@ Blockly.defineBlocksWithJsonArray([
     ],
     "previousStatement": null,
     'style': 'model_dl_blocks',
-    "tooltip": ""
+    "tooltip": "設定深度學習模型的損失函數"
   },
   // Block for training deep learning modal.
   {
@@ -394,8 +394,8 @@ Blockly.defineBlocksWithJsonArray([
     "inputsInline": true,
     "previousStatement": null,
     "nextStatement": null,
-    "style": "model_blocks",
-    "tooltip": "%{BKY_MODEL_TRAIN_TOOLTIP}"
+    "style": "model_dl_blocks",
+    "tooltip": "設定參數來訓練深度學習模型"
   },
   // Block for summarizing deep learning modal.
   {
@@ -410,7 +410,7 @@ Blockly.defineBlocksWithJsonArray([
     "previousStatement": null,
     "nextStatement": null,
     'style': 'model_dl_blocks',
-    "tooltip": ""
+    "tooltip": "輸出深度學習模型的架構"
   },
   // Block for training reinforcement learning modal.
   {
@@ -442,7 +442,7 @@ Blockly.defineBlocksWithJsonArray([
     "previousStatement": null,
     "nextStatement": null,
     "style": "model_rl_blocks",
-    "tooltip": "%{BKY_MODEL_TRAIN_TOOLTIP}"
+    "tooltip": "設定參數來訓練強化學習模型"
   },
   // Use rl model to predict.
   {
@@ -461,8 +461,42 @@ Blockly.defineBlocksWithJsonArray([
     "inputsInline": true,
     "output": null,
     "style": "model_rl_blocks",
-    "tooltip": "%{BKY_MODEL_PREDICT_TOOLTIP}"
+    "tooltip": "讓強化學習模型根據狀態預測接下來最好的行動"
   },
+  // Set rl parameter.
+  {
+    "type": "model_rl_set_parameter",
+    "message0": "調整 %1 的 %2 為 %3",
+    "args0": [
+      {
+        "type": "input_value",
+        "name": "MODEL"
+      },
+      {
+        "type": "field_dropdown",
+        "name": "PARAM",
+        "options": [
+          [
+            "學習率",
+            "learning_rate"
+          ],
+          [
+            "隨機行動機率",
+            "epsilon"
+          ]
+        ]
+      },
+      {
+        "type": "input_value",
+        "name": "VALUE"
+      }
+    ],
+    "inputsInline": true,
+    "previousStatement": null,
+    "nextStatement": null,
+    "style": "model_rl_blocks",
+    "tooltip": "調整強化學習模型的參數"
+  }
 ]);
 
 Blockly.Blocks["model_create_classification"] = {
@@ -761,7 +795,7 @@ Blockly.Blocks['model_dl_create'] = {
       'model_dl_reshape_layer',
       'model_dl_loss_layer'
     ], this));
-    this.setTooltip('');
+    this.setTooltip('加入不同的層來建立一個深度學習模型');
   },
   /**
    * Create XML to represent dim inputs.
@@ -1033,7 +1067,7 @@ Blockly.Blocks["model_rl_create"] = {
         .appendField('強化學習模型');
     this.setInputsInline(true);
     this.setOutput(true);
-    this.setTooltip(Blockly.Msg['MODEL_CREATE_CLASSIFICATION_TOOLTIP']);
+    this.setTooltip('設定參數來建立一個強化學習模型');
     this.paramCount_ = 0;
   },
   updateParameters_: function(model) {

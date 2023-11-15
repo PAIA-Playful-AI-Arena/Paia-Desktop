@@ -13,7 +13,7 @@
 /**
  * Create a namespace for the application.
  */
-var Code = {};
+const Code = {};
 
 /**
  * Get the name of the game.
@@ -34,11 +34,6 @@ Code.PROJECT = '';
  * The full path of opened project.
  */
 Code.PROJECT_PATH = '';
-
-/**
- * The file system watcher of opened project.
- */
-Code.PROJECT_WATCHER = null;
 
 /**
  * The mode of running program.
@@ -445,11 +440,11 @@ Code.init = async function() {
   python.pythonGenerator.INDENT = "    ";
   
   // Update library dropdown menu
-  var libraryDir = path.join(__dirname, 'library', Code.GAME).replace('app.asar', 'app.asar.unpacked');
-  if (!fs.existsSync(libraryDir)) {
-    fs.mkdirSync(libraryDir, { recursive: true });
+  const libraryDir = window.path.join(__dirname, 'library', Code.GAME).replace('app.asar', 'app.asar.unpacked');
+  if (!window.fs.existsSync(libraryDir)) {
+    window.fs.mkdirSync(libraryDir, { recursive: true });
   }
-  fs.watch(libraryDir, (eventType, filename) => {
+  window.fs.watch(libraryDir, (eventType, filename) => {
     Code.updateLibraryList();
   });
   Code.updateLibraryList();
@@ -473,9 +468,9 @@ Code.init = async function() {
       function() {Code.workspace.trashcan.emptyContents(); Code.renderContent();});
   Code.bindClick('custom_blocks',
       function() {
-        var dir = path.join(__dirname, 'custom_blocks').replace('app.asar', 'app.asar.unpacked');
-        if (!fs.existsSync(dir)) {
-          fs.mkdirSync(dir, { recursive: true });
+        const dir = window.path.join(__dirname, 'custom_blocks').replace('app.asar', 'app.asar.unpacked');
+        if (!window.fs.existsSync(dir)) {
+          window.fs.mkdirSync(dir, { recursive: true });
         }
         window.path.open(dir);
       });
@@ -557,7 +552,7 @@ Code.initLanguage = function() {
  * Initialize dialog body for selecting game arguments.
  */
 Code.initGameArgs = function() {
-  const config = JSON.parse(window.file.read(path.join(__dirname, 'games', Code.GAME, 'game_config.json').replace('app.asar', 'app.asar.unpacked')));
+  const config = JSON.parse(window.file.read(window.path.join(__dirname, 'games', Code.GAME, 'game_config.json').replace('app.asar', 'app.asar.unpacked')));
   const $div = $('<div class="m-2"></div>')
   $div.append('<div class="form-group"><label>每秒顯示張數 (FPS)</label><input type="number" class="form-control", id="game_fps", min="1", max="300", step="1", value="30", data-bind="value:replyNumber"></div>');
   const userNumConfig = config['user_num'];
@@ -604,11 +599,13 @@ Code.initGameArgs = function() {
 Code.selectParamPath = function(paramId) {
   const paramPath = window.path.select({
     title: "選擇檔案",
-    defaultPath: $(`#${paramId}`).val(),
+    defaultPath: ($(`#${paramId}`).val() !== "")? $(`#${paramId}`).val() : window.path.join(__dirname, 'games', Code.GAME).replace('app.asar', 'app.asar.unpacked'),
     properties: ["openFile"]
   });
   if (paramPath !== undefined) {
     $(`#${paramId}`).val(paramPath[0]);
+  } else {
+    $(`#${paramId}`).val("");
   }
 }
 
@@ -617,21 +614,25 @@ Code.selectParamPath = function(paramId) {
  */
 Code.initMlgameBlocks = function() {
   // Construct the toolbox XML, replacing translated variable names.
-  var toolboxPath = toolboxPath = path.join(__dirname, 'blockly', 'toolbox', 'default.xml');
-  var toolboxText = window.file.read(toolboxPath);
+  const toolboxPath = window.path.join(__dirname, 'blockly', 'toolbox', 'default.xml');
+  let toolboxText = window.file.read(toolboxPath);
   toolboxText = toolboxText.replace(/(^|[^%]){(\w+)}/g,
       function(m, p1, p2) {return p1 + MSG[p2];});
-  var toolboxXml = Blockly.utils.xml.textToDom(toolboxText);
-  var mlgameCat = toolboxXml.getElementsByClassName('MLGame_blocks')[0];
+  const toolboxXml = Blockly.utils.xml.textToDom(toolboxText);
+  const mlgameCat = toolboxXml.getElementsByClassName('MLGame_blocks')[0];
+
+  const block = document.createElement("block");
+  block.setAttribute("type", "mlplay_class");
+  mlgameCat.appendChild(block);
   
-  var configPath = path.join(__dirname, 'games', Code.GAME, 'blockly.json').replace('app.asar', 'app.asar.unpacked');
-  if (fs.existsSync(configPath)) {
-    var gameOptions = JSON.parse(window.file.read(configPath));
-    var reservedWords = ['MLPlay', 'self', 'scene_info', 'keyboard', 'args', 'kwargs', 'os', 'cmath', 'csv', 'plt', 'pickle', 'pygame', 'neighbors', 'tree', 'svm', 'ensemble', 'neural_network', 'linear_model', 'metrics', 'model_selection'];
+  const configPath = window.path.join(__dirname, 'games', Code.GAME, 'blockly.json').replace('app.asar', 'app.asar.unpacked');
+  if (window.fs.existsSync(configPath)) {
+    const gameOptions = JSON.parse(window.file.read(configPath));
+    const reservedWords = ['MLPlay', 'self', 'scene_info', 'keyboard', 'args', 'kwargs', 'os', 'cmath', 'csv', 'plt', 'pickle', 'pygame', 'neighbors', 'tree', 'svm', 'ensemble', 'neural_network', 'linear_model', 'metrics', 'model_selection', 'keras', 'QLearning', 'MDPInfo', 'Discrete', 'EpsGreedy', 'Parameter', 'SARSA', 'arrays_as_dataset'];
     if ("INIT_INFO" in gameOptions) {
-      var options = [];
+      const options = [];
       gameOptions["INIT_INFO"].forEach((op, index) => {
-        var opName = `${Code.GAME.toUpperCase()}_INIT_INFO_${index+1}`;
+        const opName = `${Code.GAME.toUpperCase()}_INIT_INFO_${index+1}`;
         options.push([`%{BKY_${opName}}`, op[0]]);
         reservedWords.push(op[0]);
         if (Code.LANG == 'en') {
@@ -642,14 +643,14 @@ Code.initMlgameBlocks = function() {
       });
       Blockly.Msg["MLPLAY_INIT_INFO_OPTIONS"] = options;
 
-      var block = document.createElement("block");
+      const block = document.createElement("block");
       block.setAttribute("type", "mlplay_init_info");
       mlgameCat.appendChild(block);
     }
 
-    var gameConfigPath = path.join(__dirname, 'games', Code.GAME, 'game_config.json').replace('app.asar', 'app.asar.unpacked');
-    if (fs.existsSync(gameConfigPath)) {
-      var options = [];
+    const gameConfigPath = window.path.join(__dirname, 'games', Code.GAME, 'game_config.json').replace('app.asar', 'app.asar.unpacked');
+    if (window.fs.existsSync(gameConfigPath)) {
+      const options = [];
       for (var params of JSON.parse(window.file.read(gameConfigPath)).game_params) {
         if (Code.LANG == 'en') {
           options.push([params.name.split('_').join(' '), `kwargs['game_params']['${params.name}']`]);
@@ -658,15 +659,15 @@ Code.initMlgameBlocks = function() {
         }
       }
       Blockly.Msg["MLPLAY_GAME_PARAM_OPTIONS"] = options;
-      var block = document.createElement("block");
+      const block = document.createElement("block");
       block.setAttribute("type", "mlplay_game_param");
       mlgameCat.appendChild(block);
     }
 
     if ("GAME_STATUS" in gameOptions) {
-      var options = [];
+      const options = [];
       gameOptions["GAME_STATUS"].forEach((op, index) => {
-        var opName = `${Code.GAME.toUpperCase()}_GAME_STATUS_${index+1}`;
+        const opName = `${Code.GAME.toUpperCase()}_GAME_STATUS_${index+1}`;
         options.push([`%{BKY_${opName}}`, op[0]]);
         if (Code.LANG == 'en') {
           Blockly.Msg[opName] = op[1];
@@ -676,15 +677,15 @@ Code.initMlgameBlocks = function() {
       });
       Blockly.Msg["MLPLAY_GAME_STATUS_OPTIONS"] = options;
 
-      var block = document.createElement("block");
+      const block = document.createElement("block");
       block.setAttribute("type", "mlplay_game_status");
       mlgameCat.appendChild(block);
     }
 
     if ("SCENE_INFO" in gameOptions) {
-      var options = [];
+      const options = [];
       gameOptions["SCENE_INFO"].forEach((op, index) => {
-        var opName = `${Code.GAME.toUpperCase()}_SCENE_INFO_${index+1}`;
+        const opName = `${Code.GAME.toUpperCase()}_SCENE_INFO_${index+1}`;
         options.push([`%{BKY_${opName}}`, op[0]]);
         if (Code.LANG == 'en') {
           Blockly.Msg[opName] = op[1];
@@ -694,15 +695,15 @@ Code.initMlgameBlocks = function() {
       });
       Blockly.Msg["MLPLAY_GET_INFO_OPTIONS"] = options;
 
-      var block = document.createElement("block");
+      const block = document.createElement("block");
       block.setAttribute("type", "mlplay_get_info");
       mlgameCat.appendChild(block);
     }
 
     if ("CONSTANT" in gameOptions) {
-      var options = [];
+      const options = [];
       gameOptions["CONSTANT"].forEach((op, index) => {
-        var opName = `${Code.GAME.toUpperCase()}_CONSTANT_${index+1}`;
+        const opName = `${Code.GAME.toUpperCase()}_CONSTANT_${index+1}`;
         options.push([`%{BKY_${opName}}`, `${index+1}/${op[0]}`]);
         if (Code.LANG == 'en') {
           Blockly.Msg[opName] = op[1];
@@ -712,15 +713,15 @@ Code.initMlgameBlocks = function() {
       });
       Blockly.Msg["MLPLAY_GET_CONSTANT_OPTIONS"] = options;
 
-      var block = document.createElement("block");
+      const block = document.createElement("block");
       block.setAttribute("type", "mlplay_get_constant");
       mlgameCat.appendChild(block);
     }
 
     if ("ACTION" in gameOptions) {
-      var options = [];
+      const options = [];
       gameOptions["ACTION"].forEach((op, index) => {
-        var opName = `${Code.GAME.toUpperCase()}_ACTION_${index+1}`;
+        const opName = `${Code.GAME.toUpperCase()}_ACTION_${index+1}`;
         options.push([`%{BKY_${opName}}`, op[0]]);
         if (Code.LANG == 'en') {
           Blockly.Msg[opName] = op[1];
@@ -730,7 +731,7 @@ Code.initMlgameBlocks = function() {
       });
       Blockly.Msg["MLPLAY_RETURN_ACTION_OPTIONS"] = options;
 
-      var block = document.createElement("block");
+      const block = document.createElement("block");
       block.setAttribute("type", "mlplay_return_action");
       mlgameCat.appendChild(block);
     }
@@ -755,28 +756,28 @@ Code.initMlgameBlocks = function() {
         this.init_settings_();
       }
 
-      var block = document.createElement("block");
+      const block = document.createElement("block");
       block.setAttribute("type", "mlplay_return_value");
       gameOptions["ACTION_VALUE"].forEach((op, index) => {
         if (op[1] == "NUMBER") {
-          var field = document.createElement("field");
+          const field = document.createElement("field");
           field.setAttribute("name", "NUM");
           field.appendChild(document.createTextNode(op[2]));
-          var shadow = document.createElement("shadow");
+          const shadow = document.createElement("shadow");
           shadow.setAttribute("type", "math_number");
           shadow.appendChild(field);
-          var value = document.createElement("value");
+          const value = document.createElement("value");
           value.setAttribute("name", 'INPUT' + index);
           value.appendChild(shadow);
           block.appendChild(value);
         } else if (op[1] == "STRING") {
-          var field = document.createElement("field");
+          const field = document.createElement("field");
           field.setAttribute("name", "TEXT");
           field.appendChild(document.createTextNode(op[2]));
-          var shadow = document.createElement("shadow");
+          const shadow = document.createElement("shadow");
           shadow.setAttribute("type", "text");
           shadow.appendChild(field);
-          var value = document.createElement("value");
+          const value = document.createElement("value");
           value.setAttribute("name", 'INPUT' + index);
           value.appendChild(shadow);
           block.appendChild(value);
@@ -784,17 +785,21 @@ Code.initMlgameBlocks = function() {
       });
       mlgameCat.appendChild(block);
     }
+    
+    const block = document.createElement("block");
+    block.setAttribute("type", "mlplay_is_key_pressed");
+    mlgameCat.appendChild(block);
 
     python.pythonGenerator.addReservedWords(reservedWords.join());
   }
 
-  var customBlocksPath = path.join(__dirname, 'custom_blocks', Code.GAME).replace('app.asar', 'app.asar.unpacked');
-  if (fs.existsSync(customBlocksPath)) {
-    fs.readdirSync(customBlocksPath).forEach(file => {
+  const customBlocksPath = window.path.join(__dirname, 'custom_blocks', Code.GAME).replace('app.asar', 'app.asar.unpacked');
+  if (window.fs.existsSync(customBlocksPath)) {
+    window.fs.readdirSync(customBlocksPath).forEach(file => {
       if (file.endsWith(".xml")) {
-        var customToolboxPath = toolboxPath = path.join(customBlocksPath, file);
-        var customToolboxText = window.file.read(customToolboxPath);
-        var customToolboxXml = Blockly.utils.xml.textToDom(customToolboxText);
+        const customToolboxPath = toolboxPath = window.path.join(customBlocksPath, file);
+        const customToolboxText = window.file.read(customToolboxPath);
+        const customToolboxXml = Blockly.utils.xml.textToDom(customToolboxText);
         toolboxXml.appendChild(document.createElement("sep"));
         toolboxXml.appendChild(customToolboxXml.getElementsByTagName("category")[0]);
       }
@@ -858,7 +863,7 @@ Code.updateLibraryList = function() {
       index++;
       window.fs.readdirSync(filesetDir).forEach(file => {
         if (file.endsWith(".xml")) {
-          var filePath = path.join(filesetDir, file);
+          const filePath = window.path.join(filesetDir, file);
           $list.append($(`<li class="ml-3 mt-1"><a href="#" id="${filePath}" title="${filePath}">${file}</a></li>`));
           Code.bindClick(filePath,
             function() {Code.loadXml(filePath); Code.renderContent();});
@@ -870,7 +875,7 @@ Code.updateLibraryList = function() {
   libraryDir = window.path.join(__dirname, 'library', Code.GAME).replace('app.asar', 'app.asar.unpacked');
   window.fs.readdirSync(libraryDir).forEach(dirent => {
     const filesetDir = window.path.join(libraryDir, dirent);
-    $('#library').append($(`<a href="#library-${index}" data-toggle="collapse" aria-expanded="false" class="group mt-2" title="${filesetDir}"><i class="bi bi-caret-right-fill pointer mr-1"></i>${dirent}</a>`))
+    $('#library').append($(`<a href="#library-${index}" data-toggle="collapse" aria-expanded="false" class="group mt-2" title="${filesetDir}"><i class="bi bi-caret-right-fill pointer mr-1"></i>${dirent}</a>`));
     const $list = $(`<ul class="collapse list-unstyled" id="library-${index}"></ul>`)
     $('#library').append($list);
     index++;
@@ -890,9 +895,9 @@ Code.updateLibraryList = function() {
  */
 Code.updateProjectList = function() {
   $('#project-files').empty();
-  fs.readdirSync(Code.PROJECT_PATH).forEach(file => {
+  window.fs.readdirSync(Code.PROJECT_PATH).forEach(file => {
     if (file.endsWith(".xml")) {
-      var filePath = path.join(Code.PROJECT_PATH, file);
+      const filePath = window.path.join(Code.PROJECT_PATH, file);
       $('#project-files').append($(`<li class="ml-3 mt-1"><a href="#" id="${filePath}" title="${filePath}">${file}</a></li>`));
       Code.bindClick(filePath,
         function() {Code.loadXml(filePath); Code.renderContent();});
@@ -995,32 +1000,13 @@ Code.logout = function () {
   $('#tab_user').text('尚未登入');
   $('#state-content').html('');
   $('#login-dialog').modal('show');
-}
-
-/**
- * Update UI after login. 
- */
-// Code.afterLogin = function() {
-//   Code.LOGIN = true;
-//   $('#login_logout').html('登出');
-//   document.querySelectorAll('.need-login').forEach(e => {
-//     e.classList.remove("disabled");
-//   });
-//   window.paiaAPI("GET", "me", null, false, 'USER_TOKEN', (res) => {
-//     $('#tab_user').text(`${res.first_name} ${res.last_name}`);
-//   }, (jqXHR, exception) => {
-//     console.log("取得使用者資料錯誤");
-//     window.logout();
-//   });
-//   Code.setNavWidth();
-//   $('#login-dialog').modal('hide');
-// };
+};
 
 /**
  * Let user select the path to a xml file and load it. 
  */
 Code.openXml = function() {
-  var xmlPath = window.path.select({
+  let xmlPath = window.path.select({
     title: "開啟 XML 檔",
     filters: [
       {name: 'xml', extensions: ['xml']}
@@ -1082,7 +1068,7 @@ Code.loadXml = function(xmlPath) {
   } else {
     let index = 1;
     while (name in Code.OPENED_XMLS) {
-      name = `${path.basename(xmlPath)} (${index})`;
+      name = `${window.path.basename(xmlPath)} (${index})`;
       index++;
     }
     try {
@@ -1128,14 +1114,14 @@ Code.loadXml = function(xmlPath) {
  * Close xml file and try to load another opened xml. 
  */
 Code.closeXml = function(xmlPath) {
-  var name = Code.PATH_MAP[xmlPath];
+  const name = Code.PATH_MAP[xmlPath];
   if (Code.OPENED_XMLS[name].$link.find('.not-saved').html() == '*' &&
       !window.popup.confirm(`${name} 有尚未儲存的修改，關閉後將遺失，是否確定關閉檔案？`)) {
     return;
   }
   if (Code.OPENED_XMLS[name].$link.hasClass('active')) {
-    var $links = $("#opened_xml .nav-link");
-    var index = $links.index(Code.OPENED_XMLS[name].$link);
+    const $links = $("#opened_xml .nav-link");
+    const index = $links.index(Code.OPENED_XMLS[name].$link);
     if (index - 1 >= 0) {
       $links[index - 1].click();
     } else if (index + 1 < $links.length) {
@@ -1156,7 +1142,7 @@ Code.closeXml = function(xmlPath) {
 Code.saveXml = function() {
   const xmlPath = window.path.save({
     title: "儲存 XML 檔",
-    defaultPath: path.join(Code.PROJECT_PATH, Code.FOCUSED_XML),
+    defaultPath: window.path.join(Code.PROJECT_PATH, Code.FOCUSED_XML),
     filters: [
         {name: 'XML', extensions: ['xml']}
     ]
@@ -1178,13 +1164,6 @@ Code.saveXml = function() {
     } else {
       Code.loadXml(xmlPath);
     }
-    // Add log
-    // window.addLog('store_xml', {
-    //   type: "file",
-    //   data: {
-    //     name: path.basename(xmlPath)
-    //   }
-    // });
   }
 };
 
@@ -1223,7 +1202,7 @@ Code.saveTmpPython = function(dir) {
 Code.savePython = function() {
   const pythonPath = window.path.save({
     title: "另存 Python 檔",
-    defaultPath: path.join(Code.PROJECT_PATH, 'ml_play.py'),
+    defaultPath: window.path.join(Code.PROJECT_PATH, 'ml_play.py'),
     filters: [
         {name: 'Python', extensions: ['py']}
     ]
@@ -1234,7 +1213,7 @@ Code.savePython = function() {
     const pythonText = python.pythonGenerator.workspaceToCode(Code.workspace);
     const state = window.python_env.getCustom();
     const mlgameVerPath = (state.custom_python)? 
-      window.path.join(path.dirname(state.custom_python_path), 'Lib', 'site-packages', 'mlgame', 'version.py') :
+      window.path.join(window.path.dirname(state.custom_python_path), 'Lib', 'site-packages', 'mlgame', 'version.py') :
       window.path.join(__dirname, 'python', 'dist', 'interpreter', 'mlgame', 'version.py').replace('app.asar', 'app.asar.unpacked');
     const mlgameVerStr = (window.fs.existsSync(mlgameVerPath))? window.file.read(mlgameVerPath) : "version = unknown";
     const mlgameVer = (mlgameVerStr.match(/version\s*==*\s*"([\w.]*)"/) || ['', 'unknown'])[1];
@@ -1273,7 +1252,7 @@ Code.run = function() {
  */
 Code.play = function() {
   const file_name = Code.saveTmpPython(Code.PROJECT_PATH);
-  const file_path = path.join(Code.PROJECT_PATH, file_name);
+  const file_path = window.path.join(Code.PROJECT_PATH, file_name);
   const fps = document.getElementById('game_fps').value;
   const args_elements = document.getElementById('game-args').getElementsByClassName('game-arg');
   const user_num = document.getElementById('user_num').value;;
@@ -1336,19 +1315,10 @@ Code.execute = function() {
   document.getElementById('content_console').textContent = '> Python program running\n';
   $('#console-dialog').modal('show');
   window.python_env.run(options, file_name, file_path, Code.PROJECT_PATH);
-  // Add log
-  // window.addLog('execute_py', {
-  //   type: "game",
-  //   data: {
-  //     name: Code.GAME,
-  //     id: 1,
-  //     params: {}
-  //   }
-  // });
 };
 
 Code.showReadme = function() {
-  const readme_path = path.join(__dirname, 'games', Code.GAME, 'README.md').replace('app.asar', 'app.asar.unpacked');
+  const readme_path = window.path.join(__dirname, 'games', Code.GAME, 'README.md').replace('app.asar', 'app.asar.unpacked');
   const readme_text = window.file.read(readme_path);
   const readme = window.markdown.convert(readme_text);
   $('#readme-body').html(readme);
@@ -1363,7 +1333,7 @@ Code.nextTutorials = function() {
   if (Code.tutorialsCurPage != Code.tutorialsTotalPage) {
     Code.tutorialsCurPage += 1;
   }
-  const readme_path = path.join(__dirname, 'tutorial', 'tutorials', String(Code.tutorialsCurPage) + '.md');
+  const readme_path = window.path.join(__dirname, 'tutorial', 'tutorials', String(Code.tutorialsCurPage) + '.md');
   const readme_text = window.file.read(readme_path);
   const readme = window.markdown.convert(readme_text);
   $('#readme-body').html(readme);
@@ -1373,7 +1343,7 @@ Code.prevTutorials = function() {
   if (Code.tutorialsCurPage != 1) {
     Code.tutorialsCurPage -= 1;
   }
-  const readme_path = path.join(__dirname, 'tutorial', 'tutorials', String(Code.tutorialsCurPage) + '.md');
+  const readme_path = window.path.join(__dirname, 'tutorial', 'tutorials', String(Code.tutorialsCurPage) + '.md');
   const readme_text = window.file.read(readme_path);
   const readme = window.markdown.convert(readme_text);
   $('#readme-body').html(readme);
@@ -1410,7 +1380,7 @@ Code.newProject = function() {
     window.file.unwatch(Code.PROJECT_PATH);
   }
   Code.PROJECT = $('#project-name').val();
-  Code.PROJECT_PATH = path.join($('#project-path').val(), $('#project-name').val());
+  Code.PROJECT_PATH = window.path.join($('#project-path').val(), $('#project-name').val());
   const start = (app.getVersion().indexOf("competition-tn") != -1 && Code.GAME != "easy_game")?
     window.path.join(__dirname, 'examples', Code.GAME, 'tainan', '範例程式', '1. auto.xml') :
     window.path.join(__dirname, 'examples', Code.GAME, 'xml', '範例程式 1', '1. start.xml');
@@ -1424,21 +1394,12 @@ Code.newProject = function() {
       $('#project-dialog').modal('hide');
     } else if (window.popup.confirm(`${Code.PROJECT} 已存在，是否改為載入此專案？`)) {
       $('#project_name').html(Code.PROJECT);
-      if(window.fs.existsSync(path.join(Code.PROJECT_PATH, 'ml_play.xml'))) {
-        Code.loadXml(path.join(Code.PROJECT_PATH, 'ml_play.xml'))
+      if (window.fs.existsSync(window.path.join(Code.PROJECT_PATH, 'ml_play.xml'))) {
+        Code.loadXml(window.path.join(Code.PROJECT_PATH, 'ml_play.xml'))
       } else if (window.fs.existsSync(start)) {
         Code.loadXml(start);
       }
       $('#project-dialog').modal('hide');
-      // Add log
-      // window.addLog('import_project', {
-      //   type: "project",
-      //   data: {
-      //     name: Code.PROJECT,
-      //     game_name: Code.GAME,
-      //     game_id: 1
-      //   }
-      // });
     }
   } catch(err) {
     window.popup.alert(err);
@@ -1473,20 +1434,11 @@ Code.openProject = function() {
   Code.PROJECT = window.path.basename(Code.PROJECT_PATH);
   $('#project_name').html(Code.PROJECT);
   if(window.fs.existsSync(window.path.join(Code.PROJECT_PATH, 'ml_play.xml'))) {
-    Code.loadXml(path.join(Code.PROJECT_PATH, 'ml_play.xml'))
-  } else if (fs.existsSync(start)) {
+    Code.loadXml(window.path.join(Code.PROJECT_PATH, 'ml_play.xml'))
+  } else if (window.fs.existsSync(start)) {
     Code.loadXml(start);
   }
   $('#project-dialog').modal('hide');
-  // Add log
-  // window.addLog('import_project', {
-  //   type: "project",
-  //   data: {
-  //     name: Code.PROJECT,
-  //     game_name: Code.GAME,
-  //     game_id: 1
-  //   }
-  // });
   $("#project-link").attr("title", Code.PROJECT_PATH);
   window.file.watch(Code.PROJECT_PATH, (eventType, filename) => {
     Code.updateProjectList();
@@ -1505,7 +1457,7 @@ Code.revealProject = function() {
  * Export project directory.
  */
 Code.exportProject = function() {
-  var dest = window.path.select({
+  let dest = window.path.select({
     title: "匯出專案資料夾",
     properties: ["openDirectory"]
   });
@@ -1514,18 +1466,10 @@ Code.exportProject = function() {
   } else {
     dest = dest[0];
   }
-  var projectDir = path.join(dest, Code.PROJECT);
-  if (!fs.existsSync(projectDir) || window.popup.confirm(`${projectDir} 已經存在，您要覆蓋它嗎？`)) {
-    window.copyDir(Code.PROJECT_PATH, dest);
-    // Add log
-    // window.addLog('export_project', {
-    //   type: "project",
-    //   data: {
-    //     name: Code.PROJECT,
-    //     game_name: Code.GAME,
-    //     game_id: 1
-    //   }
-    // });
+  const projectDir = window.path.join(dest, Code.PROJECT);
+  if (!window.fs.existsSync(projectDir) || window.popup.confirm(`${projectDir} 已經存在，您要覆蓋它嗎？`)) {
+    window.dir.copy(Code.PROJECT_PATH, dest);
+    window.path.open(dest);
   }
 };
 
@@ -1795,11 +1739,11 @@ if (window.fs.existsSync(customBlocksPath)) {
   });
 }
 
-customBlocksPath = path.join(__dirname, 'custom_blocks', Code.GAME).replace('app.asar', 'app.asar.unpacked');
-if (fs.existsSync(customBlocksPath)) {
-  fs.readdirSync(customBlocksPath).forEach(file => {
+customBlocksPath = window.path.join(__dirname, 'custom_blocks', Code.GAME).replace('app.asar', 'app.asar.unpacked');
+if (window.fs.existsSync(customBlocksPath)) {
+  window.fs.readdirSync(customBlocksPath).forEach(file => {
     if (file.endsWith(".js")) {
-      document.write(`<script src="${path.join(customBlocksPath, file)}"></script>\n`);
+      document.write(`<script src="${window.path.join(customBlocksPath, file)}"></script>\n`);
     }
   });
 }

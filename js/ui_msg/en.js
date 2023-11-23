@@ -35,6 +35,8 @@ var MSG = {
   textVariable: "text",
   dictVariable: "dictionary",
   modelVariable: "model",
+  dlModelVariable: "deep learning model",
+  rlModelVariable: "reinforcement learning model",
   objVariable: "object",
   filename: "filename",
   trainData: "train data",

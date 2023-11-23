@@ -24,18 +24,17 @@
     <script src="node_modules/codemirror/addon/fold/comment-fold.js"></script>
     <script src="node_modules/codemirror/addon/edit/closebrackets.js"></script>
     <script src="node_modules/codemirror/addon/edit/matchbrackets.js"></script>
-    <script>window.jQuery = window.$ = require('jquery');</script>
+    <script src="node_modules/jquery/dist/jquery.min.js"></script>
     <script src="node_modules/bootstrap/dist/js/bootstrap.bundle.js"></script>
     <script src="node_modules/vex-js/dist/js/vex.combined.min.js"></script>
     <script>vex.defaultOptions.className = 'vex-theme-os'</script>
-    <script src="renderer.js"></script>
     <script src="js/code_python.js"></script>
   </head>
   <body>
     <!-- Login dialog -->
-    <div class="modal fade" id="login-dialog" tabindex="-1">
+    <div class="modal fade" id="login-dialog" tabindex="-1" data-backdrop="static" data-keyboard="false">
       <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
+        <div class="modal-content p-3">
           <h5 class="text-center mt-3">登入 PAIA</h5>
           <form name="play" action="javascript:Code.login()">
             <div class="modal-body my-2">
@@ -44,7 +43,7 @@
                   <label for="email">Email</label>
                   <input type="email" class="form-control" id="email" aria-describedby="emailHelp" placeholder="account@gmail.com" required>
                 </div>
-                <div class="form-group">
+                <div class="form-group mb-4">
                   <label for="password">密碼</label>
                   <input type="password" class="form-control" id="password" placeholder="Password" required>
                 </div>
@@ -53,8 +52,8 @@
               </div>
             </div>
           </form>
-          <button type="button" onclick="Code.google_login()">
-            <img src="media/google-login.png" alt="...">
+          <button type="button" onclick="location.href=window.paia.redirect();">
+            從 PAIA 網站登入
           </button>
         </div>
       </div>
@@ -271,6 +270,7 @@
             <p>最後更新時間：<span id="fileset-updated-at"></span></p>
             <button class="btn btn-sm btn-outline-light" onclick="Code.downloadFileset()">下載</button>
           </ul>
+          <webview id="paia-ads" src="" style="display:none; width:100%; height:80px"></webview>
         </ul>
       </nav>
       <div class="container-fluid" id="blockly-container">
@@ -279,9 +279,9 @@
           <li class="nav-item dropdown ml-auto">
             <a class="nav-link dropdown-toggle" id="tab_user" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">尚未登入</a>
             <div class="dropdown-menu dropdown-menu-right">
-              <a class="dropdown-item" href="#" id="login_logout">登入</a>
+              <a class="dropdown-item" href="#" id="logout">登出</a>
               <div class="dropdown-divider"></div>
-              <a class="dropdown-item need-login disabled" href="#" id="show_filesets">線上檔案集</a>
+              <a class="dropdown-item" href="#" id="show_filesets">線上檔案集</a>
             </div>
           </li>
           <li class="nav-item dropdown">

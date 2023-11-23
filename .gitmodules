@@ -4,9 +4,6 @@
 [submodule "python"]
 	path = python
 	url = https://github.com/jason53415/PAIA-Desktop-Python
-[submodule "games/easy_game"]
-	path = games/easy_game
-	url = https://github.com/PAIA-Playful-AI-Arena/easy_game.git
 [submodule "games/arkanoid"]
 	path = games/arkanoid
 	url = https://github.com/PAIA-Playful-AI-Arena/arkanoid.git
@@ -25,3 +22,6 @@
 [submodule "games/dont_touch"]
 	path = games/dont_touch
 	url = https://github.com/yen900611/dont_touch
+[submodule "games/swimming-squid"]
+	path = games/swimming-squid
+	url = https://github.com/PAIA-Playful-AI-Arena/swimming-squid

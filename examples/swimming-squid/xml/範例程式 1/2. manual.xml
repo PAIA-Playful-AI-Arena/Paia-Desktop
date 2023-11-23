@@ -1,0 +1,80 @@
+<xml xmlns="https://developers.google.com/blockly/xml">
+  <variables>
+    <variable id="Y`aT@/+i*iQ60RG8gt9k">隨機數</variable>
+  </variables>
+  <block type="mlplay_class" id="wFWCh5gNy3iD70p5:1!." x="138" y="263">
+    <statement name="UPDATE">
+      <block type="variables_set" id="mK#?XglI|Po;OG!fqCt-">
+        <field name="VAR" id="Y`aT@/+i*iQ60RG8gt9k">隨機數</field>
+        <value name="VALUE">
+          <block type="math_random_int" id="r8WR1tVhMTof`x|Z96I!">
+            <value name="FROM">
+              <shadow type="math_number" id="LaFVrAS904^3$CkiI-||">
+                <field name="NUM">1</field>
+              </shadow>
+            </value>
+            <value name="TO">
+              <shadow type="math_number" id="hSUFloGb+#~@6~EL`c2@">
+                <field name="NUM">5</field>
+              </shadow>
+            </value>
+          </block>
+        </value>
+        <next>
+          <block type="controls_if" id="[||lG9ff:wUF9un:|V(V">
+            <mutation elseif="3" else="1"></mutation>
+            <value name="IF0">
+              <block type="mlplay_is_key_pressed" id=".~b?y[1d(N]?;?(c=nh#">
+                <field name="TYPE">arrow</field>
+                <field name="KEY">UP</field>
+              </block>
+            </value>
+            <statement name="DO0">
+              <block type="mlplay_return_action" id="wxdC!rih+jcwNq{:M@Uv">
+                <field name="ACTION">['UP']</field>
+              </block>
+            </statement>
+            <value name="IF1">
+              <block type="mlplay_is_key_pressed" id="4Or{f1oe+^?Wda=g4h]r">
+                <field name="TYPE">arrow</field>
+                <field name="KEY">DOWN</field>
+              </block>
+            </value>
+            <statement name="DO1">
+              <block type="mlplay_return_action" id="G~6MoTP:.xkKb5?k,C|J">
+                <field name="ACTION">['DOWN']</field>
+              </block>
+            </statement>
+            <value name="IF2">
+              <block type="mlplay_is_key_pressed" id="xlIj2A3,G.hAni:1,|;r">
+                <field name="TYPE">arrow</field>
+                <field name="KEY">LEFT</field>
+              </block>
+            </value>
+            <statement name="DO2">
+              <block type="mlplay_return_action" id="1;}t8=,Az[}~F)/-x1=O">
+                <field name="ACTION">['LEFT']</field>
+              </block>
+            </statement>
+            <value name="IF3">
+              <block type="mlplay_is_key_pressed" id="~okiSsq3t)A{`49$+0)j">
+                <field name="TYPE">arrow</field>
+                <field name="KEY">RIGHT</field>
+              </block>
+            </value>
+            <statement name="DO3">
+              <block type="mlplay_return_action" id="[Z6t()~0K@%wZv9,b`A_">
+                <field name="ACTION">['RIGHT']</field>
+              </block>
+            </statement>
+            <statement name="ELSE">
+              <block type="mlplay_return_action" id="BamCo|O%Ej89iID`(a:F">
+                <field name="ACTION">['NONE']</field>
+              </block>
+            </statement>
+          </block>
+        </next>
+      </block>
+    </statement>
+  </block>
+</xml>

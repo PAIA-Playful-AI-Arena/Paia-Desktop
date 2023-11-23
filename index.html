@@ -6,15 +6,14 @@
     <link rel="stylesheet" href="node_modules/bootstrap-icons/font/bootstrap-icons.css">
     <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="css/style.css">
-    <script>window.jQuery = window.$ = require('jquery');</script>
+    <script src="node_modules/jquery/dist/jquery.min.js"></script>
     <script src="node_modules/bootstrap/dist/js/bootstrap.bundle.js"></script>
-    <script src="renderer.js"></script>
   </head>
   <body>
     <!-- Login dialog -->
     <div class="modal fade" id="login-dialog" tabindex="-1" data-backdrop="static" data-keyboard="false">
       <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
+        <div class="modal-content p-3">
           <h5 class="text-center mt-3">登入 PAIA</h5>
           <form name="play" action="javascript:login()">
             <div class="modal-body my-2">
@@ -23,7 +22,7 @@
                   <label for="email">Email</label>
                   <input type="email" class="form-control" id="email" aria-describedby="emailHelp" placeholder="account@gmail.com" required>
                 </div>
-                <div class="form-group">
+                <div class="form-group mb-4">
                   <label for="password">密碼</label>
                   <input type="password" class="form-control" id="password" placeholder="Password" required>
                 </div>
@@ -32,10 +31,16 @@
               </div>
             </div>
           </form>
-          <button type="button" onclick="google_login()">
-            <img src="media/google-login.png" alt="...">
+          <button type="button" onclick="location.href=window.paia.redirect();">
+            從 PAIA 網站登入
           </button>
         </div>
+      </div>
+    </div>
+    <div class="card m-3 mx-auto" id="user-info" style="display: none;">
+      <div class="card-body">
+        <h3 class="card-title float-left m-0"><img class="d-inline mr-2" id="user-avatar" style="max-width: 50px; max-width: 50px;"></img><span id="user-name"></span></h3>
+        <button class="btn btn-primary float-right mt-1" onclick="logout();">登出</button>
       </div>
     </div>
     <!-- Game list -->
@@ -43,7 +48,7 @@
     <div class="card m-3 mx-auto">
       <div class="card-body">
         <h3 class="card-title">加入新遊戲</h3>
-        <button class="btn btn-primary" onclick="window.openPath(path.join(__dirname, 'games').replace('app.asar', 'app.asar.unpacked'));">開啟遊戲位置</button>
+        <button class="btn btn-primary" onclick="window.path.open(window.path.join(window.path.dirname(), 'games').replace('app.asar', 'app.asar.unpacked'));">開啟遊戲位置</button>
         <!-- <form name="add-game" action="javascript:download_game()">
           <div class="form-group py-1">
             <div class="input-group input-group-sm">
@@ -60,155 +65,128 @@
 </html>
 
 <script>
-  function token_login() {
-    console.log(window.getAccessToken(), window.getRefreshToken())
-    if (window.getAccessToken() == "no token") {
+  async function token_login(token=null) {
+    const auth = await window.paia.auth(token);
+    if (!auth.ok) {
+      $(`#user-info`).hide();
+      $('#user-name').html('');
+      $('#state-content').html(auth.content);
       $('#login-dialog').modal('show');
       return;
     } else {
-      window.paiaAPI("GET", "auth/token/verify", null, false, (res) => {
-        return;
-        }, (jqXHR, exception) => {
-          if (jqXHR.status == 401) {
-            // Refresh
-            window.paiaAPI("POST", "auth/token/refresh", null, false, {
-                refresh: window.getRefreshToken()
-              }, (res) => {
-                window.setToken(res.access, window.getRefreshToken());
-              }, (jqXHR, exception) => {
-                window.clearToken();
-                $('#state-content').html("登入逾期，請重新登入");
-                $('#login-dialog').modal('show');
-              }
-            );
-          } else {
-            window.clearToken();
-            $('#state-content').html("登入逾期，請重新登入");
-            $('#login-dialog').modal('show');
-          }
+      $(`#user-info`).show();
+      window.paia.user().then((res) => {
+        if (res.ok) {
+          $('#user-name').html(res.content.username);
+          $('#user-avatar').attr("src", res.content.avatar);
         }
-      );
-    };
-  };
-  function login() {
-    var email = $('#email').val();
-    var password = $('#password').val();
-    var data = {
-      "type": "general",
-      "account": {
-        "username": email,
-        "password": password
-      }
-    };
-    window.paiaAPI("POST", "auth/token", data, false, (res) => {
-        window.setToken(res.access, res.refresh);
-        $('#state-content').html('登入成功');
-        $('#login-dialog').modal('hide');
-      }, (jqXHR, exception) => {
-        var msg = '';
-        if (jqXHR.status === 0) {
-            msg = '連線錯誤，請確認網路';
-        } else if (jqXHR.status == 401) {
-            msg = '密碼驗證錯誤 [401]';
-        } else if (exception === 'abort') {
-            msg = 'Ajax request aborted.';
-        } else {
-            msg = 'Uncaught Error.\n' + jqXHR.responseText;
-        }
-        $('#state-content').html(msg);
-      }
-    );
-  }
-  function google_login() {
-    $('#state-content').html('請於瀏覽器登入，成功後會自動返回');
-    try {
-      myApiOauth.openAuthWindowAndGetTokens()
-        .then(token => {
-          window.setToken(token);
-          var oauth2 = window.getOauth2();
-          oauth2.userinfo.get(
-            function(err, res) {
-              if (err) {
-                $('#state-content').html('登入失敗，請確認網路連線後重新登入');
-                console.log(err);
-              } else {
-                $('#state-content').html('登入成功');
-                $('#login-dialog').modal('hide');
-              }
-          });
-        });
-    } catch(e) {
-      console.log(e);
+      })
+      $('#login-dialog').modal('hide');
     }
   };
-  function update_game_list() {
-    $('#game_list').empty();
-    var gameListDir = path.join(__dirname, 'games').replace('app.asar', 'app.asar.unpacked');
-    fs.readdirSync(gameListDir, { withFileTypes: true }).forEach(dirent => {
-      if (dirent.isDirectory()) {
-        var gameDir = path.join(gameListDir, dirent.name);
-        var configPath = path.join(gameDir, 'game_config.json');
-        if (fs.existsSync(configPath)) {
-          var config = JSON.parse(window.readFile(configPath));
-          var logoPath = (config.logo !== undefined)? path.join(gameDir, config.logo[0]) : "media/paia-logo.png";
-          var gameName = (config.game_name !== undefined)? config.game_name : dirent.name;
-          var description = (config.description !== undefined)? config.description : "";
-          var url = (config.url !== undefined)? config.url : "None";
-          var version = (config.version !== undefined)? config.version : "unknown version";
-          var $tags = $(`<select class="float-right mr-2 mt-1" id="${dirent.name}-tags"></select>`);
-          var downloadStyle = "display: none";
-          if (url.indexOf("github.com") != -1) {
-            downloadStyle = "";
-            var data = url.substring(url.indexOf("github.com") + 11).split('/');
-            var owner = data[0];
-            var repo = data[1];
-            window.githubAPI("GET", `repos/${owner}/${repo}/tags`, null, false, (res) => {
-              res.forEach((tag) => {
-                $tags.append(`<option value="${tag.name}">${tag.name}</option>`);
-              });
-            }, (jqXHR, exception) => {
-              var msg = '';
-              if (jqXHR.status === 0) {
-                  msg = '連線錯誤，請確認網路';
-              } else if (exception === 'abort') {
-                  msg = 'Ajax request aborted.';
-              } else {
-                  msg = 'Uncaught Error.\n' + jqXHR.responseText;
-              }
-              console.log(msg);
-            });
-          } else {
-            $tags.css("display", "none");
+  async function login() {
+    const response = await window.paia.login($('#email').val(), $('#password').val());
+    if (response.ok) {
+        $('#state-content').html('登入成功');
+        $('#login-dialog').modal('hide');
+        $(`#user-info`).show();
+        window.paia.user().then((res) => {
+          if (res.ok) {
+            $('#user-name').html(res.content.username);
+            $('#user-avatar').attr("src", res.content.avatar);
           }
-          $('#game_list').append(
-            `<div class="card m-3 mx-auto">
-              <div class="row g-0">
-                <div class="col-md-4">
-                  <img src="${logoPath}" alt="...">
-                </div>
-                <div class="col-md-8">
-                  <div class="card-body">
-                    <h6 class="card-subtitle mb-2 text-muted float-right"><span class="verison" game="${dirent.name}">${config.version}</span></h6>
-                    <h3 class="card-title">${gameName}</h3>
-                    <p class="card-text" style="min-height: 100px">${description}</p>
-                    <a href="code.html?game=${dirent.name}&ver=${config.version}" class="btn btn-primary">積木</a>
-                    <a href="python.html?game=${dirent.name}&ver=${config.version}" class="btn btn-primary">Python</a>
-                    <a onclick="git_download('${dirent.name}', this)" class="btn btn-primary float-right" style="${downloadStyle}"><i class="bi bi-download"></i> 下載 / 更新</a>
-                    ${$tags[0].outerHTML}
-                  </div>
+        });
+        window.paia.ga('login', {
+          event_category: 'general_desktop',
+          value: 'login'
+        });
+    } else {
+      $('#state-content').html(response.content);
+    }
+  };
+  function logout() {
+    window.paia.logout();
+    $(`#user-info`).hide();
+    $('#state-content').html('');
+    $('#login-dialog').modal('show');
+  }
+  // function google_login() {
+  //   $('#state-content').html('請於瀏覽器登入，成功後會自動返回');
+  //   try {
+  //     myApiOauth.openAuthWindowAndGetTokens()
+  //       .then(token => {
+  //         window.setToken(token);
+  //         var oauth2 = window.getOauth2();
+  //         oauth2.userinfo.get(
+  //           function(err, res) {
+  //             if (err) {
+  //               $('#state-content').html('登入失敗，請確認網路連線後重新登入');
+  //               console.log(err);
+  //             } else {
+  //               $('#state-content').html('登入成功');
+  //               $('#login-dialog').modal('hide');
+  //             }
+  //         });
+  //       });
+  //   } catch(e) {
+  //     console.log(e);
+  //   }
+  // };
+  async function update_game_list() {
+    $('#game_list').empty();
+    const gameListDir = window.path.join(window.path.dirname(), 'games').replace('app.asar', 'app.asar.unpacked');
+    window.fs.readdirSync(gameListDir).forEach(dirent => {
+      const gameDir = window.path.join(gameListDir, dirent);
+      const configPath = window.path.join(gameDir, 'game_config.json');
+      if (window.fs.existsSync(configPath)) {
+        const config = JSON.parse(window.file.read(configPath));
+        const logoPath = (config.logo !== undefined)? window.path.join(gameDir, config.logo[0]) : "media/paia-logo.png";
+        const gameName = (config.game_name !== undefined)? config.game_name : dirent;
+        const description = (config.description !== undefined)? config.description : "";
+        const url = (config.url !== undefined)? config.url : "None";
+        const version = (config.version !== undefined)? config.version : "unknown version";
+        $('#game_list').append(
+          `<div class="card m-3 mx-auto">
+            <div class="row g-0">
+              <div class="col-md-4">
+                <img src="${logoPath}" alt="...">
+              </div>
+              <div class="col-md-8">
+                <div class="card-body">
+                  <h6 class="card-subtitle mb-2 text-muted float-right"><span class="verison" game="${dirent}">${config.version}</span></h6>
+                  <h3 class="card-title">${gameName}</h3>
+                  <p class="card-text" style="min-height: 100px">${description}</p>
+                  <a href="code.html?game=${dirent}&ver=${config.version}" class="btn btn-primary">積木</a>
+                  <a href="python.html?game=${dirent}&ver=${config.version}" class="btn btn-primary">Python</a>
+                  <a onclick="git_download('${dirent}', this)" class="btn btn-primary float-right" id="${dirent}-download""><i class="bi bi-download"></i> 下載 / 更新</a>
+                  <select class="float-right mr-2 mt-1" id="${dirent}-tags"></select>
                 </div>
               </div>
-            </div>`);
+            </div>
+          </div>`);
+        if (url.indexOf("github.com") != -1) {
+          const data = url.substring(url.indexOf("github.com") + 11).split('/');
+          const owner = data[0];
+          const repo = data[1];
+          window.api.github("GET", `repos/${owner}/${repo}/tags`, null).then((res) => {
+            if (res.ok) {
+              res.content.forEach((tag) => {
+                $(`#${dirent}-tags`).append(`<option value="${tag.name}">${tag.name}</option>`);
+              });
+            }
+          });
+        } else {
+          $(`#${dirent}-tags`).css("display", "none");
+          $(`#${dirent}-download`).css("display", "none");
         }
       }
     });
   };
   function update_version_name() {
     Array.from(document.getElementsByClassName('verison')).forEach(e => {
-      var fs = require('fs');
-      var config_path = path.join(__dirname, 'games', e.getAttribute('game'), 'game_config.json');
-      if (fs.existsSync(config_path)) {
-        var config = JSON.parse(window.readFile(config_path));
+      const config_path = window.path.join(window.path.dirname(), 'games', e.getAttribute('game'), 'game_config.json');
+      if (window.fs.existsSync(config_path)) {
+        const config = JSON.parse(window.file.read(config_path));
         e.innerHTML = config['game_name'] + '-' + config['version'];
         if (e.classList.contains('text-danger')) {
           e.classList.remove("text-danger");
@@ -227,38 +205,47 @@
     });
   };
   function git_download(game, button) {
-    var path = require('path');
-    var fs = require('fs');
-    var gameDir = path.join(__dirname, 'games', game).replace('app.asar', 'app.asar.unpacked');;
-    var config = JSON.parse(window.readFile(path.join(gameDir, 'game_config.json')));
-    var url = (config.url !== undefined)? config.url : "None";
-    var version = $(`#${game}-tags`).val();
-    var data = url.substring(url.indexOf("github.com") + 11).split('/');
-    var owner = data[0];
-    var repo = data[1];
-    if (window.confirm('下載後會覆蓋此遊戲資料夾下的所有檔案，確定執行？')) {
+    const gameDir = window.path.join(window.path.dirname(), 'games', game).replace('app.asar', 'app.asar.unpacked');;
+    const config = JSON.parse(window.file.read(window.path.join(gameDir, 'game_config.json')));
+    const url = (config.url !== undefined)? config.url : "None";
+    const version = $(`#${game}-tags`).val();
+    const data = url.substring(url.indexOf("github.com") + 11).split('/');
+    const owner = data[0];
+    const repo = data[1];
+    if (window.popup.confirm('下載後會覆蓋此遊戲資料夾下的所有檔案，確定執行？')) {
       button.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> 下載 / 更新';
       document.querySelectorAll('a.btn').forEach(e => {
         e.classList.add("disabled");
       });
-      var download = require('download-git-repo');
-      download(`direct:https://github.com/${owner}/${repo}/archive/refs/tags/${version}.zip`, gameDir, function (err) {
+      window.repo.download(`direct:https://github.com/${owner}/${repo}/archive/refs/tags/${version}.zip`, gameDir, function (err) {
         button.innerHTML = '<i class="bi bi-download"></i> 下載 / 更新';
         document.querySelectorAll('a.btn').forEach(e => {
           e.classList.remove("disabled");
         });
         if (err) {
-          window.alert(err);
+          window.popup.alert(err);
         } else {
           update_version_name();
-          var config = JSON.parse(window.readFile(path.join(gameDir, 'game_config.json')));
-          window.alert(config['game_name'] + '-' + config['version'] + ' 下載成功');
+          const config = JSON.parse(window.file.read(path.join(gameDir, 'game_config.json')));
+          window.popup.alert(config['game_name'] + '-' + config['version'] + ' 下載成功');
         }
       });
     };
   };
-  document.title += ` ${app.getVersion()}`;
+  document.title += ` ${window.app.getVersion()}`;
+  window.deeplink.onLogin((event, token) => {
+    token_login(token);
+    window.paia.ga('login', {
+      event_category: 'deeplink_desktop',
+      value: 'login'
+    });
+  });
+  token_login();
   update_game_list();
   update_version_name();
-  // token_login();
+  window.paia.ga('screen_view', {
+    app_name: "paia_desktop",
+    app_version: window.app.getVersion(),
+    screen_name: 'index'
+  });
 </script>

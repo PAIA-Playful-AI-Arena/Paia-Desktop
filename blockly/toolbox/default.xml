@@ -418,6 +418,7 @@
       </value>
     </block>
     <block type="model_dl_create"></block>
+    <block type="model_dl_create_transformer"></block>
     <block type="model_dl_train">
       <value name="MODEL">
         <block type="variables_get">

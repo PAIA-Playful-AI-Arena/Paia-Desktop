@@ -214,19 +214,30 @@ def ${generator.FUNCTION_NAME_PLACEHOLDER_}(layers, loss="mean_squared_error"):
   for (let i = 0; i < block.layers_.length; i++) {
     switch (block.layers_[i].name) {
       case 'model_dl_dense_layer':
-        layerCode += `keras.layers.Dense(${block.layers_[i].units}),\n`;
+        if (block.layers_[i].activation == "None")
+          layerCode += `keras.layers.Dense(${block.layers_[i].units}, name="layer_${i+1}"),\n`;
+        else
+          layerCode += `keras.layers.Dense(${block.layers_[i].units}, activation="${block.layers_[i].activation}", name="layer_${i+1}"),\n`;
         break;
       case 'model_dl_recurrent_layer':
         layerCode += `keras.layers.${block.layers_[i].type}(${block.layers_[i].units}),\n`;
         break;
+      case 'model_dl_embedding_layer':
+        layerCode += `keras.layers.Embedding(${block.layers_[i].input_dim}, ${block.layers_[i].output_dim}),\n`;
+        break;
+      case 'model_dl_transformer_encoder_layer':
+        generator.definitions_['import_keras_nlp'] = 'import keras_nlp';
+        layerCode += `keras_nlp.layers.TransformerEncoder(${block.layers_[i].intermediate_dim}, ${block.layers_[i].num_heads}),\n`;
+        break;
       case 'model_dl_convolution_layer':
-        layerCode += `keras.layers.Conv${block.layers_[i].type}(${block.layers_[i].filters},${block.layers_[i].kernel_size}),\n`;
+        const size = parseInt(block.layers_[i].kernel_size);
+        layerCode += `keras.layers.Conv${block.layers_[i].type}(${block.layers_[i].filters}, ${block.layers_[i].kernel_size}, padding="same", name="layer_${i+1}"),\n`;
         break;
       case 'model_dl_pooling_layer':
-        layerCode += `keras.layers.${block.layers_[i].value}Pooling${block.layers_[i].type}(${block.layers_[i].pool_size}),\n`;
+        layerCode += `keras.layers.${block.layers_[i].value}Pooling${block.layers_[i].type}(${block.layers_[i].pool_size}, name="layer_${i+1}"),\n`;
         break;
       case 'model_dl_reshape_layer':
-        layerCode += `keras.layers.Reshape([${block.layers_[i].shape.join(', ')}]),\n`;
+        layerCode += `keras.layers.Reshape([${block.layers_[i].shape.join(', ')}], name="layer_${i+1}"),\n`;
         break;
       case 'model_dl_loss_layer':
         loss = block.layers_[i].type
@@ -235,6 +246,32 @@ def ${generator.FUNCTION_NAME_PLACEHOLDER_}(layers, loss="mean_squared_error"):
   }
   code += generator.prefixLines(layerCode, generator.INDENT) + ']';
   code += (loss)? `, loss="${loss}")` : ')';
+  return [code, generator.ORDER_ATOMIC];
+};
+
+python.pythonGenerator.forBlock['model_dl_create_transformer'] = function(block, generator) {
+  // Create a deep learning model.
+  generator.definitions_['import_get_model'] = 'from keras_transformer import get_model';
+  const functionName = generator.provideFunction_('create_transformer', `
+def ${generator.FUNCTION_NAME_PLACEHOLDER_}(token_num, embed_dim, encoder_num, decoder_num, head_num, hidden_dim):
+  model = get_model(
+    token_num,
+    embed_dim,
+    encoder_num,
+    decoder_num,
+    head_num,
+    hidden_dim
+  )
+  model.compile('adam', 'sparse_categorical_crossentropy')
+  return model
+`);
+  const token_num = block.getFieldValue('NUM_TOKEN');
+  const embed_dim = block.getFieldValue('EMBED_DIM');
+  const encoder_num = block.getFieldValue('NUM_ENCODE');
+  const decoder_num = block.getFieldValue('NUM_DECODE');
+  const head_num = block.getFieldValue('NUM_HEADS');
+  const hidden_dim = block.getFieldValue('FEED_FORWARD_DIM');
+  const code = `${functionName}(${token_num}, ${embed_dim}, ${encoder_num}, ${decoder_num}, ${head_num}, ${hidden_dim})`;
   return [code, generator.ORDER_ATOMIC];
 };
 

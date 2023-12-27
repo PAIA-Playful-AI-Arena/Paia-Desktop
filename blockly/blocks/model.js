@@ -142,6 +142,9 @@ Blockly.defineBlocksWithJsonArray([
       {
         "type": "input_value",
         "name": "TEST_TARGET"
+      },
+      {
+        "type": "input_end_row"
       }
     ],
     "inputsInline": true,
@@ -194,13 +197,31 @@ Blockly.defineBlocksWithJsonArray([
   // Block representing the dense layer in deep learning modal mutator.
   {
     'type': 'model_dl_dense_layer',
-    "message0": "全連接層 維度：%1",
+    "message0": "全連接層 維度：%1 激勵函數：%2",
     "args0": [
       {
         "type": "field_number",
         "name": "UNITS",
         "value": 16,
         "min": 1
+      },
+      {
+        "type": "field_dropdown",
+        "name": "ACTIVATION",
+        "options": [
+          [
+            "無",
+            "None"
+          ],
+          [
+            "ReLU",
+            "ReLU"
+          ],
+          [
+            "Softmax",
+            "Softmax"
+          ]
+        ]
       }
     ],
     "previousStatement": null,
@@ -238,6 +259,52 @@ Blockly.defineBlocksWithJsonArray([
     "nextStatement": null,
     'style': 'model_dl_blocks',
     "tooltip": "在深度學習模型中加入一層循環層"
+  },
+  // Block representing the embedding layer in deep learning modal mutator.
+  {
+    'type': 'model_dl_embedding_layer',
+    "message0": "嵌入層 輸入維度：%1 輸出維度：%2",
+    "args0": [
+      {
+        "type": "field_number",
+        "name": "INPUT_DIM",
+        "value": 100,
+        "min": 1
+      },
+      {
+        "type": "field_number",
+        "name": "OUTPUT_DIM",
+        "value": 16,
+        "min": 1
+      }
+    ],
+    "previousStatement": null,
+    "nextStatement": null,
+    'style': 'model_dl_blocks',
+    "tooltip": "在深度學習模型中加入一層嵌入層"
+  },
+  // Block representing the transformer encoder layer in deep learning modal mutator.
+  {
+    'type': 'model_dl_transformer_encoder_layer',
+    "message0": "Transformer 編碼層 中間維度：%1 多頭數量：%2",
+    "args0": [
+      {
+        "type": "field_number",
+        "name": "INTERMEDIATE_DIM",
+        "value": 16,
+        "min": 1
+      },
+      {
+        "type": "field_number",
+        "name": "NUM_HEADS",
+        "value": 1,
+        "min": 1
+      }
+    ],
+    "previousStatement": null,
+    "nextStatement": null,
+    'style': 'model_dl_blocks',
+    "tooltip": "在深度學習模型中加入一層 Transformer 編碼層"
   },
   // Block representing the convolution layer in deep learning modal mutator.
   {
@@ -361,18 +428,80 @@ Blockly.defineBlocksWithJsonArray([
     'style': 'model_dl_blocks',
     "tooltip": "設定深度學習模型的損失函數"
   },
+  // Block creatting a transformer model.
+  {
+    'type': 'model_dl_create_transformer',
+    "message0": "建立 Transformer 模型 %7 token 數量：%1 embedding 維度：%2 %8 編碼器層數：%3 解碼器層數：%4 %9 多頭數量：%5 前饋神經網路維度：%6",
+    "args0": [
+      {
+        "type": "field_number",
+        "name": "NUM_TOKEN",
+        "value": 100,
+        "min": 1
+      },
+      {
+        "type": "field_number",
+        "name": "EMBED_DIM",
+        "value": 16,
+        "min": 1
+      },
+      {
+        "type": "field_number",
+        "name": "NUM_ENCODE",
+        "value": 6,
+        "min": 1
+      },
+      {
+        "type": "field_number",
+        "name": "NUM_DECODE",
+        "value": 6,
+        "min": 1
+      },
+      {
+        "type": "field_number",
+        "name": "NUM_HEADS",
+        "value": 8,
+        "min": 1
+      },
+      {
+        "type": "field_number",
+        "name": "FEED_FORWARD_DIM",
+        "value": 2048,
+        "min": 1
+      },
+      {
+        "type": "input_end_row"
+      },
+      {
+        "type": "input_end_row"
+      },
+      {
+        "type": "input_end_row"
+      }
+    ],
+    "inputsInline": true,
+    "output": null,
+    'style': 'model_dl_blocks',
+    "tooltip": "建立 Transformer 模型"
+  },
   // Block for training deep learning modal.
   {
     "type": "model_dl_train",
-    "message0": "使用訓練資料：%1 目標：%2 訓練 %3 批次大小：%4 訓練次數：%5",
+    "message0": "使用訓練資料：%1 %2 目標：%3 %4 訓練 %5 批次大小：%6 訓練次數：%7",
     "args0": [
       {
         "type": "input_value",
         "name": "X"
       },
       {
+        "type": "input_end_row",
+      },
+      {
         "type": "input_value",
         "name": "Y"
+      },
+      {
+        "type": "input_end_row",
       },
       {
         "type": "input_value",
@@ -790,6 +919,8 @@ Blockly.Blocks['model_dl_create'] = {
     this.setMutator(new Blockly.icons.MutatorIcon([
       'model_dl_dense_layer',
       'model_dl_recurrent_layer',
+      'model_dl_embedding_layer',
+      'model_dl_transformer_encoder_layer',
       'model_dl_convolution_layer',
       'model_dl_pooling_layer',
       'model_dl_reshape_layer',
@@ -810,11 +941,22 @@ Blockly.Blocks['model_dl_create'] = {
         case 'model_dl_dense_layer':
           layer.setAttribute('name', this.layers_[i].name);
           layer.setAttribute('units', this.layers_[i].units);
+          layer.setAttribute('activation', this.layers_[i].activation);
           break;
         case 'model_dl_recurrent_layer':
           layer.setAttribute('name', this.layers_[i].name);
           layer.setAttribute('type', this.layers_[i].type);
           layer.setAttribute('units', this.layers_[i].units);
+          break;
+        case 'model_dl_embedding_layer':
+          layer.setAttribute('name', this.layers_[i].name);
+          layer.setAttribute('input_dim', this.layers_[i].input_dim);
+          layer.setAttribute('output_dim', this.layers_[i].output_dim);
+          break;
+        case 'model_dl_transformer_encoder_layer':
+          layer.setAttribute('name', this.layers_[i].name);
+          layer.setAttribute('intermediate_dim', this.layers_[i].intermediate_dim);
+          layer.setAttribute('num_heads', this.layers_[i].num_heads);
           break;
         case 'model_dl_convolution_layer':
           layer.setAttribute('name', this.layers_[i].name);
@@ -854,7 +996,8 @@ Blockly.Blocks['model_dl_create'] = {
           case 'model_dl_dense_layer':
             this.layers_.push({
               name: element.getAttribute('name'),
-              units: element.getAttribute('units')
+              units: element.getAttribute('units'),
+              activation: element.getAttribute('activation')
             });
             break;
           case 'model_dl_recurrent_layer':
@@ -862,6 +1005,20 @@ Blockly.Blocks['model_dl_create'] = {
               name: element.getAttribute('name'),
               type: element.getAttribute('type'),
               units: element.getAttribute('units')
+            });
+            break;
+          case 'model_dl_embedding_layer':
+            this.layers_.push({
+              name: element.getAttribute('name'),
+              input_dim: element.getAttribute('input_dim'),
+              output_dim: element.getAttribute('output_dim')
+            });
+            break;
+          case 'model_dl_transformer_encoder_layer':
+            this.layers_.push({
+              name: element.getAttribute('name'),
+              intermediate_dim: element.getAttribute('intermediate_dim'),
+              num_heads: element.getAttribute('num_heads')
             });
             break;
           case 'model_dl_convolution_layer':
@@ -921,10 +1078,19 @@ Blockly.Blocks['model_dl_create'] = {
       switch (this.layers_[i].name) {
         case 'model_dl_dense_layer':
           layerBlock.setFieldValue(this.layers_[i].units, 'UNITS');
+          layerBlock.setFieldValue(this.layers_[i].activation, 'ACTIVATION');
           break;
         case 'model_dl_recurrent_layer':
           layerBlock.setFieldValue(this.layers_[i].type, 'TYPE');
           layerBlock.setFieldValue(this.layers_[i].units, 'UNITS');
+          break;
+        case 'model_dl_embedding_layer':
+          layerBlock.setFieldValue(this.layers_[i].input_dim, 'INPUT_DIM');
+          layerBlock.setFieldValue(this.layers_[i].output_dim, 'OUTPUT_DIM');
+          break;
+        case 'model_dl_transformer_encoder_layer':
+          layerBlock.setFieldValue(this.layers_[i].intermediate_dim, 'INTERMEDIATE_DIM');
+          layerBlock.setFieldValue(this.layers_[i].num_heads, 'NUM_HEADS');
           break;
         case 'model_dl_convolution_layer':
           layerBlock.setFieldValue(this.layers_[i].type, 'TYPE');
@@ -966,7 +1132,8 @@ Blockly.Blocks['model_dl_create'] = {
         case 'model_dl_dense_layer':
           this.layers_.push({
             name: layerBlock.type,
-            units: layerBlock.getFieldValue('UNITS')
+            units: layerBlock.getFieldValue('UNITS'),
+            activation: layerBlock.getFieldValue('ACTIVATION')
           });
           break;
         case 'model_dl_recurrent_layer':
@@ -974,6 +1141,20 @@ Blockly.Blocks['model_dl_create'] = {
             name: layerBlock.type,
             type: layerBlock.getFieldValue('TYPE'),
             units: layerBlock.getFieldValue('UNITS')
+          });
+          break;
+        case 'model_dl_embedding_layer':
+          this.layers_.push({
+            name: layerBlock.type,
+            input_dim: layerBlock.getFieldValue('INPUT_DIM'),
+            output_dim: layerBlock.getFieldValue('OUTPUT_DIM')
+          });
+          break;
+        case 'model_dl_transformer_encoder_layer':
+          this.layers_.push({
+            name: layerBlock.type,
+            intermediate_dim: layerBlock.getFieldValue('INTERMEDIATE_DIM'),
+            num_heads: layerBlock.getFieldValue('NUM_HEADS')
           });
           break;
         case 'model_dl_convolution_layer':
@@ -1022,10 +1203,19 @@ Blockly.Blocks['model_dl_create'] = {
       const layer = this.appendDummyInput('LAYER' + i);
       switch (this.layers_[i].name) {
         case 'model_dl_dense_layer':
-          layer.appendField(`- 全連接層 (${this.layers_[i].units})`);
+          if (this.layers_[i].activation == "None")
+            layer.appendField(`- 全連接層 (${this.layers_[i].units})`);
+          else
+            layer.appendField(`- 全連接層 (${this.layers_[i].units}) (${this.layers_[i].activation})`);
           break;
         case 'model_dl_recurrent_layer':
           layer.appendField(`- ${this.layers_[i].type} (${this.layers_[i].units})`);
+          break;
+        case 'model_dl_embedding_layer':
+          layer.appendField(`- 嵌入層 (輸入=${this.layers_[i].input_dim}, 輸出=${this.layers_[i].output_dim})`);
+          break;
+        case 'model_dl_transformer_encoder_layer':
+          layer.appendField(`- Transformer 編碼層 (中間維度=${this.layers_[i].intermediate_dim}, 多頭=${this.layers_[i].num_heads})`);
           break;
         case 'model_dl_convolution_layer':
           const kernel_size = Array(parseInt(this.layers_[i].type[0])).fill(this.layers_[i].kernel_size).join(' x ');
@@ -1033,7 +1223,7 @@ Blockly.Blocks['model_dl_create'] = {
           break;
         case 'model_dl_pooling_layer':
           const pool_size = Array(parseInt(this.layers_[i].type[0])).fill(this.layers_[i].pool_size).join(' x ');
-          layer.appendField(`- 池化層 ${this.layers_[i].type} (${pool_size})`);
+          layer.appendField(`- 池化層 ${this.layers_[i].type} ${this.layers_[i].value} (${pool_size})`);
           break;
         case 'model_dl_reshape_layer':
           layer.appendField(`- 改變形狀 (${this.layers_[i].shape.join(', ')})`);

@@ -9,129 +9,153 @@
     <script src="node_modules/jquery/dist/jquery.min.js"></script>
     <script src="node_modules/bootstrap/dist/js/bootstrap.bundle.js"></script>
   </head>
-  <body>
+  <body style="background: linear-gradient(180deg, #001935 0%, #004592 82.32%, #ECCCFB 100%) fixed;">
     <!-- Login dialog -->
-    <div class="modal fade" id="login-dialog" tabindex="-1" data-backdrop="static" data-keyboard="false">
-      <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content p-3">
-          <h5 class="text-center mt-3">登入 PAIA</h5>
-          <form name="play" action="javascript:login()">
-            <div class="modal-body my-2">
-              <div class="container">
-                <div class="form-group">
-                  <label for="email">Email</label>
-                  <input type="email" class="form-control" id="email" aria-describedby="emailHelp" placeholder="account@gmail.com" required>
-                </div>
-                <div class="form-group mb-4">
-                  <label for="password">密碼</label>
-                  <input type="password" class="form-control" id="password" placeholder="Password" required>
-                </div>
-                <button type="submit" class="btn btn-primary">登入</button>
-                <span class="text-danger ml-3" id="state-content"></span>
-              </div>
-            </div>
-          </form>
-          <button type="button" onclick="location.href=window.paia.redirect();">
-            從 PAIA 網站登入
-          </button>
+    <div class="modal fade" id="login-dialog" data-keyboard="true">
+      <div class="modal-dialog modal-dialog-centered" style="max-width: 600px; position: absolute; left: 50%; transform: translate(-50%, 0%);">
+        <div class="modal-content p-3" style="width: 600px; min-height: 400px; border-radius: 25px;">
+          <div class="modal-body">
+            <h5 class="text-center" style="padding-top: 130px; color: #0039CF; font-size: 24px; font-weight: 800;">請先登入</h5>
+          </div>
+          <div class="modal-footer d-flex justify-content-center pt-4">
+            <button type="button" class="btn px-4" onclick="location.href=window.paia.redirect();" style="color: white; background-color: #0039CF; font-size: 24px; font-weight: 800; border-radius: 15px; border: 2px solid #0039CF;">登入</button>
+            <button type="button" class="btn px-4" data-dismiss="modal" style="color: #0039CF; background-color: white; font-size: 24px; font-weight: 800; border-radius: 15px; border: 2px solid #0039CF;">取消</button>
+          </div>
         </div>
       </div>
     </div>
-    <div class="card m-3 mx-auto" id="user-info" style="display: none;">
-      <div class="card-body">
-        <h3 class="card-title float-left m-0"><img class="d-inline mr-2" id="user-avatar" style="max-width: 50px; max-width: 50px;"></img><span id="user-name"></span></h3>
-        <button class="btn btn-primary float-right mt-1" onclick="logout();">登出</button>
+    <!-- Game dialog -->
+    <div class="modal fade" id="game-dialog" tabindex="-1" data-backdrop="true" data-keyboard="true">
+      <div class="modal-dialog" style="max-width: 1200px; position: absolute; left: 50%; transform: translate(-50%, 0%);">
+        <div class="modal-content" style="width: 1200px; height: 750px; border-radius: 25px;">
+          <img src="media/universe.svg" style="position: fixed; top: -64px; left: -60px; z-index: 10;">
+          <img src="media/robot.svg" style="position: fixed; bottom: -38px; right: -66px; z-index: 10;">
+          <img src="media/desktop.svg" style="position: fixed; bottom: -6px; right: 72px; z-index: 10;">
+          <img src="media/ufo.svg" style="position: fixed; bottom: 86px; right: -86px; z-index: 10;">
+          <div class="modal-body" style="background-color: #BFFBFF; height: 400px; border-radius: 25px 25px 0px 0px; padding: 50px 120px 60px;">
+            <div class="d-flex justify-content-between">
+              <h5 class="text-center" id="game-name" style="color: #011C3C; font-size: 48px; font-weight: 800;"></h5>
+              <button type="button" class="btn btn-primary mt-2" id="editor-mode" style="width: 200px; height: 50px; border-radius: 25px; border: 0px; color: #011C3C; background: white; box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25); font-size: 24px; font-weight: 800; text-align: left; padding-left: 24px;" mode="block" onclick="toggle_editor_mode();">
+                <span id="editor-mode-block">積木模式</span>
+                <img id="editor-mode-python" style="display: none;" src="media/python.svg"/>
+              </button>
+              <div id="editor-mode-color" style="width: 39px; height: 39px; position: absolute; top: 64px; right: 128px; border-radius: 25px; background: #AA3D3D;"></div>
+            </div>
+            <div class="d-flex justify-content-between mt-4">
+              <div class="d-flex align-items-start flex-column" style="height: 212px;">
+                <p class="text-left mb-auto" id="game-description" style="width: 413px; color: #000; font-size: 16px; font-weight: 600;"></p>
+                <!-- <button type="button" class="btn btn-primary">新增專案</button> -->
+                <button class="btn btn-primary" id="open-project" style="width: 200px; height: 50px; border-radius: 25px; border: 1px solid #FFF; background: #3764F9; box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25); font-size: 24px; font-weight: 800;" onclick="new_project();">新增專案</button>
+              </div>
+              <div>
+                <p class="text-center pt-5" id="game-description" style="width: 485px; height: 212px; color: #000; font-size: 16px; background-color: #ECC8D6;">遊戲主視覺</p>
+              </div>
+            </div>
+          </div>
+          <div class="modal-body" style="height: 350px; padding: 30px 120px 0px;">
+            <h5 class="text-left" style="color: #000; font-size: 32px; font-weight: 800;">載入最近專案</h5>
+            <div class="d-flex justify-content-between mt-4">
+              <div>
+                <div style="height: 180px; width: 180px; border-radius: 15px; border: 1px solid #B6B6B6;"></div>
+                <h5 class="text-center mt-2" id="game-name" style="color: #000; font-size: 20px; font-weight: 800;">專案名稱</h5>
+                <h6 class="text-center" id="game-name" style="color: #B6B6B6; font-size: 14px; font-weight: 800;">日期</h5>
+              </div>
+              <div>
+                <div style="height: 180px; width: 180px; border-radius: 15px; border: 1px solid #B6B6B6;"></div>
+                <h5 class="text-center mt-2" id="game-name" style="color: #000; font-size: 20px; font-weight: 800;">專案名稱</h5>
+                <h6 class="text-center" id="game-name" style="color: #B6B6B6; font-size: 14px; font-weight: 800;">日期</h5>
+              </div>
+              <div>
+                <div style="height: 180px; width: 180px; border-radius: 15px; border: 1px solid #B6B6B6;"></div>
+                <h5 class="text-center mt-2" id="game-name" style="color: #000; font-size: 20px; font-weight: 800;">專案名稱</h5>
+                <h6 class="text-center" id="game-name" style="color: #B6B6B6; font-size: 14px; font-weight: 800;">日期</h5>
+              </div>
+              <div>
+                <div style="height: 180px; width: 180px; border-radius: 15px; border: 1px solid #B6B6B6; padding: 70px;">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40" fill="none">
+                    <path d="M40 22.8571H22.8571V40H17.1429V22.8571H0V17.1429H17.1429V0H22.8571V17.1429H40V22.8571Z" fill="#B6B6B6"/>
+                  </svg>
+                </div>
+                <h5 class="text-center mt-2" id="game-name" style="color: #000; font-size: 20px; font-weight: 800;">其他...</h5>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="fixed-top p-4" id="user-info">
+      <div class="float-right dropdown">
+        <button class="btn dropdown-toggle disabled" type="button" id="login-button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="color: #BFFBFF;" onclick="location.href=window.paia.redirect();">
+          <svg xmlns="http://www.w3.org/2000/svg" width="58" height="58" viewBox="0 0 58 58" fill="none">
+            <circle id="user-info-backgroud" cx="29" cy="29" r="29" fill="#B6B6B6"/>
+          </svg>
+          <img src="media/login-owl1.png" id="user-info-icon" style="position: absolute; top: 8px; left: 16px;">
+          <h6 id="user-name" class="pt-2" style="font-size: 13px; color: white; position: absolute; left: 43px; transform: translate(-50%, 0%);">未登入</h6>
+        </button>
+        <div class="dropdown-menu dropdown-menu-right mt-4 mr-2" id="login-menu" aria-labelledby="login-button" style="min-width: 0px; background: #EEF9FE; border-color: #3764F9;">
+          <a class="dropdown-item py-0 px-5" href="javascript:logout()" style="font-size: 16px;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 10 10" fill="none" style="vertical-align: baseline">
+              <path d="M4.5 2.22222L3.8 3L5.1 4.44444H0V5.55556H5.1L3.8 7L4.5 7.77778L7 5L4.5 2.22222ZM9 8.88889H5V10H9C9.55 10 10 9.5 10 8.88889V1.11111C10 0.5 9.55 0 9 0H5V1.11111H9V8.88889Z" fill="#0039CF"/>
+            </svg>
+            登出
+          </a>
+        </div>
       </div>
     </div>
     <!-- Game list -->
-    <div id="game_list"></div>
-    <div class="card m-3 mx-auto">
+    <div style="background-image: url('media/stars.png'); height: 150px;">
+      <div class="card-deck justify-content-center" id="game_list" style="position: absolute;"></div>
+    </div>
+    <!-- <div class="card m-3 mx-auto">
       <div class="card-body">
         <h3 class="card-title">加入新遊戲</h3>
         <button class="btn btn-primary" onclick="window.path.open(window.path.join(window.path.dirname(), 'games').replace('app.asar', 'app.asar.unpacked'));">開啟遊戲位置</button>
-        <!-- <form name="add-game" action="javascript:download_game()">
-          <div class="form-group py-1">
-            <div class="input-group input-group-sm">
-              <div class="input-group-prepend">
-                <button type="submit" class="btn btn-primary">下載</button>
-              </div>
-              <input type="text" class="form-control" id="game_url" placeholder="遊戲 Github 網址" required>
-            </div>
-          </div>
-        </form> -->
       </div>
-    </div>
+    </div> -->
+    <footer class="fixed-bottom" >
+      <div style="background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, #004592 60%, #ECCCFB 100%)">
+        <svg class="d-block mx-auto shake" xmlns="http://www.w3.org/2000/svg" width="42" height="33" viewBox="0 0 42 33" fill="none">
+          <path d="M41 15.9106L21.9344 30.5293C20.8148 31.3878 19.2483 31.3502 18.1713 30.4389L1 15.9106" stroke="white" stroke-width="3"/>
+          <path d="M41 2L21.9344 16.6187C20.8148 17.4772 19.2483 17.4395 18.1713 16.5282L1 2" stroke="white" stroke-width="3"/>
+        </svg>
+        <img class="d-block mx-auto" src="media/footer.png" style="max-height: 25vh;"/>
+      </div>
+      <div class="text-center" style="color: #D9D9D9; background-color: #011C3C; height: 5vh; padding: 1vh;">
+        訓練專屬 AI，一起打 Game 學程式！
+      </div>
+    </footer>
   </body>
 </html>
 
 <script>
   async function token_login(token=null) {
     const auth = await window.paia.auth(token);
-    if (!auth.ok) {
-      $(`#user-info`).hide();
-      $('#user-name').html('');
-      $('#state-content').html(auth.content);
-      $('#login-dialog').modal('show');
-      return;
-    } else {
-      $(`#user-info`).show();
+    if (auth.ok) {
       window.paia.user().then((res) => {
         if (res.ok) {
           $('#user-name').html(res.content.username);
-          $('#user-avatar').attr("src", res.content.avatar);
+          $('#user-info-icon').attr("src", "media/login-owl2.png");
+          $('#user-info-backgroud').attr("fill", "#ECC8D6");
+          $('#login-button').attr("onclick", "");
+          $('#login-button').removeClass("disabled");
+          $('#login-dialog').modal('hide');
+          window.paia.ga('login', {
+            event_category: 'general_desktop',
+            value: 'login'
+          });
         }
       })
-      $('#login-dialog').modal('hide');
-    }
-  };
-  async function login() {
-    const response = await window.paia.login($('#email').val(), $('#password').val());
-    if (response.ok) {
-        $('#state-content').html('登入成功');
-        $('#login-dialog').modal('hide');
-        $(`#user-info`).show();
-        window.paia.user().then((res) => {
-          if (res.ok) {
-            $('#user-name').html(res.content.username);
-            $('#user-avatar').attr("src", res.content.avatar);
-          }
-        });
-        window.paia.ga('login', {
-          event_category: 'general_desktop',
-          value: 'login'
-        });
-    } else {
-      $('#state-content').html(response.content);
     }
   };
   function logout() {
     window.paia.logout();
-    $(`#user-info`).hide();
     $('#state-content').html('');
-    $('#login-dialog').modal('show');
+    $('#user-name').html('未登入');
+    $('#user-info-icon').attr("src", "media/login-owl1.png");
+    $('#user-info-backgroud').attr("fill", "#B6B6B6");
+    $('#login-button').attr("onclick", "location.href=window.paia.redirect();");
+    $('#login-button').addClass("disabled");
   }
-  // function google_login() {
-  //   $('#state-content').html('請於瀏覽器登入，成功後會自動返回');
-  //   try {
-  //     myApiOauth.openAuthWindowAndGetTokens()
-  //       .then(token => {
-  //         window.setToken(token);
-  //         var oauth2 = window.getOauth2();
-  //         oauth2.userinfo.get(
-  //           function(err, res) {
-  //             if (err) {
-  //               $('#state-content').html('登入失敗，請確認網路連線後重新登入');
-  //               console.log(err);
-  //             } else {
-  //               $('#state-content').html('登入成功');
-  //               $('#login-dialog').modal('hide');
-  //             }
-  //         });
-  //       });
-  //   } catch(e) {
-  //     console.log(e);
-  //   }
-  // };
   async function update_game_list() {
     $('#game_list').empty();
     const gameListDir = window.path.join(window.path.dirname(), 'games').replace('app.asar', 'app.asar.unpacked');
@@ -146,41 +170,90 @@
         const url = (config.url !== undefined)? config.url : "None";
         const version = (config.version !== undefined)? config.version : "unknown version";
         $('#game_list').append(
-          `<div class="card m-3 mx-auto">
-            <div class="row g-0">
-              <div class="col-md-4">
-                <img src="${logoPath}" alt="...">
-              </div>
-              <div class="col-md-8">
-                <div class="card-body">
-                  <h6 class="card-subtitle mb-2 text-muted float-right"><span class="verison" game="${dirent}">${config.version}</span></h6>
-                  <h3 class="card-title">${gameName}</h3>
-                  <p class="card-text" style="min-height: 100px">${description}</p>
-                  <a href="code.html?game=${dirent}&ver=${config.version}" class="btn btn-primary">積木</a>
-                  <a href="python.html?game=${dirent}&ver=${config.version}" class="btn btn-primary">Python</a>
-                  <a onclick="git_download('${dirent}', this)" class="btn btn-primary float-right" id="${dirent}-download""><i class="bi bi-download"></i> 下載 / 更新</a>
-                  <select class="float-right mr-2 mt-1" id="${dirent}-tags"></select>
-                </div>
-              </div>
+          `<div class="card" style="margin-bottom: 200px; cursor: pointer;" onclick="javascript:prompt_game(name='${gameName}', description='${description}', dirent='${dirent}', version='${version}');">
+            <div class="card-body d-flex justify-content-center">
+              <img class="card-logo" src="${logoPath}" style="max-width: 250px; max-height: 250px;">
+            </div>
+            <div class="card-cover">
+              <p class="p-5 h-100" style="overflow-y: scroll;">${description}</p>
+            </div>
+            <div class="card-footer">
+              <h6 class="text-center" style="font-size: 24px; color: white;">${gameName}</h6>
             </div>
           </div>`);
-        if (url.indexOf("github.com") != -1) {
-          const data = url.substring(url.indexOf("github.com") + 11).split('/');
-          const owner = data[0];
-          const repo = data[1];
-          window.api.github("GET", `repos/${owner}/${repo}/tags`, null).then((res) => {
-            if (res.ok) {
-              res.content.forEach((tag) => {
-                $(`#${dirent}-tags`).append(`<option value="${tag.name}">${tag.name}</option>`);
-              });
-            }
-          });
-        } else {
-          $(`#${dirent}-tags`).css("display", "none");
-          $(`#${dirent}-download`).css("display", "none");
-        }
+            // <div class="row g-0">
+            //   <div class="col-md-4">
+            //     <img src="${logoPath}" alt="...">
+            //   </div>
+            //   <div class="col-md-8">
+            //     <div class="card-body">
+            //       <h6 class="card-subtitle mb-2 text-muted float-right"><span class="verison" game="${dirent}">${config.version}</span></h6>
+            //       <h3 class="card-title">${gameName}</h3>
+            //       <p class="card-text" style="min-height: 100px">${description}</p>
+            //       <a href="code.html?game=${dirent}&ver=${config.version}" class="btn btn-primary">積木</a>
+            //       <a href="python.html?game=${dirent}&ver=${config.version}" class="btn btn-primary">Python</a>
+            //       <a onclick="git_download('${dirent}', this)" class="btn btn-primary float-right" id="${dirent}-download""><i class="bi bi-download"></i> 下載 / 更新</a>
+            //       <select class="float-right mr-2 mt-1" id="${dirent}-tags"></select>
+            //     </div>
+            //   </div>
+            // </div>
+        // if (url.indexOf("github.com") != -1) {
+        //   const data = url.substring(url.indexOf("github.com") + 11).split('/');
+        //   const owner = data[0];
+        //   const repo = data[1];
+        //   window.api.github("GET", `repos/${owner}/${repo}/tags`, null).then((res) => {
+        //     if (res.ok) {
+        //       res.content.forEach((tag) => {
+        //         $(`#${dirent}-tags`).append(`<option value="${tag.name}">${tag.name}</option>`);
+        //       });
+        //     }
+        //   });
+        // } else {
+        //   $(`#${dirent}-tags`).css("display", "none");
+        //   $(`#${dirent}-download`).css("display", "none");
+        // }
       }
     });
+    $('#game_list').append(
+      `<div class="card" style="margin-bottom: 200px; cursor: pointer;">
+        <div class="card-body d-flex justify-content-center">
+          <webview id="paia-ads" src="" style="width:100%; height:250px;"></webview>
+        </div>
+        <div class="card-footer">
+          <h6 class="text-center" style="font-size: 24px; color: white;">廣告</h6>
+        </div>
+      </div>`);
+  };
+  async function prompt_game(name, description, dirent, version) {
+    const auth = await window.paia.auth();
+    if (!auth.ok) {
+      $('#login-dialog').modal('show');
+    } else {
+      $('#game-name').html(name);
+      $('#game-description').html(description);
+      $('#open-project').attr("onclick", `new_project('${dirent}', '${version}');`);
+      $('#game-dialog').modal('show');
+    }
+  };
+  function new_project(dirent, version) {
+    if ($('#editor-mode').attr("mode") == "block") {
+      location.href=`code.html?game=${dirent}&ver=${version}`;
+    } else {
+      location.href=`python.html?game=${dirent}&ver=${version}`;
+    }
+  }
+  function toggle_editor_mode() {
+    if ($('#editor-mode').attr("mode") == "block") {
+      $('#editor-mode-block').css("display", "none");
+      $('#editor-mode-python').css("display", "inline");
+      $('#editor-mode-color').css("background", "#4483B5");
+      $('#editor-mode').attr("mode", "python");
+    } else {
+      $('#editor-mode-block').css("display", "inline");
+      $('#editor-mode-python').css("display", "none");
+      $('#editor-mode-color').css("background", "#AA3D3D");
+      $('#editor-mode').attr("mode", "block");
+    }
   };
   function update_version_name() {
     Array.from(document.getElementsByClassName('verison')).forEach(e => {
@@ -247,5 +320,15 @@
     app_name: "paia_desktop",
     app_version: window.app.getVersion(),
     screen_name: 'index'
+  });
+  $("#paia-ads").attr("src", window.paia.ads());
+  const webview = document.getElementById('paia-ads');
+  webview.addEventListener('dom-ready', function() {
+    webview.setZoomFactor(0.77);
+    webview.insertCSS('body { overflow: hidden; }');
+  });
+  webview.addEventListener('will-navigate', (e) => {
+    webview.stop();
+    window.shell.openExternal(e.url);
   });
 </script>

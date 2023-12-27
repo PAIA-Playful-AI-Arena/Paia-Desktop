@@ -1,4 +1,4 @@
-const { contextBridge, ipcRenderer, clipboard } = require('electron');
+const { contextBridge, ipcRenderer, clipboard, shell } = require('electron');
 const { PythonShell } = require('python-shell');
 const path = require('path');
 const fs = require('fs');
@@ -49,6 +49,7 @@ let user_id = "";
 contextBridge.exposeInMainWorld('deeplink', {
   onLogin: (callback) => ipcRenderer.on('login', callback)
 });
+contextBridge.exposeInMainWorld('shell', shell);
 contextBridge.exposeInMainWorld('clipboard', clipboard);
 contextBridge.exposeInMainWorld('dateformat', dateformat);
 contextBridge.exposeInMainWorld('fs', fs);

@@ -14,15 +14,20 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: #f1f1f1; 
+  background: #011C3C;  
 }
  
 ::-webkit-scrollbar-thumb {
-  background: #888; 
+  border-radius: 5px;
+  background: #E4F5FF; 
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #555; 
+  background: #E4F5FF; 
+}
+
+body::-webkit-scrollbar-track {
+  background: #011C3C; 
 }
 
 .wrapper {
@@ -170,11 +175,11 @@ button.primary {
   background-color: #dd4b39;
   color: #fff;
 }
-button.primary>img {
+/* button.primary>img {
   opacity: 1;
 }
 button>img {
-  opacity: 0.6;
+  opacity: 0.8;
   vertical-align: text-bottom;
 }
 button:hover>img {
@@ -183,11 +188,17 @@ button:hover>img {
 button.disabled:hover>img {
   opacity: 0.6;
 }
-button.disabled {
-  display: none;
-}
+
 button.notext {
   font-size: 10%;
+} */
+
+.dropdown-item:hover {
+  background-color: rgba(55, 123, 250, 0.20);
+}
+
+.dropdown-toggle.disabled {
+  opacity: 1;
 }
 
 #readme-body {
@@ -301,28 +312,69 @@ pre.content {
   width: 100%;
 }
 
-.modal-dialog {
-  width: calc(100vw - (100px));
-  max-width: 800px;
-}
-.modal-body {
-  max-height: calc(100vh - (210px));
+/* .modal-dialog {
+  left: 50%;
+  transform: translate(-50%, 0%);
+} */
+/* .modal-body {
+  max-height: calc(100vh - (20px));
   overflow-y: auto;
-}
+} */
 
 .modal-header {
   cursor: move;
 }
 
-.card {
-  width: calc(100vw - (40px));
-  max-width: 800px;
+.modal-body input {
+  border-radius: 10px;
+  border: 1.5px solid #0039CF;
+  padding: 20px 15px;
+  font-size: 16px;
 }
 
-.card img {
+.card-deck {
+  margin: 0px;
+  padding: 200px 120px 25vh;
+}
+
+.card {
+  min-width: 360px;
+  max-width: 360px;
+  /* height: 360px; */
+  border-radius: 15px;
+  border: 1.5px solid #FFF;
+  background: rgba(0, 47, 90, 0.90);
+}
+
+.card-body {
+  padding: 36px 55px 25px;
+}
+
+.card-cover {
+  position: absolute;
+  height: 286px;
+  width: 100%;
+  border-radius: 15px;
+  border: 1.5px solid #FFF;
+  background: rgba(0, 27, 52, 0.90);
+  opacity: 0;
+  color: white;
+  font-size: 24px;
+}
+
+.card-cover:hover {
+  opacity: 1;
+}
+
+.card-footer {
+  padding: 0px 55px 25px;
+  border: 0px;
+}
+
+/* .card img {
   width: 100%;
   max-width: 250px;
-}
+} */
 
 .CodeMirror {
   font-family: Consolas, "Courier New", monospace;
@@ -334,4 +386,43 @@ pre.content {
 .btn:focus,.btn:active {
   outline: none !important;
   box-shadow: none;
+}
+
+/* Makes our label white. */
+.blocklyTreeLabel {
+  margin-top: 2px;
+  color: #fff;
+}
+/* Adds padding around the group of categories and separators. */
+.blocklyToolboxContents {
+  padding: 0.5em;
+}
+/* Adds space between the categories, rounds the corners and adds space around the label. */
+.blocklyTreeRow {
+  padding: 3px;
+  margin-bottom: 0.5em;
+  border-radius: 4px;
+}
+/* Stacks the icon on top of the label. */
+.blocklyTreeRowContentContainer {
+  padding: 3px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.blocklyTreeRow {
+  height: initial;
+}
+
+.shake {
+  animation: MoveUpDown 1s linear infinite;
+}
+
+@keyframes MoveUpDown {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
 }

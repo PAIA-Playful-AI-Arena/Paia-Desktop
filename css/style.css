@@ -47,7 +47,7 @@ body::-webkit-scrollbar-track {
 }
 
 #blockly-container {
-  padding-top: 10px;
+  padding: 0px;
   min-width: 800px;
 }
 
@@ -412,6 +412,23 @@ pre.content {
 }
 .blocklyTreeRow {
   height: initial;
+}
+
+.blocklyToolboxDiv {
+  background-color: white;
+  border-right: 1px solid #B6B6B6;
+}
+
+.blocklyScrollbarVertical .blocklyScrollbarHandle {
+  width: 10px;
+  rx: 5px;
+  ry: 5px;
+}
+
+.blocklyScrollbarHorizontal .blocklyScrollbarHandle {
+  height: 10px;
+  rx: 5px;
+  ry: 5px;
 }
 
 .shake {

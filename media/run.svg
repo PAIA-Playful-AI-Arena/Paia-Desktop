@@ -1,0 +1,17 @@
+<svg width="90" height="90" viewBox="0 0 90 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Vector" filter="url(#filter0_d_6_461)">
+<path d="M45 1C22.92 1 5 18.92 5 41C5 63.08 22.92 81 45 81C67.08 81 85 63.08 85 41C85 18.92 67.08 1 45 1ZM37 55V27C37 25.36 38.88 24.4 40.2 25.4L58.88 39.4C59.96 40.2 59.96 41.8 58.88 42.6L40.2 56.6C38.88 57.6 37 56.64 37 55Z" fill="#3763F9" fill-opacity="0.9" shape-rendering="crispEdges"/>
+</g>
+<defs>
+<filter id="filter0_d_6_461" x="0" y="0" width="90" height="90" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+<feOffset dy="4"/>
+<feGaussianBlur stdDeviation="2.5"/>
+<feComposite in2="hardAlpha" operator="out"/>
+<feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.3 0"/>
+<feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_6_461"/>
+<feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_6_461" result="shape"/>
+</filter>
+</defs>
+</svg>

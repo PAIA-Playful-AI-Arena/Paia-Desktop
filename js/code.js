@@ -373,23 +373,184 @@ Code.init = async function() {
   // Overide the color settings.
   Blockly.utils.colour.setHsvSaturation(0.4);
   Blockly.utils.colour.setHsvValue(0.85);
+
+  class CustomCategory extends Blockly.ToolboxCategory {
+    /**
+     * Constructor for a custom category.
+     * @override
+     */
+    constructor(categoryDef, toolbox, opt_parent) {
+      super(categoryDef, toolbox, opt_parent);
+    }
+  
+    /**
+     * Adds the colour to the toolbox.
+     * This is called on category creation and whenever the theme changes.
+     * @override
+     */
+    addColourBorder_(colour){
+      // this.rowDiv_.style.backgroundColor = colour;
+      this.labelDom_.style.color = colour;
+    }
+  
+    /**
+     * Sets the style for the category when it is selected or deselected.
+     * @param {boolean} isSelected True if the category has been selected,
+     *     false otherwise.
+     * @override
+     */
+    setSelected(isSelected){
+      // We do not store the label span on the category, so use getElementsByClassName.
+      // const labelDom = this.rowDiv_.getElementsByClassName('blocklyTreeLabel')[0];
+      // if (isSelected) {
+      //   // Change the background color of the div to white.
+      //   this.rowDiv_.style.backgroundColor = 'white';
+      //   // Set the colour of the text to the colour of the category.
+      //   labelDom.style.color = this.colour_;
+      //   this.iconDom_.style.color = this.colour_;
+      // } else {
+      //   // Set the background back to the original colour.
+      //   this.rowDiv_.style.backgroundColor = this.colour_;
+      //   // Set the text back to white.
+      //   labelDom.style.color = 'white';
+      //   this.iconDom_.style.color = 'white';
+      // }
+      // This is used for accessibility purposes.
+      Blockly.utils.aria.setState(/** @type {!Element} */ (this.htmlDiv_),
+          Blockly.utils.aria.State.SELECTED, isSelected);
+    }
+  
+    /**
+     * Creates the dom used for the icon.
+     * @returns {HTMLElement} The element for the icon.
+     * @override
+     */
+    createIconDom_() {
+      const iconImg = document.createElement('img');
+      switch (this.toolboxItemDef_.name) {
+        case '%{BKY_CATLOGIC}':
+          iconImg.src = 'media/logic-icon.svg';
+          break;
+        case '%{BKY_CATLOOPS}':
+          iconImg.src = 'media/loops-icon.svg';
+          break;
+        case '%{BKY_CATMATH}':
+          iconImg.src = 'media/math-icon.svg';
+          break;
+        case '%{BKY_CATTEXT}':
+          iconImg.src = 'media/text-icon.svg';
+          break;
+        case '%{BKY_CATLISTS}':
+          iconImg.src = 'media/lists-icon.svg';
+          break;
+        case '%{BKY_CATDICTS}':
+          iconImg.src = 'media/dicts-icon.svg';
+          break;
+        case '%{BKY_CATNDARRAYS}':
+          iconImg.src = 'media/ndarrays-icon.svg';
+          break;
+        case '%{BKY_CATMODEL}':
+          iconImg.src = 'media/model-icon.svg';
+          break;
+        case '%{BKY_CATVARIABLES}':
+          iconImg.src = 'media/variables-icon.svg';
+          break;
+        case '%{BKY_CATFUNCTIONS}':
+          iconImg.src = 'media/functions-icon.svg';
+          break;
+        case '%{BKY_CATPLOT}':
+          iconImg.src = 'media/plot-icon.svg';
+          break;
+        case '%{BKY_CATFILE}':
+          iconImg.src = 'media/file-icon.svg';
+          break;
+        case '%{BKY_CATMLGAME}':
+          iconImg.src = 'media/game-icon.svg';
+          break;
+        default:
+          iconImg.src = 'media/paia-logo.png';
+          break;
+      }
+      iconImg.alt = 'Blockly Logo';
+      iconImg.width = '25';
+      iconImg.height = '25';
+      return iconImg;
+    }
+  }
+  
+  Blockly.registry.register(
+    Blockly.registry.Type.TOOLBOX_ITEM,
+    Blockly.ToolboxCategory.registrationName,
+    CustomCategory, true);
+
+  class CustomContinuousFlyout extends ContinuousFlyout {
+    constructor(workspaceOptions) {
+      super(workspaceOptions);
+      this.autoClose = true;
+    }
+  }
+
+  class CustomContinuousToolbox extends ContinuousToolbox {
+    init() {
+      super.init();
+      this.getFlyout().hide();
+      this.workspace_.addChangeListener((e) => {
+        if (
+          e.type === Blockly.Events.CLICK
+        ) {
+          this.refreshSelection();
+        }
+      });
+    }
+    refreshSelection() {
+      this.getFlyout().hide();
+    }
+    updateFlyout_(_oldItem, newItem) {
+      if (newItem) {
+        const target = this.getFlyout().getCategoryScrollPosition(
+          newItem.name_,
+        ).y;
+        this.getFlyout().scrollTo(target);
+      }
+      this.getFlyout().show(this.getInitialFlyoutContents_());
+    }
+    getX() {
+      return super.getX();
+    }
+  }
+
+  class CustomRenderer extends Blockly.zelos.Renderer {
+    // makeConstants_() {
+    //   return new CustomConstantProvider();
+    // }
+  };
+  Blockly.blockRendering.register('custom_renderer', CustomRenderer);
   
   // Initialize blockly workspace.
-  Code.workspace = Blockly.inject('content_blocks',
-      {grid:
-          {spacing: 25,
-           length: 3,
-           colour: '#FFF',
-           snap: true},
-       media: 'media/',
-       rtl: Code.isRtl(),
-       toolbox: toolboxXml,
-       zoom:
-          {controls: true,
-           wheel: true},
-       move:
-          {wheel: true}
-      });
+  Code.workspace = Blockly.inject('content_blocks', {
+    // plugins: {
+    //   'toolbox': CustomContinuousToolbox,
+    //   'flyoutsVerticalToolbox': CustomContinuousFlyout,
+    //   'metricsManager': ContinuousMetrics,
+    // },
+    grid: {
+      spacing: 25,
+      length: 3,
+      colour: '#FFF',
+      snap: true
+    },
+    renderer: 'custom_renderer',
+    media: 'media/',
+    rtl: Code.isRtl(),
+    toolbox: toolboxXml,
+    zoom: {
+      controls: true,
+      wheel: true
+    },
+    move: {
+      wheel: true
+    }
+  });
   
   // Set callback function when workspace is changed.
   Code.workspace.addChangeListener((e) => {

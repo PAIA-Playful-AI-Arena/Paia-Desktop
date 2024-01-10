@@ -1,5 +1,5 @@
 Blockly.Themes.Classic.blockStyles.dict_blocks = {
-  "colourPrimary": "230"
+  "colourPrimary": "#00428D"
 };
 
 Blockly.defineBlocksWithJsonArray([

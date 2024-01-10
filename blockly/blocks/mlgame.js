@@ -1,17 +1,17 @@
 Blockly.Themes.Classic.blockStyles.logic_blocks = {
-  "colourPrimary": "100"
+  "colourPrimary": "#085C1F"
 };
 
 Blockly.Themes.Classic.blockStyles.loops_blocks = {
-  "colourPrimary": "140"
+  "colourPrimary": "#49CB4E"
 };
 
 Blockly.Themes.Classic.blockStyles.variable_blocks = {
-  "colourPrimary": "290"
+  "colourPrimary": "#B371F5"
 };
 
 Blockly.Themes.Classic.blockStyles.mlgame_blocks = {
-  "colourPrimary": "20"
+  "colourPrimary": "#FF0000"
 };
 
 Blockly.Blocks['mlplay_class'] = {

@@ -1,5 +1,5 @@
 Blockly.Themes.Classic.blockStyles.file_blocks = {
-  "colourPrimary": "360"
+  "colourPrimary": "#B10000"
 };
 
 Blockly.defineBlocksWithJsonArray([

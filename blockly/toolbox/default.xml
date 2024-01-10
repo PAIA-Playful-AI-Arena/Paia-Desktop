@@ -43,7 +43,6 @@
     </block>
     <block type="controls_flow_statements"></block>
   </category>
-  <sep></sep>
   <category name="%{BKY_CATMATH}" colour="%{BKY_MATH_HUE}">
     <block type="math_number">
       <field name="NUM">123</field>
@@ -461,10 +460,8 @@
       </value>
     </block>
   </category>
-  <sep></sep>
   <category name="%{BKY_CATVARIABLES}" colour="%{BKY_VARIABLES_HUE}" custom="VARIABLE"></category>
   <category name="%{BKY_CATFUNCTIONS}" colour="%{BKY_PROCEDURES_HUE}" custom="PROCEDURE"></category>
-  <sep></sep>
   <category name="%{BKY_CATPLOT}" colour="%{BKY_PLOT_HUE}">
     <block type="plot_plot"></block>
   </category>
@@ -525,7 +522,6 @@
       </value>
     </block>
   </category>
-  <sep></sep>
-  <category name="MLGame" colour="%{BKY_MLGAME_HUE}" class='MLGame_blocks'>
+  <category name="%{BKY_CATMLGAME}" colour="%{BKY_MLGAME_HUE}" class='MLGame_blocks'>
   </category>
 </xml>

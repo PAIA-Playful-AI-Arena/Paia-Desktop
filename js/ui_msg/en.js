@@ -30,6 +30,7 @@ var MSG = {
   catFile: "File",
   catPlot: "Plot",
   catModel: "Model",
+  catMLGame: "MLGame",
   listVariable: "list",
   ndarrayVariable: "ndarray",
   textVariable: "text",

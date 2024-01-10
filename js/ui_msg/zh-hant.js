@@ -30,6 +30,7 @@ var MSG = {
   catFile: "檔案",
   catPlot: "繪圖",
   catModel: "模型",
+  catMLGame: "遊戲",
   catVariables: "變數",
   catFunctions: "函式",
   listVariable: "清單",

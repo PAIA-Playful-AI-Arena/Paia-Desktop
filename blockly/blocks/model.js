@@ -1,5 +1,5 @@
 Blockly.Themes.Classic.blockStyles.model_blocks = {
-  "colourPrimary": "270"
+  "colourPrimary": "#D000BB"
 };
 
 Blockly.Themes.Classic.blockStyles.model_dl_blocks = {

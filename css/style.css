@@ -308,7 +308,7 @@ pre.content {
 }
 
 .tab-content {
-  height: calc(100vh - (70px));
+  height: 100%;
   width: 100%;
 }
 
@@ -325,11 +325,29 @@ pre.content {
   cursor: move;
 }
 
-.modal-body input {
+.modal-body {
+  max-height: 70vh;
+  padding: 50px 100px 20px;
+  overflow-y: auto;
+}
+
+.modal-body .form-group {
+  margin-bottom: 50px;
+}
+
+.modal-body .form-group label {
+  margin-bottom: 12px;
+}
+
+.modal-body input, .modal-body select {
   border-radius: 10px;
   border: 1.5px solid #0039CF;
-  padding: 20px 15px;
   font-size: 16px;
+  color: #000;
+}
+
+.modal-body select option {
+  background-color: #E4F5FF;
 }
 
 .card-deck {

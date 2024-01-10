@@ -35,41 +35,28 @@
   </head>
   <body>
     <!-- Login dialog -->
-    <div class="modal fade" id="login-dialog" tabindex="-1" data-backdrop="static" data-keyboard="false">
-      <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content p-3">
-          <h5 class="text-center mt-3">登入 PAIA</h5>
-          <form name="play" action="javascript:Code.login()">
-            <div class="modal-body my-2">
-              <div class="container">
-                <div class="form-group">
-                  <label for="email">Email</label>
-                  <input type="email" class="form-control" id="email" aria-describedby="emailHelp" placeholder="account@gmail.com" required>
-                </div>
-                <div class="form-group mb-4">
-                  <label for="password">密碼</label>
-                  <input type="password" class="form-control" id="password" placeholder="Password" required>
-                </div>
-                <button type="submit" class="btn btn-primary">登入</button>
-                <span class="text-danger ml-3" id="state-content"></span>
-              </div>
-            </div>
-          </form>
-          <button type="button" onclick="location.href=window.paia.redirect();">
-            從 PAIA 網站登入
-          </button>
+    <div class="modal fade" id="login-dialog" data-backdrop="static" data-keyboard="false" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered" style="max-width: 600px; position: absolute; left: 50%; transform: translate(-50%, 0%);">
+        <div class="modal-content p-3" style="width: 600px; min-height: 400px; border-radius: 25px;">
+          <div class="modal-body">
+            <h5 class="text-center" style="padding-top: 130px; color: #0039CF; font-size: 20px; font-weight: 800;">請先登入</h5>
+          </div>
+          <div class="modal-footer d-flex justify-content-center pt-4">
+            <button type="button" class="btn px-4" onclick="location.href=window.paia.redirect();" style="color: white; background-color: #0039CF; font-size: 24px; font-weight: 800; border-radius: 15px; border: 2px solid #0039CF;">登入</button>
+            <button type="button" class="btn px-4" style="color: #0039CF; background-color: white; font-size: 24px; font-weight: 800; border-radius: 15px; border: 2px solid #0039CF;" onclick="location.href='index.html'">返回</button>
+          </div>
         </div>
       </div>
     </div>
     <!-- Project dialog -->
     <div class="modal fade" id="project-dialog" tabindex="-1" data-backdrop="static" data-keyboard="false" aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="game-play-title">新建 / 載入專案</h5>
+      <div class="modal-dialog" style="max-width: 800px; position: absolute; left: 50%; transform: translate(-50%, 0%);">
+        <div class="modal-content" style="width: 800px; border-radius: 25px; border: 1px solid #B7B7B7; box-shadow: 0px 4px 10px 0px #011C3C;">
+          <div class="modal-header d-flex justify-content-center" style="background-color: #0039CF; color: white; font-size: 28px; font-weight: 800; border-radius: 25px 25px 0px 0px;">
+            <span class="modal-title" id="game-play-title">新建 / 載入專案</span>
           </div>
-          <form name="project" action="javascript:Code.newProject()">
-            <div class="modal-body my-2">
+          <form name="project" action="javascript:Code.newProject()" style="color: #0039CF; font-size: 20px; font-family: Inter;">
+            <div class="modal-body">
               <div class="form-group">
                 <label for="">專案位置</label>
                 <input type="text" class="form-control" id="project-path" onclick="Code.selectProjectPath()" readonly required>
@@ -83,7 +70,7 @@
             <div class="modal-footer">
               <button type="button" onclick="location.href='index.html';" class="btn btn-outline-primary mr-auto">返回遊戲選單</button>
               <button type="submit" class="btn btn-outline-primary">新建</button>
-              <button type="button" onclick="Code.openProject()" class="btn btn-outline-secondary">載入</button>
+              <button type="button" onclick="Code.selectProject()" class="btn btn-outline-secondary">載入</button>
             </div>
           </form>
         </div>
@@ -91,20 +78,13 @@
     </div>
     <!-- Game play dialog -->
     <div class="modal fade" id="run-mlgame-dialog" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="game-play-title">開始玩</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
+      <div class="modal-dialog" style="max-width: 800px; position: absolute; left: 50%; transform: translate(-50%, 0%);">
+        <div class="modal-content" style="width: 800px; border-radius: 25px; border: 1px solid #B7B7B7; box-shadow: 0px 4px 10px 0px #011C3C;">
+          <div class="modal-header d-flex justify-content-center" style="background-color: #0039CF; color: white; font-size: 28px; font-weight: 800; border-radius: 25px 25px 0px 0px;">
+            <span class="modal-title" id="game-play-title">遊戲設定</span>
           </div>
-          <form name="play" action="javascript:Code.play()">
+          <form name="play" action="javascript:Code.play()" style="color: #0039CF; font-size: 24px; font-weight: 800;">
             <div class="modal-body" id="game-args"></div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">取消</button>
-              <button type="submit" class="btn btn-outline-primary">確定</button>
-            </div>
           </form>
         </div>
       </div>
@@ -135,17 +115,18 @@
       </div>
     </div>
     <!-- Console dialog -->
-    <div class="modal fade" id="console-dialog" tabindex="-1" aria-labelledby="exampleModalLabel" data-backdrop="static" aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="console-title">Console</h5>
+    <div class="modal fade" id="console-dialog" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog" style="max-width: 800px; position: absolute; left: 50%; transform: translate(-50%, 0%);">
+        <div class="modal-content" style="width: 800px; border-radius: 25px; border: 1px solid #B7B7B7; box-shadow: 0px 4px 10px 0px #011C3C;">
+          <div class="modal-header d-flex justify-content-center" style="background-color: #0039CF; color: white; font-size: 28px; font-weight: 800; border-radius: 25px 25px 0px 0px;">
+            <div class="modal-title" id="console-title" style="padding-left: 10px;">Console</div>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
-          <div class="modal-body" id='console-body'>
-            <pre id="content_console" class="prettyprint lang-sh" style="border: 0"></pre>
+          <div class="modal-body" id='console-body' style="padding: 20px;">
+            <pre id="content_console" class="prettyprint lang-sh" style="border: 0; min-height: 20vh;"></pre>
+            <webview id="paia-ads" src="" style="width:100%; height:180px; z-index: 100;"></webview>
           </div>
         </div>
       </div>

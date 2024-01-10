@@ -15,7 +15,7 @@
       <div class="modal-dialog modal-dialog-centered" style="max-width: 600px; position: absolute; left: 50%; transform: translate(-50%, 0%);">
         <div class="modal-content p-3" style="width: 600px; min-height: 400px; border-radius: 25px;">
           <div class="modal-body">
-            <h5 class="text-center" style="padding-top: 130px; color: #0039CF; font-size: 24px; font-weight: 800;">請先登入</h5>
+            <h5 class="text-center" style="padding-top: 80px; color: #0039CF; font-size: 24px; font-weight: 800;">請先登入</h5>
           </div>
           <div class="modal-footer d-flex justify-content-center pt-4">
             <button type="button" class="btn px-4" onclick="location.href=window.paia.redirect();" style="color: white; background-color: #0039CF; font-size: 24px; font-weight: 800; border-radius: 15px; border: 2px solid #0039CF;">登入</button>
@@ -32,7 +32,7 @@
           <img src="media/robot.svg" style="position: fixed; bottom: -38px; right: -66px; z-index: 10;">
           <img src="media/desktop.svg" style="position: fixed; bottom: -6px; right: 72px; z-index: 10;">
           <img src="media/ufo.svg" style="position: fixed; bottom: 86px; right: -86px; z-index: 10;">
-          <div class="modal-body" style="background-color: #BFFBFF; height: 400px; border-radius: 25px 25px 0px 0px; padding: 50px 120px 60px;">
+          <div class="modal-body" style="background-color: #BFFBFF; height: 400px; border-radius: 25px 25px 0px 0px; padding: 50px 120px 30px;">
             <div class="d-flex justify-content-between">
               <h5 class="text-center" id="game-name" style="color: #011C3C; font-size: 48px; font-weight: 800;"></h5>
               <button type="button" class="btn btn-primary mt-2" id="editor-mode" style="width: 200px; height: 50px; border-radius: 25px; border: 0px; color: #011C3C; background: white; box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25); font-size: 24px; font-weight: 800; text-align: left; padding-left: 24px;" mode="block" onclick="toggle_editor_mode();">
@@ -90,7 +90,7 @@
             <circle id="user-info-backgroud" cx="29" cy="29" r="29" fill="#B6B6B6"/>
           </svg>
           <img src="media/login-owl1.png" id="user-info-icon" style="position: absolute; top: 8px; left: 16px;">
-          <h6 id="user-name" class="pt-2" style="font-size: 13px; color: white; position: absolute; left: 43px; transform: translate(-50%, 0%);">未登入</h6>
+          <h6 id="user-name" class="pt-2" style="max-width: 150px; font-size: 13px; color: white; position: absolute; left: 43px; transform: translate(-50%, 0%); text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">未登入</h6>
         </button>
         <div class="dropdown-menu dropdown-menu-right mt-4 mr-2" id="login-menu" aria-labelledby="login-button" style="min-width: 0px; background: #EEF9FE; border-color: #3764F9;">
           <a class="dropdown-item py-0 px-5" href="javascript:logout()" style="font-size: 16px;">

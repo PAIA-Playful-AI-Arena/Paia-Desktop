@@ -1,13 +1,13 @@
 Blockly.Themes.Classic.blockStyles.model_blocks = {
-  "colourPrimary": "#D000BB"
+  "colourPrimary": "#FFD3FB"
 };
 
 Blockly.Themes.Classic.blockStyles.model_dl_blocks = {
-  "colourPrimary": "#B46CD8"
+  "colourPrimary": "#FFD3FB"
 };
 
 Blockly.Themes.Classic.blockStyles.model_rl_blocks = {
-  "colourPrimary": "#C356D8"
+  "colourPrimary": "#FFD3FB"
 };
 
 Blockly.defineBlocksWithJsonArray([

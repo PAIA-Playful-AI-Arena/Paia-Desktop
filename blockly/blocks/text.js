@@ -1,5 +1,5 @@
 Blockly.Themes.Classic.blockStyles.text_blocks = {
-  "colourPrimary": "#14CBF3"
+  "colourPrimary": "#B7F2FF"
 };
 
 Blockly.Blocks['text_changeCase'] = {

@@ -524,4 +524,6 @@
   </category>
   <category name="%{BKY_CATMLGAME}" colour="%{BKY_MLGAME_HUE}" class='MLGame_blocks'>
   </category>
+  <category name="%{BKY_CATOTHER}" colour="%{BKY_OTHER_HUE}" class='other_blocks'>
+  </category>
 </xml>

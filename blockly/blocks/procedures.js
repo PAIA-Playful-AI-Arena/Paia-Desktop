@@ -1,5 +1,5 @@
 Blockly.Themes.Classic.blockStyles.procedure_blocks = {
-  "colourPrimary": "#3764F9"
+  "colourPrimary": "#E8D1FF"
 };
 
 Blockly.Blocks['procedures_ifreturn'] = {

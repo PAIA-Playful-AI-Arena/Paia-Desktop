@@ -1,17 +1,21 @@
 Blockly.Themes.Classic.blockStyles.logic_blocks = {
-  "colourPrimary": "#085C1F"
+  "colourPrimary": "#C1DBC8"
 };
 
-Blockly.Themes.Classic.blockStyles.loops_blocks = {
-  "colourPrimary": "#49CB4E"
+Blockly.Themes.Classic.blockStyles.loop_blocks = {
+  "colourPrimary": "#D1FBD3"
 };
 
 Blockly.Themes.Classic.blockStyles.variable_blocks = {
-  "colourPrimary": "#B371F5"
+  "colourPrimary": "#FFA2A2"
 };
 
 Blockly.Themes.Classic.blockStyles.mlgame_blocks = {
-  "colourPrimary": "#FF0000"
+  "colourPrimary": "#FFC7C7"
+};
+
+Blockly.Themes.Classic.blockStyles.other_blocks = {
+  "colourPrimary": "#676767"
 };
 
 Blockly.Blocks['mlplay_class'] = {

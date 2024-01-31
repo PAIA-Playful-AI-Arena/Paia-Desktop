@@ -31,15 +31,16 @@
     <script src="node_modules/blockly/blockly_compressed.js"></script>
     <script src="node_modules/blockly/blocks_compressed.js"></script>
     <script src="node_modules/blockly/python_compressed.js"></script>
+    <script src="node_modules/@blockly/continuous-toolbox/dist/index.js"></script>
     <script src="js/code.js"></script>
   </head>
-  <body>
+  <body style="overflow-y: hidden; min-width: 1200px;">
     <!-- Login dialog -->
     <div class="modal fade" id="login-dialog" data-backdrop="static" data-keyboard="false" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered" style="max-width: 600px; position: absolute; left: 50%; transform: translate(-50%, 0%);">
         <div class="modal-content p-3" style="width: 600px; min-height: 400px; border-radius: 25px;">
           <div class="modal-body">
-            <h5 class="text-center" style="padding-top: 130px; color: #0039CF; font-size: 20px; font-weight: 800;">請先登入</h5>
+            <h5 class="text-center" style="padding-top: 80px; color: #0039CF; font-size: 20px; font-weight: 800;">請先登入</h5>
           </div>
           <div class="modal-footer d-flex justify-content-center pt-4">
             <button type="button" class="btn px-4" onclick="location.href=window.paia.redirect();" style="color: white; background-color: #0039CF; font-size: 24px; font-weight: 800; border-radius: 15px; border: 2px solid #0039CF;">登入</button>
@@ -68,9 +69,9 @@
               </div>
             </div>
             <div class="modal-footer">
-              <button type="button" onclick="location.href='index.html';" class="btn btn-outline-primary mr-auto">返回遊戲選單</button>
-              <button type="submit" class="btn btn-outline-primary">新建</button>
-              <button type="button" onclick="Code.selectProject()" class="btn btn-outline-secondary">載入</button>
+              <button type="button" onclick="location.href='index.html';" class="mr-auto" style="background-color: #0039CF; color: white; border-radius: 15px; border: 2px solid #0039CF;">返回遊戲選單</button>
+              <button type="submit" style="background-color: #0039CF; color: white; border-radius: 15px; border: 2px solid #0039CF;">新建</button>
+              <button type="button" onclick="Code.selectProject()" style="background-color: white; color: #0039CF; border-radius: 15px; border: 2px solid #0039CF;">載入</button>
             </div>
           </form>
         </div>
@@ -115,19 +116,17 @@
       </div>
     </div>
     <!-- Console dialog -->
-    <div class="modal fade" id="console-dialog" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-      <div class="modal-dialog" style="max-width: 800px; position: absolute; left: 50%; transform: translate(-50%, 0%);">
-        <div class="modal-content" style="width: 800px; border-radius: 25px; border: 1px solid #B7B7B7; box-shadow: 0px 4px 10px 0px #011C3C;">
-          <div class="modal-header d-flex justify-content-center" style="background-color: #0039CF; color: white; font-size: 28px; font-weight: 800; border-radius: 25px 25px 0px 0px;">
-            <div class="modal-title" id="console-title" style="padding-left: 10px;">Console</div>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body" id='console-body' style="padding: 20px;">
-            <pre id="content_console" class="prettyprint lang-sh" style="border: 0; min-height: 20vh;"></pre>
-            <webview id="paia-ads" src="" style="width:100%; height:180px; z-index: 100;"></webview>
-          </div>
+    <div class="modal-dialog" id="console-dialog" style="max-width: 800px; position: absolute; left: 50%; transform: translate(-50%, 0%); z-index: 2000; display: none;">
+      <div class="modal-content" style="width: 800px; border: 1px solid #B7B7B7; box-shadow: 0px 4px 10px 0px #011C3C;">
+        <div class="modal-header d-flex justify-content-center" style="background-color: #E4F5FF; color: block; font-size: 28px; font-weight: 800; ">
+          <div class="modal-title" id="console-title" style="padding-left: 10px;">Console</div>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="$('#console-dialog').css('display', 'none');">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body" id='console-body' style="padding: 20px; background-color: #E4F5FF;">
+          <pre id="content_console" class="prettyprint lang-sh" style="border: 0; min-height: 20vh;"></pre>
+          <webview id="paia-ads" src="" style="width:100%; height:180px;"></webview>
         </div>
       </div>
     </div>
@@ -193,10 +192,155 @@
         </div>
       </div>
     </div>
+    <!-- Project file window -->
+    <div id="project-file-window" style="position: absolute; width: 280px; top: 80px; left: 0px; border: 1px solid #B6B6B6; z-index: 500; display: none;">
+      <div class="d-flex justify-content-between" style="background-color: #E4F5FF; font-size: 16px; color: #000000; height: 50px; padding: 15px 10px;">
+        <div>專案資料夾</div>
+        <img src="media/collapse-icon.svg" style="transform: rotate(180deg); cursor: pointer;" onclick="$('#project-file-window').css('display', 'none');">
+      </div>
+      <div id="project-file-list" style="background-color: white; padding: 5px 10px; max-height: calc(100vh - 200px); overflow-y: auto;"></div>
+      <div class="d-flex justify-content-between" style="background-color: #E4F5FF; font-size: 16px; color: #000000; height: 50px; padding: 15px 10px; cursor: pointer;" onclick="Code.revealProject();">
+        開啟專案位置
+      </div>
+    </div>
 
-    <div class="wrapper">
-      <nav class="pt-3 px-3" id="sidebar">
-        <div class="sidebar-header">
+    <div class="d-flex" style="background: #EDEDED; height: 80px;">
+      <img src="media/paia-logo.png" id="game-logo" style="width: 46px; height: 46px; margin: 17px 0px 17px 17px;">
+      <div id="project-title" style="width: 200px; margin: 17px 17px 17px 18px; font-family: Inter; font-size: 32px; font-weight: 500; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;"></div>
+      
+      <!-- Collect filelist -->
+      <div class="dropdown" id="group-collect-dropdown" style="margin: 17px 0px;">
+        <button class="dropdown-toggle d-flex" type="button" id="group-collect-button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="width: 140px; height: 46px; border-radius: 15px; border-width: 0px; outline: 1px solid #676767; background: #FFF; color: #00000000; vertical-align: baseline; padding: 11px 0px 6px 12px;">
+          <img src="media/state-unexecuted.svg" id="group-collect-state" style="width: 20px;">
+          <div id="group-collect-name" style="max-width: 100px; font-size: 16px; color: black; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; margin: 0px auto 0px 15px;">蒐集</div>
+          <img src="media/add-icon.svg" class="group-new" id="group-collect-new" style="width: 15px; padding-top: 3px;" onclick="(function(event){ event.stopPropagation(); Code.newXml('collect');})(event);">
+        </button>
+        <div class="dropdown-menu" id="group-collect-list" aria-labelledby="group-collect-button" style="min-width: 0px; max-height: calc(100vh - 100px); background: #EDEDED; border-radius: 15px; border-color: #B7B7B7; padding: 0px; overflow-y: auto; overflow-x: hidden;"></div>
+      </div>
+      
+      <img src="media/arrow-icon.svg" style="width: 40px; margin: 35px 17px;">
+      
+      <!-- Train filelist -->
+      <div class="dropdown" id="group-train-dropdown" style="margin: 17px 0px;">
+        <button class="dropdown-toggle d-flex" type="button" id="group-train-button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="width: 140px; height: 46px; border-radius: 15px; border-width: 0px; outline: 1px solid #676767; background: #FFF; color: #00000000; vertical-align: baseline; padding: 11px 0px 6px 12px;">
+          <img src="media/state-unexecuted.svg" id="group-train-state" style="width: 20px;">
+          <div id="group-train-name" style="max-width: 100px; font-size: 16px; color: black; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; margin: 0px auto 0px 15px;">訓練</div>
+          <img src="media/add-icon.svg" class="group-new" id="group-train-new" style="width: 15px; padding-top: 3px;" onclick="(function(event){ event.stopPropagation(); Code.newXml('train');})(event);">
+        </button>
+        <div class="dropdown-menu" id="group-train-list" aria-labelledby="group-train-button" style="min-width: 0px; max-height: calc(100vh - 100px); background: #EDEDED; border-radius: 15px; border-color: #B7B7B7; padding: 0px; overflow-y: auto; overflow-x: hidden;"></div>
+      </div>
+      
+      <img src="media/arrow-icon.svg" style="width: 40px; margin: 35px 17px;">
+      
+      <!-- Test filelist -->
+      <div class="dropdown" id="group-test-dropdown" style="margin: 17px 0px;">
+        <button class="dropdown-toggle d-flex" type="button" id="group-test-button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="width: 140px; height: 46px; border-radius: 15px; border-width: 0px; outline: 1px solid #676767; background: #FFF; color: #00000000; vertical-align: baseline; padding: 11px 0px 6px 12px;">
+          <img src="media/state-unexecuted.svg" id="group-test-state" style="width: 20px;">
+          <div id="group-test-name" style="max-width: 100px; font-size: 16px; color: black; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; margin: 0px auto 0px 15px;">測試</div>
+          <img src="media/add-icon.svg" class="group-new" id="group-test-new" style="width: 15px; padding-top: 3px;" onclick="(function(event){ event.stopPropagation(); Code.newXml('test');})(event);">
+        </button>
+        <div class="dropdown-menu" id="group-test-list" aria-labelledby="group-test-button" style="min-width: 0px; max-height: calc(100vh - 100px); background: #EDEDED; border-radius: 15px; border-color: #B7B7B7; padding: 0px; overflow-y: auto; overflow-x: hidden;"></div>
+      </div>
+      
+      <img src="media/divide-icon.svg" style="height: 45px; margin: 17px 17px;">
+
+      <!-- Other filelist -->
+      <div class="dropdown" id="group-other-dropdown" style="margin: 17px 0px;">
+        <button class="dropdown-toggle d-flex" type="button" id="group-other-button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="width: 140px; height: 46px; border-radius: 15px; border-width: 0px; outline: 1px solid #676767; background: #FFF; color: #00000000; vertical-align: baseline; padding: 11px 0px 6px 12px;">
+          <img src="media/state-unexecuted.svg" id="group-other-state" style="width: 20px;">
+          <div id="group-other-name" style="max-width: 100px; font-size: 16px; color: black; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; margin: 0px auto 0px 15px;">未分類</div>
+          <img src="media/add-icon.svg" class="group-new" id="group-other-new" style="width: 15px; padding-top: 3px;" onclick="(function(event){ event.stopPropagation(); Code.newXml('other');})(event);">
+        </button>
+        <div class="dropdown-menu" id="group-other-list" aria-labelledby="group-other-button" style="min-width: 0px; max-height: calc(100vh - 100px); background: #EDEDED; border-radius: 15px; border-color: #B7B7B7; padding: 0px; overflow-y: auto; overflow-x: hidden;"></div>
+      </div>
+
+      <!-- Login button -->
+      <div class="ml-auto dropdown" style="margin-top: 5px;">
+        <button class="btn dropdown-toggle disabled" type="button" id="login-button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="color: #0000;" onclick="location.href=window.paia.redirect();">
+          <svg xmlns="http://www.w3.org/2000/svg" width="45" height="45" viewBox="0 0 58 58" fill="none">
+            <circle id="user-info-backgroud" cx="29" cy="29" r="29" fill="#B6B6B6"/>
+          </svg>
+          <img src="media/login-owl1.png" id="user-info-icon" style="position: absolute; width: 39px; top: 8px; left: 16px;">
+          <h6 id="user-name" style="max-width: 100px; font-size: 16px; color: black; position: absolute; left: 36px; transform: translate(-50%, 0%); text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">未登入</h6>
+        </button>
+        <div class="dropdown-menu dropdown-menu-right mt-4 mr-2" id="login-menu" aria-labelledby="login-button" style="min-width: 0px; background: #EEF9FE; border-color: #3764F9;">
+          <a class="dropdown-item py-0 px-5" href="javascript:Code.logout()" style="font-size: 16px;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 10 10" fill="none" style="vertical-align: baseline">
+              <path d="M4.5 2.22222L3.8 3L5.1 4.44444H0V5.55556H5.1L3.8 7L4.5 7.77778L7 5L4.5 2.22222ZM9 8.88889H5V10H9C9.55 10 10 9.5 10 8.88889V1.11111C10 0.5 9.55 0 9 0H5V1.11111H9V8.88889Z" fill="#0039CF"/>
+            </svg>
+            登出
+          </a>
+        </div>
+      </div>
+    </div>
+    <div class="wrapper" style="height: calc(100vh - 80px);">
+      <div class="container-fluid" id="blockly-container">
+        <ul class="nav nav-tabs" role="tablist" id="tab_list" style="display: none;">
+          <div class="row mx-0" id="opened_xml"></div>
+          <button class="btn btn-primary h-75 mr-1 ml-auto" id="toggle_python">Python</button>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" id="tab_user" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">尚未登入</a>
+            <div class="dropdown-menu dropdown-menu-right">
+              <a class="dropdown-item" href="#" id="logout">登出</a>
+              <!-- <div class="dropdown-divider"></div> -->
+              <a class="dropdown-item" href="#" id="show_filesets">線上檔案集</a>
+            </div>
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" id="tab_lang" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">語言</a>
+            <div class="dropdown-menu dropdown-menu-right">
+              <a class="dropdown-item" href="#" id="zh-hant">中文</a>
+              <a class="dropdown-item" href="#" id="en">英文</a>
+            </div>
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" id="tab_option" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">選項</a>
+            <div class="dropdown-menu dropdown-menu-right">
+              <a class="dropdown-item" href="#" id="show_readme">遊戲說明</a>
+              <a class="dropdown-item" href="#" id="run">執行程式</a>
+              <a class="dropdown-item" href="#" id="custom_python">執行環境設定</a>
+              <div class="dropdown-divider"></div>
+              <a class="dropdown-item" href="#" id='open_xml'>開啟 XML 檔</a>
+              <a class="dropdown-item" href="#" id='save_xml'>儲存 XML 檔</a>
+              <a class="dropdown-item" href="#" id='save_python'>另存 Python 檔</a>
+              <div class="dropdown-divider"></div>
+              <a class="dropdown-item" href="#" id="discard">移除所有積木</a>
+              <a class="dropdown-item" href="#" id="clean_trashcan">清空垃圾桶</a>
+              <a class="dropdown-item" href="#" id="custom_blocks">開啟自訂積木位置</a>
+              <a class="dropdown-item" href="index.html" id="game_menu">選擇遊戲</a>
+            </div>
+          </li>
+        </ul>
+        <div class="tab-content" id="tab_content">
+          <div id="content_blocks" class="content active" role="tabpanel" aria-labelledby="tab_blocks"></div>
+          <div id="content_python" class="content" role="tabpanel" aria-labelledby="tab_python"><textarea id="python_code"></textarea></div>
+        </div>
+      </div>
+      <nav class="" id="sidebar" style="background: #EDEDED; overflow-y: auto;">
+        <button onclick="location.href='index.html'" style="height: 36px; border: 0px; margin: 20px 36px 0px; padding: 0px;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="36" height="35" viewBox="0 0 36 35" fill="#777">
+            <path d="M15.9304 6.66868C17.0892 5.56442 18.9108 5.56442 20.0696 6.66868L27.0696 13.3393C27.6638 13.9055 28 14.6904 28 15.5111V28.7647C28 29.8693 27.1046 30.7647 26 30.7647C24.8954 30.7647 24 29.8693 24 28.7647V21.0588C24 19.402 22.6569 18.0588 21 18.0588H15C13.3431 18.0588 12 19.402 12 21.0588V28.7647C12 29.8693 11.1046 30.7647 10 30.7647C8.89543 30.7647 8 29.8693 8 28.7647V15.5111C8 14.6904 8.33624 13.9055 8.9304 13.3393L15.9304 6.66868ZM20.0696 0.972211C18.9108 -0.132047 17.0892 -0.132048 15.9304 0.972211L1.1022 15.1026C-0.0182527 16.1703 0.737463 18.0588 2.28519 18.0588C3.23225 18.0588 4 18.8266 4 19.7736V32C4 33.6569 5.34315 35 7 35H13C14.6569 35 16 33.6569 16 32V24.2941C16 23.1896 16.8954 22.2941 18 22.2941C19.1046 22.2941 20 23.1896 20 24.2941V32C20 33.6569 21.3431 35 23 35H29C30.6569 35 32 33.6569 32 32V19.7736C32 18.8266 32.7677 18.0588 33.7148 18.0588C35.2625 18.0588 36.0183 16.1703 34.8978 15.1026L20.0696 0.972211Z" fill="#777777"/>
+          </svg>
+        </button>
+        <button onclick="$('#project-file-window').css('display', ($('#project-file-window').css('display') == 'none')? 'block':'none');" style="height: 36px; border: 0px; margin: 50px 36px 50px; padding: 0px;">
+          <svg width="36" height="34" viewBox="0 0 44 34" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M39.6 4.25H22L17.6 0H4.4C1.98 0 0.022 1.9125 0.022 4.25L0 29.75C0 32.0875 1.98 34 4.4 34H39.6C42.02 34 44 32.0875 44 29.75V8.5C44 6.1625 42.02 4.25 39.6 4.25ZM39.6 29.75H4.4V8.5H39.6V29.75Z" fill="#777777"/>
+          </svg>
+        </button>
+        <button onclick="$('#console-dialog').css('display', ($('#console-dialog').css('display') == 'none')? 'block':'none');" style="height: 40px; border: 0px; margin: calc(100vh - 530px) 34px 20px; padding: 0px;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40" fill="none">
+            <path d="M33.3334 15V8.33333H6.66671V15H33.3334ZM33.3334 18.3333H6.66671V31.6667H33.3334V18.3333ZM5.00004 5H35C35.4421 5 35.866 5.17559 36.1786 5.48816C36.4911 5.80072 36.6667 6.22464 36.6667 6.66667V33.3333C36.6667 33.7754 36.4911 34.1993 36.1786 34.5118C35.866 34.8244 35.4421 35 35 35H5.00004C4.55801 35 4.13409 34.8244 3.82153 34.5118C3.50897 34.1993 3.33337 33.7754 3.33337 33.3333V6.66667C3.33337 6.22464 3.50897 5.80072 3.82153 5.48816C4.13409 5.17559 4.55801 5 5.00004 5ZM8.33337 20H13.3334V28.3333H8.33337V20ZM8.33337 10H11.6667V13.3333H8.33337V10ZM15 10H18.3334V13.3333H15V10Z" fill="#777777"/>
+            </svg>
+        </button>
+        <button onclick="$('#run-mlgame-dialog').modal('show');" style="height: 40px; border: 0px; margin: 20px 34px 0px; padding: 0px;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40" fill="none">
+            <path d="M36.8467 23.1506C35.8783 22.414 35.4253 21.2168 35.4253 20C35.4253 18.7832 35.8783 17.586 36.8467 16.8494L39.6198 14.74C40.0105 14.44 40.1133 13.9 39.8665 13.46L35.7543 6.54C35.5693 6.22 35.2197 6.04 34.8496 6.04C34.7263 6.04 34.6029 6.06 34.5001 6.1L31.2109 7.38492C30.0726 7.82959 28.805 7.6296 27.743 7.0249C26.6479 6.4013 25.7924 5.37262 25.6086 4.12587L25.1242 0.84C25.0626 0.36 24.6308 0 24.1168 0H15.8923C15.3783 0 14.9465 0.36 14.8848 0.84L14.4024 4.11227C14.2174 5.36744 13.3537 6.40738 12.2537 7.03963C11.2003 7.64511 9.94373 7.83242 8.81201 7.39032L5.50899 6.1C5.38562 6.06 5.26226 6.04 5.13889 6.04C4.78935 6.04 4.43982 6.22 4.25477 6.54L0.142553 13.46C-0.124741 13.9 -0.0013741 14.44 0.389286 14.74L3.16241 16.8494C4.13083 17.586 4.58374 18.7833 4.58374 20C4.58374 21.2167 4.13083 22.414 3.16241 23.1506L0.389286 25.26C-0.0013741 25.56 -0.10418 26.1 0.142553 26.54L4.25477 33.46C4.43982 33.78 4.78935 33.96 5.15945 33.96C5.28282 33.96 5.40619 33.94 5.50899 33.9L8.79821 32.6151C9.93649 32.1704 11.2041 32.3704 12.2661 32.9751C13.3612 33.5987 14.2166 34.6274 14.4004 35.8741L14.8848 39.16C14.9465 39.64 15.3783 40 15.8923 40H24.1168C24.6308 40 25.0626 39.64 25.1242 39.16L25.6066 35.8877C25.7917 34.6326 26.6554 33.5926 27.7554 32.9604C28.8088 32.3549 30.0654 32.1676 31.1971 32.6097L34.5001 33.9C34.6235 33.94 34.7468 33.96 34.8702 33.96C35.2197 33.96 35.5693 33.78 35.7543 33.46L39.8665 26.54C40.1133 26.1 40.0105 25.56 39.6198 25.26L36.8467 23.1506ZM31.2103 18.54C31.2926 19.16 31.3131 19.58 31.3131 20C31.3131 20.42 31.272 20.86 31.2103 21.46C31.0321 22.8591 31.6117 24.2473 32.7319 25.1043L32.7524 25.12L33.8202 25.9279C34.4766 26.4244 34.6548 27.335 34.2341 28.0424C33.83 28.7218 32.9938 29.0091 32.2575 28.7215L30.9225 28.2C29.5919 27.6773 28.0855 27.8735 26.9336 28.72C26.0495 29.36 25.2065 29.84 24.3635 30.18L24.3084 30.2017C22.9945 30.7202 22.0585 31.9022 21.855 33.3L21.6597 34.5825C21.5355 35.3977 20.8346 36 20.01 36C19.1806 36 18.4771 35.391 18.3584 34.5702L18.1746 33.3C17.9711 31.9022 17.0352 30.7202 15.7212 30.2017L15.6662 30.18C14.782 29.82 13.9596 29.36 13.1371 28.76C11.9742 27.8899 10.4377 27.6869 9.08662 28.22L7.75161 28.7415C7.01532 29.0291 6.17904 28.7418 5.77498 28.0624C5.35427 27.355 5.5325 26.4444 6.18885 25.9479L7.25668 25.14L7.27717 25.1243C8.39734 24.2673 8.97696 22.8791 8.79876 21.48C8.73708 20.86 8.69596 20.4 8.69596 20C8.69596 19.6 8.73708 19.14 8.79876 18.54C8.97696 17.1409 8.39734 15.7527 7.27717 14.8957L7.25668 14.88L6.18885 14.0721C5.5325 13.5756 5.35427 12.665 5.77498 11.9576C6.17904 11.2782 7.01532 10.9909 7.75161 11.2785L9.08662 11.8C10.4171 12.3227 11.9236 12.1265 13.0755 11.28C13.9596 10.64 14.8026 10.16 15.6456 9.82L15.7007 9.79827C17.0146 9.27981 17.9506 8.0978 18.154 6.7L18.3509 5.40738C18.4742 4.598 19.1702 4 19.9889 4C20.8123 4 21.5107 4.60468 21.6287 5.41959L21.8139 6.7C22.0174 8.0978 22.9534 9.27981 24.2673 9.79827L24.3224 9.82C25.2065 10.18 26.0289 10.64 26.8514 11.24C28.0143 12.1101 29.5509 12.3131 30.9019 11.78L32.2302 11.2612C32.9704 10.972 33.811 11.2609 34.2172 11.9438C34.6369 12.6495 34.464 13.5574 33.8143 14.0594L32.7524 14.88L32.7319 14.8957C31.6117 15.7527 31.0321 17.1409 31.2103 18.54ZM20.0045 12C15.4605 12 11.7801 15.58 11.7801 20C11.7801 24.42 15.4605 28 20.0045 28C24.5485 28 28.229 24.42 28.229 20C28.229 15.58 24.5485 12 20.0045 12ZM20.0045 24C17.7428 24 15.8923 22.2 15.8923 20C15.8923 17.8 17.7428 16 20.0045 16C22.2663 16 24.1168 17.8 24.1168 20C24.1168 22.2 22.2663 24 20.0045 24Z" fill="#777777"/>
+          </svg>
+        </button>
+        <button onclick="Code.run();" style="border: 0px; margin: 30px 14px 0px; padding: 0px;">
+          <img src="media/run.svg" style="width: 80px; height: 80px; filter: drop-shadow(0px 4px 5px rgba(0, 0, 0, 0.30));">
+        </button>
+        <!-- <div class="sidebar-header">
           <h4 id='game_name'></h4>
         </div>
         <div class="dropdown-divider"></div>
@@ -255,50 +399,8 @@
             <button class="btn btn-sm btn-outline-light" onclick="Code.downloadFileset()">下載</button>
           </ul>
         </ul>
-        <webview id="paia-ads" src="" style="display:none; width:100%; height:80px"></webview>
+        <webview id="paia-ads" src="" style="width:100%; height:180px;"></webview> -->
       </nav>
-      <div class="container-fluid" id="blockly-container">
-        <ul class="nav nav-tabs" role="tablist" id="tab_list">
-          <div class="row mx-0" id="opened_xml"></div>
-          <button class="btn btn-primary h-75 mr-1 ml-auto" id="toggle_python">Python</button>
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" id="tab_user" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">尚未登入</a>
-            <div class="dropdown-menu dropdown-menu-right">
-              <a class="dropdown-item" href="#" id="logout">登出</a>
-              <!-- <div class="dropdown-divider"></div> -->
-              <a class="dropdown-item" href="#" id="show_filesets">線上檔案集</a>
-            </div>
-          </li>
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" id="tab_lang" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">語言</a>
-            <div class="dropdown-menu dropdown-menu-right">
-              <a class="dropdown-item" href="#" id="zh-hant">中文</a>
-              <a class="dropdown-item" href="#" id="en">英文</a>
-            </div>
-          </li>
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" id="tab_option" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">選項</a>
-            <div class="dropdown-menu dropdown-menu-right">
-              <a class="dropdown-item" href="#" id="show_readme">遊戲說明</a>
-              <a class="dropdown-item" href="#" id="run">執行程式</a>
-              <a class="dropdown-item" href="#" id="custom_python">執行環境設定</a>
-              <div class="dropdown-divider"></div>
-              <a class="dropdown-item" href="#" id='open_xml'>開啟 XML 檔</a>
-              <a class="dropdown-item" href="#" id='save_xml'>儲存 XML 檔</a>
-              <a class="dropdown-item" href="#" id='save_python'>另存 Python 檔</a>
-              <div class="dropdown-divider"></div>
-              <a class="dropdown-item" href="#" id="discard">移除所有積木</a>
-              <a class="dropdown-item" href="#" id="clean_trashcan">清空垃圾桶</a>
-              <a class="dropdown-item" href="#" id="custom_blocks">開啟自訂積木位置</a>
-              <a class="dropdown-item" href="index.html" id="game_menu">選擇遊戲</a>
-            </div>
-          </li>
-        </ul>
-        <div class="tab-content" id="tab_content">
-          <div id="content_blocks" class="content active" role="tabpanel" aria-labelledby="tab_blocks"></div>
-          <div id="content_python" class="content" role="tabpanel" aria-labelledby="tab_python"><textarea id="python_code"></textarea></div>
-        </div>
-      </div>
     </div>
   </body>
 </html>

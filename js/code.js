@@ -26,6 +26,11 @@ Code.GAME = (new URLSearchParams(window.location.search)).get('game');
 Code.GAME_VERSION = (new URLSearchParams(window.location.search)).get('ver');
 
 /**
+ * Get the path of game logo.
+ */
+Code.LOGO_PATH = (new URLSearchParams(window.location.search)).get('logo');
+
+/**
  * The name of opened project.
  */
 Code.PROJECT = '';
@@ -55,20 +60,20 @@ Code.FILESET_ID = null;
  */
 Code.FILESET_FOUND = null;
 
- /**
- * The list of all opened files.
+/**
+ * All valid files under project dir.
  */
-Code.OPENED_XMLS = {};
+Code.FILE_LIST = {};
 
 /**
- * The mapping from paths to displayed names.
+ * The name of currently focused FILE.
  */
-Code.PATH_MAP = {};
+Code.FOCUSED_FILE = "";
 
- /**
- * The name of currently focused XML.
+/**
+ * The name of currently focused group.
  */
-Code.FOCUSED_XML = "";
+Code.FOCUSED_GROUP = "";
 
 /**
  * Lookup for names of supported languages.  Keys should be in ISO 639 format.
@@ -135,14 +140,6 @@ Code.loadBlocks = function(defaultXml) {
  * Save the blocks and reload with a different language.
  */
 Code.changeLanguage = function(lang) {
-  // Store the blocks for the duration of the reload.
-  // MSIE 11 does not support sessionStorage on file:// URLs.
-  if (window.sessionStorage) {
-    var xml = Blockly.Xml.workspaceToDom(Code.workspace);
-    var text = Blockly.Xml.domToText(xml);
-    window.sessionStorage.loadOnceBlocks = text;
-  }
-
   var newLang = lang
   var search = window.location.search;
   if (search.length <= 1) {
@@ -273,11 +270,62 @@ Code.setNavWidth = function() {
 };
 
 /**
+ * Create an SVG of the blocks on the workspace.
+ * @param {!Blockly.WorkspaceSvg} workspace The workspace.
+ */
+Code.workspaceToSvg = function(workspace) {
+  const bBox = workspace.getBlocksBoundingBox();
+  const x = bBox.x || bBox.left;
+  const y = bBox.y || bBox.top;
+  const width = bBox.width || bBox.right - x;
+  const height = bBox.height || bBox.bottom - y;
+
+  const blockCanvas = workspace.getCanvas();
+  const clone = blockCanvas.cloneNode(true);
+  clone.removeAttribute('transform');
+
+  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  svg.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+  svg.appendChild(clone);
+  svg.setAttribute('viewBox', x + ' ' + y + ' ' + width + ' ' + height);
+
+  svg.setAttribute(
+    'class',
+    'blocklySvg ' +
+      (workspace.options.renderer || 'geras') +
+      '-renderer ' +
+      (workspace.getTheme ? workspace.getTheme().name + '-theme' : ''),
+  );
+  svg.setAttribute('width', width);
+  svg.setAttribute('height', height);
+  svg.style.backgroundColor = 'transparent';
+
+  const css = [].slice
+    .call(document.head.querySelectorAll('style'))
+    .filter(
+      (el) =>
+        /\.blocklySvg/.test(el.innerText) || el.id.indexOf('blockly-') === 0,
+    )
+    .map((el) => el.innerText)
+    .join('\n');
+  const style = document.createElement('style');
+  style.innerHTML = css;
+  svg.insertBefore(style, svg.firstChild);
+
+  let svgAsXML = new XMLSerializer().serializeToString(svg);
+  svgAsXML = svgAsXML.replace(/&nbsp/g, '&#160');
+  return svgAsXML;
+};
+
+/**
  * Initialize Blockly.  Called on page load.
  */
 Code.init = async function() {
   // Add version to the title.
   document.title += ` ${app.getVersion()}`;
+
+  // Init game logo
+  $("#game-logo").attr("src", Code.LOGO_PATH);
   
   // Hide fileset download part when competition mode is true.
   if (app.getVersion().indexOf("competition") != -1) {
@@ -296,15 +344,14 @@ Code.init = async function() {
     var x = mousedownEvt.pageX - $draggable.offset().left,
         y = mousedownEvt.pageY - $draggable.offset().top;
     $("body").on("mousemove.draggable", function(mousemoveEvt) {
-        $draggable.closest(".modal-dialog").offset({
-            "left": mousemoveEvt.pageX - x,
-            "top": mousemoveEvt.pageY - y
-        });
+      const left = Math.max(0, Math.min(mousemoveEvt.pageX - x, $(window).width() - $draggable.closest(".modal-dialog").width()));
+      const top = Math.max(0, Math.min(mousemoveEvt.pageY - y, $(window).height() - $draggable.closest(".modal-dialog").height()));
+      $draggable.closest(".modal-dialog").offset({
+          "left": left,
+          "top": top
+      });
     });
     $("body").one("mouseup", function() {
-        $("body").off("mousemove.draggable");
-    });
-    $draggable.closest(".modal").one("bs.modal.hide", function() {
         $("body").off("mousemove.draggable");
     });
   });
@@ -349,6 +396,9 @@ Code.init = async function() {
       el.style.width = bBox.width + 'px';
       el.style.width = (2 * bBox.width - el.offsetWidth) + 'px';
     }
+    var el = document.getElementById('project-file-window');
+    el.style.top = bBox.y + 'px';
+    el.style.left = (bBox.x + bBox.width - 280) + 'px';
     Code.setNavWidth();
   };
   window.addEventListener('resize', onresize, false);
@@ -466,6 +516,9 @@ Code.init = async function() {
           break;
         case '%{BKY_CATMLGAME}':
           iconImg.src = 'media/game-icon.svg';
+          break;
+        case '%{BKY_CATOTHER}':
+          iconImg.src = 'media/other-icon.svg';
           break;
         default:
           iconImg.src = 'media/paia-logo.png';
@@ -640,20 +693,21 @@ Code.init = async function() {
   // Set callback function when workspace is changed.
   Code.workspace.addChangeListener((e) => {
     if (!e.isUiEvent) {
-      if (Code.FOCUSED_XML != "" && !Code.OPENED_XMLS[Code.FOCUSED_XML].isLoading) {
-        Code.OPENED_XMLS[Code.FOCUSED_XML].xml = Blockly.Xml.workspaceToDom(Code.workspace);
-        if (Blockly.Xml.domToPrettyText(Code.OPENED_XMLS[Code.FOCUSED_XML].xml) != Code.OPENED_XMLS[Code.FOCUSED_XML].xmlText) {
-          Code.OPENED_XMLS[Code.FOCUSED_XML].$link.find('.not-saved').html('*');
-        } else {
-          Code.OPENED_XMLS[Code.FOCUSED_XML].$link.find('.not-saved').html('');
-        }
-      }
       if (e.type == "finished_loading") {
-        Code.OPENED_XMLS[Code.FOCUSED_XML].isLoading = false;
-        if (Code.OPENED_XMLS[Code.FOCUSED_XML].trashcan === undefined || Code.OPENED_XMLS[Code.FOCUSED_XML].trashcan.length == 0) {
+        Code.FILE_LIST[Code.FOCUSED_FILE].isLoading = false;
+        if (Code.FILE_LIST[Code.FOCUSED_FILE].trashcan === undefined || Code.FILE_LIST[Code.FOCUSED_FILE].trashcan.length == 0) {
           Code.workspace.trashcan.emptyContents();
         } else {
-          Code.workspace.trashcan.contents = Code.OPENED_XMLS[Code.FOCUSED_XML].trashcan.slice();
+          Code.workspace.trashcan.contents = Code.FILE_LIST[Code.FOCUSED_FILE].trashcan.slice();
+        }
+        Code.workspace.clearUndo();
+        if (Code.FILE_LIST[Code.FOCUSED_FILE].redoStack !== undefined) {
+          const redoStack = Code.workspace.getRedoStack();
+          redoStack.push(...Code.FILE_LIST[Code.FOCUSED_FILE].redoStack)
+        }
+        if (Code.FILE_LIST[Code.FOCUSED_FILE].undoStack !== undefined) {
+          const undoStack = Code.workspace.getUndoStack();
+          undoStack.push(...Code.FILE_LIST[Code.FOCUSED_FILE].undoStack)
         }
       }
       var topBlocks = Code.workspace.getTopBlocks();
@@ -667,8 +721,8 @@ Code.init = async function() {
         }
       }
     } else {
-      if (Code.FOCUSED_XML != "") {
-        Code.OPENED_XMLS[Code.FOCUSED_XML].settings = {x: Code.workspace.scrollX, y: Code.workspace.scrollY, scale: Code.workspace.scale};
+      if (Code.FOCUSED_FILE != "") {
+        Code.FILE_LIST[Code.FOCUSED_FILE].settings = {x: Code.workspace.scrollX, y: Code.workspace.scrollY, scale: Code.workspace.scale};
       }
     }
   });
@@ -682,6 +736,14 @@ Code.init = async function() {
     });
   });
 
+  Blockly.dialog.setAlert((message) => {
+    window.popup.alert(message);
+  });
+
+  Blockly.dialog.setConfirm((message, callback) => {
+    callback(window.popup.confirm(message));
+  });
+
   // Overide the length of indent.
   python.pythonGenerator.INDENT = "    ";
   
@@ -690,10 +752,6 @@ Code.init = async function() {
   if (!window.fs.existsSync(libraryDir)) {
     window.fs.mkdirSync(libraryDir, { recursive: true });
   }
-  window.fs.watch(libraryDir, (eventType, filename) => {
-    Code.updateLibraryList();
-  });
-  Code.updateLibraryList();
 
   if ('BlocklyStorage' in window) {
     // Hook a save function onto unload.
@@ -722,24 +780,22 @@ Code.init = async function() {
       });
   Code.bindClick('toggle_python',
       function() {Code.togglePython(); Code.renderContent();});
-  Code.bindClick('logout',
-      function() {Code.logout(); Code.renderContent();});
   Code.bindClick('show_filesets',
       function() {Code.showFilesets(); Code.renderContent();});
-  Code.bindClick('load_project',
-      function() {Code.loadProject(); Code.renderContent();});
-  Code.bindClick('reveal_project',
-      function() {Code.revealProject(); Code.renderContent();});
-  Code.bindClick('export_project',
-      function() {Code.exportProject(); Code.renderContent();});
+  // Code.bindClick('load_project',
+  //     function() {Code.loadProject(); Code.renderContent();});
+  // Code.bindClick('reveal_project',
+  //     function() {Code.revealProject(); Code.renderContent();});
+  // Code.bindClick('export_project',
+  //     function() {Code.exportProject(); Code.renderContent();});
   Code.bindClick('open_xml',
       function() {Code.openXml(); Code.renderContent();});
   Code.bindClick('save_xml',
       function() {Code.saveXml(); Code.renderContent();});
   Code.bindClick('save_python',
       function() {Code.savePython(); Code.renderContent();});
-  Code.bindClick('open_example_dir',
-      function() {window.path.open(window.path.join(__dirname, 'library', Code.GAME).replace('app.asar', 'app.asar.unpacked')); Code.renderContent();});
+  // Code.bindClick('open_example_dir',
+  //     function() {window.path.open(window.path.join(__dirname, 'library', Code.GAME).replace('app.asar', 'app.asar.unpacked')); Code.renderContent();});
   Code.bindClick('en',
       function() {Code.changeLanguage('en'); Code.renderContent();});
   Code.bindClick('zh-hant',
@@ -750,21 +806,45 @@ Code.init = async function() {
   onresize();
   Blockly.svgResize(Code.workspace);
 
-  
   // Initialize content visibility.
   $("#content_python").css("visibility", "hidden");
   $("#content_blocks").css("visibility", "visible");
   Code.workspace.setVisible(true);
   
+  // Open project by url
+  const index = parseInt((new URLSearchParams(window.location.search)).get('latest'));
+  if (index != -1) {
+    Code.openProject(window.project.getLatest(Code.GAME)[index]);
+  }
+  
   // Try to Use saved token to login.
-  if (await Code.token_login())
+  if (await Code.token_login() && Code.PROJECT == '') {
     $('#project-dialog').modal('show');
+  }
 
-  // Set PAIA ads url
-  $("#paia-ads").attr("src", window.paia.ads());
+  // Set paia ads.
   const webview = document.getElementById('paia-ads');
   webview.addEventListener('dom-ready', function() {
-    webview.insertCSS('body{ overflow: hidden; }');
+    webview.setZoomFactor(0.85);
+    webview.insertCSS('body { overflow: hidden; }');
+  });
+  webview.addEventListener('will-navigate', (e) => {
+    webview.stop();
+    window.shell.openExternal(e.url);
+  });
+
+  // Set dropdown callback.
+  (['collect', 'train', 'test', 'other']).forEach(group => {
+    $(`#group-${group}-dropdown`).on('show.bs.dropdown', function () {
+      if (group == Code.FOCUSED_GROUP) {
+        $(`#group-${group}-name`).html(`${MSG[group]}`);
+      }
+    });
+    $(`#group-${group}-dropdown`).on('hide.bs.dropdown', function () {
+      if (group == Code.FOCUSED_GROUP) {
+        $(`#group-${group}-name`).html(Code.FILE_LIST[Code.FOCUSED_FILE].name);
+      }
+    });
   });
 
   // GA4
@@ -788,10 +868,13 @@ Code.initLanguage = function() {
   document.head.parentElement.setAttribute('lang', Code.LANG);
 
   // Inject language strings.
-  document.getElementById('game_name').textContent = Code.GAME;
-  document.getElementById('discard').textContent = MSG['discard'];
+  // document.getElementById('game_name').textContent = Code.GAME;
+  // document.getElementById('discard').textContent = MSG['discard'];
   document.getElementById('en').textContent = MSG['en'];
   document.getElementById('zh-hant').textContent = MSG['zh_hant'];
+  (['collect', 'train', 'test', 'other']).forEach((group) => {
+    document.getElementById(`group-${group}-name`).textContent = MSG[group];
+  })
 };
 
 /**
@@ -1140,13 +1223,51 @@ Code.updateLibraryList = function() {
  * Update project files dropdown list.
  */
 Code.updateProjectList = function() {
-  $('#project-files').empty();
-  window.fs.readdirSync(Code.PROJECT_PATH).forEach(file => {
-    if (file.endsWith(".xml")) {
-      const filePath = window.path.join(Code.PROJECT_PATH, file);
-      $('#project-files').append($(`<li class="ml-3 mt-1"><a href="#" id="${filePath}" title="${filePath}">${file}</a></li>`));
-      Code.bindClick(filePath,
-        function() {Code.loadXml(filePath); Code.renderContent();});
+  (['collect', 'train', 'test', 'other']).forEach(group => {
+    $(`#group-${group}-list`).empty();
+    const groupPath = window.path.join(Code.PROJECT_PATH, group);
+    if (!window.fs.existsSync(groupPath)) {
+      window.fs.mkdirSync(groupPath, { recursive: true });
+    }
+    window.fs.readdirSync(groupPath).forEach(file => {
+      if (file.endsWith(".xml")) {
+        const filePath = window.path.join(groupPath, file);
+        if (filePath in Code.FILE_LIST) {
+          $(`#group-${group}-list`).append(Code.FILE_LIST[filePath].$button);
+        } else {
+          const name = file.substring(0, file.length-4);
+          const $button = $(`<a class="dropdown-item d-flex" href="#" id="file-${filePath}" title="${filePath}" style="width: 138px; height: 46px; border-radius: 15px; border: 1px solid #676767; background: #FFF; vertical-align: baseline; padding: 10px 6px 6px 12px; margin: 1px;"></a>`);
+          const $state = $(`<img src="media/state-unexecuted.svg" id="file-${filePath}-state" style="width: 20px;">`);
+          const $name = $(`<div id="file-${filePath}-name" style="max-width: 100px; font-size: 16px; color: black; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; margin: 0px auto 0px 15px;"><span class="not-saved"></span>${name}</div>`);
+          $button.append($state, $name);
+          $(`#group-${group}-list`).append($button);
+          Code.bindClick(`file-${filePath}`,
+            function() {Code.loadXml(filePath); Code.renderContent();});
+          Code.FILE_LIST[filePath] = {
+            group: group,
+            name: name,
+            state: "unexecuted",
+            $button: $button,
+            $state: $state
+          }
+        }
+      }
+    });
+  });
+};
+
+/**
+ * Update project file list.
+ */
+Code.updateProjectFileList = function(parent='') {
+  if (parent == '')
+    $(`#project-file-list`).empty();
+  window.fs.readdirSync(window.path.join(Code.PROJECT_PATH, parent), { recursive: true }).forEach(file => {
+    if (window.path.extname(file) == '') {
+      Code.updateProjectFileList(window.path.join(parent, file));
+    } else {
+      const $file = $(`<div title="${window.path.join(parent, file)}" style="white-space: nowrap; text-overflow: ellipsis; overflow: hidden; padding: 5px 0px;">${window.path.join(parent, file)}</div>`);
+      $(`#project-file-list`).append($file);
     }
   });
 };
@@ -1182,45 +1303,10 @@ Code.login = async function () {
   }
 };
 
-// Code.google_login = function() {
-//   $('#state-content').html('請於瀏覽器登入，成功後會自動返回');
-//   try {
-//     myApiOauth.openAuthWindowAndGetTokens()
-//       .then(token => {
-//         var data = {
-//           type: "social",
-//           account: {
-//             provider: "google-desktop",
-//             id_token: token.id_token
-//           }
-//         };
-//         window.paiaAPI("POST", "auth/token", data, false, null, (res) => {
-//           window.setToken(res.access, res.refresh);
-//           Code.LOGIN = true;
-//           Code.afterLogin();
-//         }, (jqXHR, exception) => {
-//           var msg = '';
-//           if (jqXHR.status === 0) {
-//               msg = '連線錯誤，請確認網路';
-//           } else if (jqXHR.status == 401) {
-//               msg = `${jqXHR.responseText} [401]`;
-//           } else if (exception === 'abort') {
-//               msg = 'Ajax request aborted.';
-//           } else {
-//               msg = 'Uncaught Error.\n' + jqXHR.responseText;
-//           }
-//           console.log(msg);
-//         });
-//       });
-//   } catch(e) {
-//     console.log(e);
-//   }
-// };
-
 Code.token_login = async function (token=null) {
   const auth = await window.paia.auth(token);
   if (!auth.ok) {
-    $('#state-content').html(auth.content);
+    // $('#state-content').html(auth.content);
     if (Code.PROJECT == '')
         $('#project-dialog').modal('hide');
     $('#login-dialog').modal('show');
@@ -1228,7 +1314,17 @@ Code.token_login = async function (token=null) {
   } else {
     window.paia.user().then((res) => {
       if (res.ok) {
-        $('#tab_user').text(res.content.username);
+        $('#user-name').html(res.content.username);
+        $('#user-name').attr("title", res.content.username);
+        $('#user-info-icon').attr("src", "media/login-owl2.png");
+        $('#user-info-backgroud').attr("fill", "#ECC8D6");
+        $('#login-button').attr("onclick", "");
+        $('#login-button').removeClass("disabled");
+        $('#login-dialog').modal('hide');
+        window.paia.ga('login', {
+          event_category: 'general_desktop',
+          value: 'login'
+        });
       }
     })
     $('#login-dialog').modal('hide');
@@ -1243,6 +1339,12 @@ Code.token_login = async function (token=null) {
  */
 Code.logout = function () {
   window.paia.logout();
+  $('#state-content').html('');
+  $('#user-name').html('未登入');
+  $('#user-info-icon').attr("src", "media/login-owl1.png");
+  $('#user-info-backgroud').attr("fill", "#B6B6B6");
+  $('#login-button').attr("onclick", "location.href=window.paia.redirect();");
+  $('#login-button').addClass("disabled");
   $('#tab_user').text('尚未登入');
   $('#state-content').html('');
   $('#login-dialog').modal('show');
@@ -1268,91 +1370,74 @@ Code.openXml = function() {
 }
 
 /**
+ * Let user select the path to a xml file and load it. 
+ */
+Code.newXml = function(group) {
+  const name = `${MSG[group]}.xml`;
+  const xmlPath = window.path.save({
+    title: "新增 XML 檔",
+    defaultPath: window.path.join(Code.PROJECT_PATH, group, name),
+    filters: [
+        {name: 'XML', extensions: ['xml']}
+    ]
+  });
+  if (xmlPath === undefined) {
+    return;
+  }
+  const xmlText = "<xml></xml>";
+  window.file.write(xmlPath, xmlText);
+  Code.updateProjectList();
+  Code.loadXml(xmlPath);
+}
+
+/**
  * Load xml file to workscpace. 
  */
 Code.loadXml = function(xmlPath) {
-  // Save trashcan state before open another xml.
-  if (Code.FOCUSED_XML != "") {
-    Code.OPENED_XMLS[Code.FOCUSED_XML].trashcan = Code.workspace.trashcan.contents.slice();
-  }
-  let name = window.path.basename(xmlPath);
-  if (xmlPath in Code.PATH_MAP) {
-    if (Code.PYTHON_EDITOR) {
+  // Toggle to block editor.
+  if (Code.PYTHON_EDITOR)
       Code.togglePython();
-    }
-    name = Code.PATH_MAP[xmlPath];
-    if (name == Code.FOCUSED_XML) {
-      return;
-    }
-    if (!window.fs.existsSync(xmlPath)) {
-      if (!window.popup.confirm(`${name} 已被刪除，是否繼續保留？`)) {
-        Code.closeXml(xmlPath);
-        return;
-      }
-    } else {
-      const xmlText = window.file.read(xmlPath);
-      if (xmlText != Code.OPENED_XMLS[name].xmlText) {
-        Code.OPENED_XMLS[name].xmlText = xmlText;
-        if (window.popup.confirm(`${name} 已被更改過，是否重新載入？`)) {
-          Code.OPENED_XMLS[name].$link.find('.not-saved').html('');
-          Code.OPENED_XMLS[name].xml = Blockly.utils.xml.textToDom(xmlText);
-        }
-      }
-    }
-    Code.workspace.clear();
-    Blockly.Xml.domToWorkspace(Code.OPENED_XMLS[name].xml, Code.workspace);
-    Code.OPENED_XMLS[name].isLoading = true;
-    Code.workspace.setScale(Code.OPENED_XMLS[name].settings.scale);
-    Code.workspace.scroll(Code.OPENED_XMLS[name].settings.x, Code.OPENED_XMLS[name].settings.y);
-    $("#opened_xml a").removeClass("active");
-    Code.OPENED_XMLS[name].$link.addClass("active");
-    const tabPos = $("#opened_xml").scrollLeft() + Code.OPENED_XMLS[name].$item.position().left;
-    const scrollTarget = ($("#opened_xml").width() - Code.OPENED_XMLS[name].$item.width()) / 2;
-    $("#opened_xml").animate({ scrollLeft: tabPos - scrollTarget });
-    Code.FOCUSED_XML = name;
+  // Return if try to load focused file.
+  if (xmlPath == Code.FOCUSED_FILE) {
     return;
-  } else {
-    let index = 1;
-    while (name in Code.OPENED_XMLS) {
-      name = `${window.path.basename(xmlPath)} (${index})`;
-      index++;
+  }
+  // Return if file under incorrect dir.
+  const group = window.path.basename(window.path.dirname(xmlPath));
+  const project = window.path.dirname(window.path.dirname(xmlPath));
+  if (project != Code.PROJECT_PATH || (['collect', 'train', 'test', 'other']).indexOf(group) == -1) {
+    window.popup.alert("只能開啟位於專案資料夾 collect、train、test、other 底下的檔案。");
+    return;
+  }
+  // Save trashcan and undo/redo stack before open another xml.
+  if (Code.FOCUSED_FILE != "") {
+    Code.FILE_LIST[Code.FOCUSED_FILE].trashcan = Code.workspace.trashcan.contents.slice();
+    Code.FILE_LIST[Code.FOCUSED_FILE].undoStack = Code.workspace.getUndoStack().slice();
+    Code.FILE_LIST[Code.FOCUSED_FILE].redoStack = Code.workspace.getRedoStack().slice();
+    Code.saveXml(Code.FOCUSED_FILE);
+  }
+  // Load xml to workspace.
+  try {
+    const xmlText = window.file.read(xmlPath);
+    const xml = Blockly.utils.xml.textToDom(xmlText);
+    Code.workspace.clear();
+    Blockly.Xml.domToWorkspace(xml, Code.workspace);
+    Code.FILE_LIST[xmlPath].settings = {x: Code.workspace.scrollX, y: Code.workspace.scrollY, scale: Code.workspace.scale};
+    Code.FILE_LIST[xmlPath].isLoading = true;
+    if (Code.FOCUSED_FILE != '') {
+      Code.FILE_LIST[Code.FOCUSED_FILE].$button.css("border", "1px solid #676767");
     }
-    try {
-      const xmlText = window.file.read(xmlPath);
-      const xml = Blockly.utils.xml.textToDom(xmlText);
-      Code.workspace.clear();
-      Blockly.Xml.domToWorkspace(xml, Code.workspace);
-      Code.PATH_MAP[xmlPath] = name;
-      Code.OPENED_XMLS[name] = {};
-      Code.OPENED_XMLS[name].path = xmlPath;
-      Code.OPENED_XMLS[name].xml = xml;
-      Code.OPENED_XMLS[name].xmlText = xmlText;
-      Code.OPENED_XMLS[name].settings = {x: Code.workspace.scrollX, y: Code.workspace.scrollY, scale: Code.workspace.scale};
-      Code.OPENED_XMLS[name].isLoading = true;
-      const $item = $('<li class="nav-item"></li>');
-      const $link = $(`<a class="nav-link pr-4" href="#" id="tab-${xmlPath}" title="${xmlPath}">${name}<span class="not-saved"></span>&ensp;</a>`);
-      const $close = $(`<button class="p-0 border-0 bg-white tab-close" id="close-${xmlPath}"><i class="bi bi-x"></i></button>`);
-      $item.append($link);
-      $item.append($close);
-      $("#opened_xml").append($item);
-      Code.bindClick(`tab-${xmlPath}`,
-        function() {Code.loadXml(xmlPath); Code.renderContent();});
-      Code.bindClick(`close-${xmlPath}`,
-        function() {Code.closeXml(xmlPath); Code.renderContent();});
-      if (Code.PYTHON_EDITOR) {
-        Code.togglePython();
-      }
-      $("#opened_xml a").removeClass("active");
-      $link.addClass("active");
-      const tabPos = $("#opened_xml").scrollLeft() + $item.position().left;
-      const scrollTarget = ($("#opened_xml").width() - $item.width()) / 2;
-      $("#opened_xml").animate({ scrollLeft: tabPos - scrollTarget });
-      Code.OPENED_XMLS[name].$item = $item;
-      Code.OPENED_XMLS[name].$link = $link;
-      Code.FOCUSED_XML = name;
-    } catch (err) {
-      window.popup.alert(err);
+    Code.FILE_LIST[xmlPath].$button.css("border", "2px solid #0039CF");
+    Code.FOCUSED_FILE = xmlPath;
+    if (Code.FOCUSED_GROUP != '') {
+      $(`#group-${Code.FOCUSED_GROUP}-button`).css("outline", "1px solid #676767");
+      $(`#group-${Code.FOCUSED_GROUP}-name`).html(MSG[Code.FOCUSED_GROUP]);
     }
+    $(`#group-${group}-button`).css("outline", "3px solid #0039CF");
+    $(`#group-${group}-name`).html(Code.FILE_LIST[xmlPath].name);
+    $(`#group-${group}-state`).attr("src" , Code.FILE_LIST[xmlPath].$state.attr("src"));
+    Code.FOCUSED_GROUP = group;
+  } catch (err) {
+    window.popup.alert(err);
   }
 };
 
@@ -1383,50 +1468,67 @@ Code.closeXml = function(xmlPath) {
 };
 
 /**
- * Let user select the path to a xml file and save workscpace to it. 
+ * Save workscpace to xml.
  */
-Code.saveXml = function() {
-  const xmlPath = window.path.save({
-    title: "儲存 XML 檔",
-    defaultPath: window.path.join(Code.PROJECT_PATH, Code.FOCUSED_XML),
-    filters: [
-        {name: 'XML', extensions: ['xml']}
-    ]
-  });
-  if (xmlPath === undefined) {
-    return;
-  } else {
-    const xml = Blockly.Xml.workspaceToDom(Code.workspace);
-    const xmlText = Blockly.Xml.domToPrettyText(xml);
-    window.file.write(xmlPath, xmlText);
-    if (Code.FOCUSED_XML != "") {
-      Code.OPENED_XMLS[Code.FOCUSED_XML].$link.find('.not-saved').html('');
-      if (xmlPath == Code.OPENED_XMLS[Code.FOCUSED_XML].path) {
-        Code.OPENED_XMLS[Code.FOCUSED_XML].xmlText = xmlText;
-      } else {
-        Code.closeXml(Code.OPENED_XMLS[Code.FOCUSED_XML].path);
-        Code.loadXml(xmlPath);
-      }
-    } else {
-      Code.loadXml(xmlPath);
+Code.saveXml = function(xmlPath=null) {
+  // Select xml path if it is null.
+  if (xmlPath === null) {
+    xmlPath = window.path.save({
+      title: "儲存 XML 檔",
+      defaultPath: window.path.join(Code.PROJECT_PATH, Code.FOCUSED_XML),
+      filters: [
+          {name: 'XML', extensions: ['xml']}
+      ]
+    });
+    if (xmlPath === undefined) {
+      return;
     }
+  }
+  // Save workscpace to xml.
+  const xml = Blockly.Xml.workspaceToDom(Code.workspace);
+  const xmlText = Blockly.Xml.domToPrettyText(xml);
+  window.file.write(xmlPath, xmlText);
+  console.log(`Save workspace to ${xmlPath}.`);
+  // Save project config.
+  const configPath = window.path.join(Code.PROJECT_PATH, 'project.json');
+  if (window.fs.existsSync(configPath)) {
+    const config = JSON.parse(window.file.read(configPath));
+    config.saved_at = dateformat(new Date(), "yyyy-mm-dd HH:MM:ss");
+    window.file.write(configPath, JSON.stringify(config));
+  } else {
+    window.file.write(configPath, JSON.stringify({
+      game: Code.GAME,
+      saved_at: dateformat(new Date(), "yyyy-mm-dd HH:MM:ss")
+    }));
+  }
+  // Save blocks as cover.
+  window.file.write(window.path.join(Code.PROJECT_PATH, "cover.svg"), Code.workspaceToSvg(Code.workspace));
+  
+  // Load saved xml if it is not focused.
+  if (Code.FOCUSED_FILE == "" || xmlPath != Code.FOCUSED_FILE) {
+    Code.loadXml(xmlPath);
   }
 };
 
 // Toggle python editor.
 Code.togglePython = function() {
+  Code.renderContent();
   if (Code.PYTHON_EDITOR) {
     $("#toggle_python").html("Python");
     $("#content_python").css("visibility", "hidden");
     $("#content_blocks").css("visibility", "visible");
     Code.workspace.setVisible(true);
     Code.PYTHON_EDITOR = false;
+    window.menu.enableItem({id: 'show_python', enabled: true});
+    window.menu.enableItem({id: 'show_block', enabled: false});
   } else {
     $("#toggle_python").html("積木");
     $("#content_python").css("visibility", "visible");
     $("#content_blocks").css("visibility", "hidden");
     Code.workspace.setVisible(false);
     Code.PYTHON_EDITOR = true;
+    window.menu.enableItem({id: 'show_python', enabled: false});
+    window.menu.enableItem({id: 'show_block', enabled: true});
   }
   Code.setNavWidth();
 };
@@ -1486,8 +1588,16 @@ Code.savePython = function() {
  * Show dialog for playing or run the code. 
  */
 Code.run = function() {
+  // Set PAIA ads url
+  if ($("#paia-ads").attr("src") == "") {
+    $("#paia-ads").attr("src", window.paia.adsConsole());
+  } else {
+    const webview = document.getElementById('paia-ads');
+    webview.reload();
+  }
+
   if (Code.MODE == 'play') {
-    $('#run-mlgame-dialog').modal('show');
+    Code.play();
   } else {
     Code.execute();
   }
@@ -1532,8 +1642,8 @@ Code.play = function() {
   };
   $('#run-mlgame-dialog').modal('hide');
   document.getElementById('content_console').textContent = '> Python program running\n';
-  $('#console-dialog').modal('show');
-  window.python_env.run(options, "mlgame", file_path, Code.PROJECT_PATH);
+  $('#console-dialog').css('display', 'block');
+  window.python_env.run(options, "mlgame", file_path, Code.PROJECT_PATH, Code.FOCUSED_GROUP, Code.FOCUSED_FILE);
   // GA4
   window.paia.ga('playAI', {
     event_category: 'playAI_desktop',
@@ -1559,8 +1669,8 @@ Code.execute = function() {
   };
   $('#run-python-dialog').modal('hide');
   document.getElementById('content_console').textContent = '> Python program running\n';
-  $('#console-dialog').modal('show');
-  window.python_env.run(options, file_name, file_path, Code.PROJECT_PATH);
+  $('#console-dialog').css('display', 'block');
+  window.python_env.run(options, file_name, file_path, Code.PROJECT_PATH, Code.FOCUSED_GROUP, Code.FOCUSED_FILE);
 };
 
 Code.showReadme = function() {
@@ -1622,45 +1732,53 @@ Code.selectProjectPath = function() {
  * Add new project. 
  */
 Code.newProject = function() {
-  if (Code.PROJECT_PATH != '') {
-    window.file.unwatch(Code.PROJECT_PATH);
-  }
-  Code.PROJECT = $('#project-name').val();
-  Code.PROJECT_PATH = window.path.join($('#project-path').val(), $('#project-name').val());
-  const start = (app.getVersion().indexOf("competition-tn") != -1 && Code.GAME != "easy_game")?
-    window.path.join(__dirname, 'examples', Code.GAME, 'tainan', '範例程式', '1. auto.xml') :
-    window.path.join(__dirname, 'examples', Code.GAME, 'xml', '範例程式 1', '1. start.xml');
+  const project_path = window.path.join($('#project-path').val(), $('#project-name').val());
   try {
-    if (!window.fs.existsSync(Code.PROJECT_PATH)) {
-      window.fs.mkdirSync(Code.PROJECT_PATH, { recursive: true });
-      $('#project_name').html(Code.PROJECT);
-      if (window.fs.existsSync(start)) {
-        Code.loadXml(start);
+    if (!window.fs.existsSync(project_path)) {
+      window.fs.mkdirSync(project_path, { recursive: true });
+      const example_path = window.path.join(__dirname, 'examples', Code.GAME, 'block');
+      const collect_path = window.path.join(example_path, "collect");
+      if (window.fs.existsSync(collect_path)) {
+        window.dir.copy(collect_path, project_path);
+      } else {
+        window.fs.mkdirSync(window.path.join(project_path, "collect"));
       }
-      $('#project-dialog').modal('hide');
-    } else if (window.popup.confirm(`${Code.PROJECT} 已存在，是否改為載入此專案？`)) {
-      $('#project_name').html(Code.PROJECT);
-      if (window.fs.existsSync(window.path.join(Code.PROJECT_PATH, 'ml_play.xml'))) {
-        Code.loadXml(window.path.join(Code.PROJECT_PATH, 'ml_play.xml'))
-      } else if (window.fs.existsSync(start)) {
-        Code.loadXml(start);
+      const train_path = window.path.join(example_path, "train");
+      if (window.fs.existsSync(train_path)) {
+        window.dir.copy(train_path, project_path);
+      } else {
+        window.fs.mkdirSync(window.path.join(project_path, "train"));
       }
-      $('#project-dialog').modal('hide');
+      const test_path = window.path.join(example_path, "test");
+      if (window.fs.existsSync(test_path)) {
+        window.dir.copy(test_path, project_path);
+      } else {
+        window.fs.mkdirSync(window.path.join(project_path, "test"));
+      }
+      const other_path = window.path.join(example_path, "other");
+      if (window.fs.existsSync(other_path)) {
+        window.dir.copy(other_path, project_path);
+      } else {
+        window.fs.mkdirSync(window.path.join(project_path, "other"));
+      }
+      window.file.write(window.path.join(project_path, "project.json"), JSON.stringify({
+        game: Code.GAME,
+        created_at: dateformat(new Date(), "yyyy-mm-dd HH:MM:ss"),
+        saved_at: dateformat(new Date(), "yyyy-mm-dd HH:MM:ss"),
+      }));
+      Code.openProject(project_path);
+    } else if (window.popup.confirm(`${project_path} 已存在，是否改為載入此專案？`)) {
+      Code.openProject(project_path);
     }
   } catch(err) {
     window.popup.alert(err);
   }
-  $("#project-link").attr("title", Code.PROJECT_PATH);
-  window.file.watch(Code.PROJECT_PATH, (eventType, filename) => {
-    Code.updateProjectList();
-  });
-  Code.updateProjectList();
 };
 
 /**
- * Load existing project.
+ * Select existing project.
  */
-Code.openProject = function() {
+Code.selectProject = function() {
   const dir = window.path.select({
     title: "開啟專案資料夾",
     defaultPath: window.project.getPath(),
@@ -1669,38 +1787,44 @@ Code.openProject = function() {
   if (dir === undefined) {
     return;
   } else {
-    if (Code.PROJECT_PATH != '') {
-      window.file.unwatch(Code.PROJECT_PATH);
-    }
-    Code.PROJECT_PATH = dir[0];
+    Code.openProject(dir[0]);
   }
-  const start = (app.getVersion().indexOf("competition-tn") != -1 && Code.GAME != "easy_game")?
-    window.path.join(__dirname, 'examples', Code.GAME, 'tainan', '範例程式', '1. auto.xml') :
-    window.path.join(__dirname, 'examples', Code.GAME, 'xml', '範例程式 1', '1. start.xml');
+};
+
+/**
+ * Open existing project.
+ */
+Code.openProject = function(path) {
+  if (Code.PROJECT_PATH != '') {
+    window.file.unwatch(Code.PROJECT_PATH);
+  }
+  Code.PROJECT_PATH = path;
   Code.PROJECT = window.path.basename(Code.PROJECT_PATH);
-  $('#project_name').html(Code.PROJECT);
-  if(window.fs.existsSync(window.path.join(Code.PROJECT_PATH, 'ml_play.xml'))) {
-    Code.loadXml(window.path.join(Code.PROJECT_PATH, 'ml_play.xml'))
-  } else if (window.fs.existsSync(start)) {
-    Code.loadXml(start);
-  }
-  $('#project-dialog').modal('hide');
-  $("#project-link").attr("title", Code.PROJECT_PATH);
+  $('#project-title').html(Code.PROJECT);
+  $('#project-title').attr("title", Code.PROJECT_PATH);
+  window.project.saveLatest(Code.GAME, Code.PROJECT_PATH);
   window.file.watch(Code.PROJECT_PATH, (eventType, filename) => {
     Code.updateProjectList();
+    Code.updateProjectFileList();
   });
   Code.updateProjectList();
+  Code.updateProjectFileList();
+  const start = window.path.join(Code.PROJECT_PATH, 'collect', '蒐集.xml');
+  if (window.fs.existsSync(start)) {
+    Code.loadXml(start, "collect");
+  }
   window.menu.enableItem({id: 'reveal_project', enabled: true});
   window.project.onExport((event) => {
     Code.exportProject();
   });
+  $('#project-dialog').modal('hide');
 };
 
 /**
  * Reveal project directory.
  */
 Code.revealProject = function() {
-  window.path.open(Code.PROJECT_PATH);
+  window.project.open(Code.PROJECT_PATH);
 };
 
 /**
@@ -1709,6 +1833,7 @@ Code.revealProject = function() {
 Code.exportProject = function() {
   let dest = window.path.select({
     title: "匯出專案資料夾",
+    defaultPath: window.project.getPath(),
     properties: ["openDirectory"]
   });
   if (dest === undefined) {
@@ -1969,7 +2094,7 @@ document.write('<script src="js/ui_msg/' + Code.LANG + '.js"></script>\n');
 document.write('<script src="node_modules/blockly/msg/' + Code.LANG + '.js"></script>\n');
 document.write('<script src="blockly/msg/' + Code.LANG + '.js"></script>\n');
 
-const __dirname = window.path.dirname();
+const __dirname = window.path.__dirname();
 
 let customBlocksPath = window.path.join(__dirname, 'blockly', 'blocks');
 if (window.fs.existsSync(customBlocksPath)) {

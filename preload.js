@@ -4,6 +4,7 @@ const path = require('path');
 const fs = require('fs');
 const os = require('os');
 const https = require('https');
+const { Buffer } = require('node:buffer');
 const Store = require('electron-store');
 const dateformat = require('dateformat');
 const download = require('download-git-repo');
@@ -24,6 +25,10 @@ const schema = {
   project_path: {
     type: "string",
     default: path.join(os.homedir(), 'Desktop')
+  },
+  project_latest: {
+    type: "object",
+    default: {}
   },
   custom_python: {
     type: "boolean",
@@ -57,6 +62,11 @@ contextBridge.exposeInMainWorld('shell', shell);
 contextBridge.exposeInMainWorld('clipboard', clipboard);
 contextBridge.exposeInMainWorld('dateformat', dateformat);
 contextBridge.exposeInMainWorld('fs', fs);
+contextBridge.exposeInMainWorld('buffer', {
+  from: (string, encoding) => {
+    return Buffer.from(string, encoding);
+  }
+});
 contextBridge.exposeInMainWorld('https', {
   get: (url, filepath, callback, end, error) => {
     const file = fs.createWriteStream(filepath);
@@ -92,10 +102,12 @@ contextBridge.exposeInMainWorld('popup', {
   }
 });
 contextBridge.exposeInMainWorld('python_env', {
-  run: (options, script, file, cwd) => {
+  run: (options, script, file, cwd, group, id) => {
     const old_cwd = process.cwd();
     process.chdir(cwd);
+    document.getElementById(`group-${group}-state`).src = "media/state-unexecuted.svg";
     let python = new PythonShell(script, options);
+    var error = false;
     python.on('message', function (message) {
       const full_message = document.getElementById('content_console').textContent + message + '\n';
       document.getElementById('content_console').textContent = full_message.slice(-50000);
@@ -106,23 +118,35 @@ contextBridge.exposeInMainWorld('python_env', {
       document.getElementById('content_console').textContent += stderr + '\n';
       const e = document.getElementById('console-body');
       e.scrollTo(0, e.scrollHeight);
+      error = true;
     });
     python.on('close', function () {
       document.getElementById('content_console').textContent += '> Python program finished\n';
       const e = document.getElementById('console-body');
       e.scrollTo(0, e.scrollHeight);
+      if (error || python.exitCode != 0) {
+        document.getElementById(`group-${group}-state`).src = "media/state-error.svg";
+        document.getElementById(`file-${id}-state`).src = "media/state-error.svg";
+      } else {
+        document.getElementById(`group-${group}-state`).src = "media/state-ok.svg";
+        document.getElementById(`file-${id}-state`).src = "media/state-ok.svg";
+      }
       if (fs.existsSync(file)) {
         fs.unlinkSync(file);
       }
       process.chdir(old_cwd);
     });
     python.on('error', function () {
-      window.alert('Error: process exited with code ' + python.exitCode);
+      fixedAlert('Error: process exited with code ' + python.exitCode);
+      error = true
       if (fs.existsSync(file)) {
         fs.unlinkSync(file);
       }
       process.chdir(old_cwd);
     });
+  },
+  stop: () => {
+
   },
   getCustom: () => {
     return {
@@ -138,13 +162,13 @@ contextBridge.exposeInMainWorld('python_env', {
 contextBridge.exposeInMainWorld('file', {
   write: (file, data) => {
     fs.writeFileSync(file, data, (err) => {
-      if (err) window.alert(err);
-      console.log('The file has been saved at ' + file);
+      if (err) fixedAlert(err);
+      // console.log('The file has been saved at ' + file);
     });
   },
   read: (file) => {
     return fs.readFileSync(file, 'utf8', (err, data) => {
-      if (err) window.alert(err);
+      if (err) fixedAlert(err);
       return data;
     });
   },
@@ -171,11 +195,17 @@ contextBridge.exposeInMainWorld('path', {
   join: (...args) => {
     return path.join(...args)
   },
-  dirname: () => {
+  __dirname: () => {
     return __dirname;
+  },
+  dirname: (pathname) => {
+    return path.dirname(pathname);
   },
   basename: (pathname) => {
     return path.basename(pathname);
+  },
+  extname: (pathname) => {
+    return path.extname(pathname);
   },
   homedir: () => {
     return os.homedir();
@@ -328,6 +358,9 @@ contextBridge.exposeInMainWorld('paia', {
   },
   ads: () => {
     return `${env.parsed.PAIA_APP_HOST}/ads`
+  },
+  adsConsole: () => {
+    return `${env.parsed.PAIA_APP_HOST_STAGE}/adsconsole`
   },
   redirect: () => {
     return `${env.parsed.PAIA_APP_HOST}/login?app=true`

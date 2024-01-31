@@ -14,7 +14,7 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: #011C3C;  
+  background: white;  
 }
  
 ::-webkit-scrollbar-thumb {
@@ -27,7 +27,7 @@ body {
 }
 
 body::-webkit-scrollbar-track {
-  background: #011C3C; 
+  background: white; 
 }
 
 .wrapper {
@@ -35,15 +35,13 @@ body::-webkit-scrollbar-track {
 }
 
 #sidebar {
-  min-width: 250px;
-  max-width: 250px;
+  width: 116px;
   top: 0;
   left: 0;
-  height: 100vh;
-  z-index: 999;
+  height: calc(100vh - (80px));;
+  z-index: 300;
   background: #333;
   color: #fff;
-  overflow-y: scroll;
 }
 
 #blockly-container {
@@ -451,6 +449,10 @@ pre.content {
 
 .shake {
   animation: MoveUpDown 1s linear infinite;
+}
+
+.group-new:hover {
+  filter: invert(0.8);
 }
 
 @keyframes MoveUpDown {

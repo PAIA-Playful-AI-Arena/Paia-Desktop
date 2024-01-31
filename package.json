@@ -1,7 +1,7 @@
 {
   "name": "paia-desktop",
   "productName": "PAIA Desktop",
-  "version": "2.6.0",
+  "version": "3.0.0-alpha.0",
   "description": "A blockly application that can build AI to play games.",
   "main": "main.js",
   "scripts": {
@@ -22,7 +22,7 @@
     "AI"
   ],
   "author": "PAIA",
-  "license": "CC0-1.0",
+  "license": "MIT",
   "devDependencies": {
     "@electron-forge/cli": "^6.2.1",
     "@electron-forge/maker-deb": "^6.2.1",
@@ -33,9 +33,10 @@
     "electron": "^25.3.1"
   },
   "dependencies": {
+    "@blockly/continuous-toolbox": "^5.0.8",
     "@getstation/electron-google-oauth2": "^2.1.0",
     "about-window": "^1.15.1",
-    "blockly": "^10.1.2",
+    "blockly": "^10.2.2",
     "bootstrap": "^4.6.1",
     "bootstrap-icons": "^1.5.0",
     "codemirror": "^5.61.1",

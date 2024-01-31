@@ -447,6 +447,10 @@ pre.content {
   ry: 5px;
 }
 
+.blocklyTrash, .blocklyZoom {
+  display: none;
+}
+
 .shake {
   animation: MoveUpDown 1s linear infinite;
 }

@@ -399,6 +399,9 @@ Code.init = async function() {
     var el = document.getElementById('project-file-window');
     el.style.top = bBox.y + 'px';
     el.style.left = (bBox.x + bBox.width - 280) + 'px';
+    var el = document.getElementById('blockly-icons');
+    el.style.top = (bBox.y + Math.max(bBox.height - 100, 0)) + 'px';
+    el.style.left = (bBox.x + Math.max(bBox.width - 580, 0)) + 'px';
     Code.setNavWidth();
   };
   window.addEventListener('resize', onresize, false);
@@ -682,7 +685,6 @@ Code.init = async function() {
     rtl: Code.isRtl(),
     toolbox: toolboxXml,
     zoom: {
-      controls: true,
       wheel: true
     },
     move: {

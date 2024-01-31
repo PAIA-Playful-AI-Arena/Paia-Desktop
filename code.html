@@ -80,7 +80,9 @@
     <!-- Game play dialog -->
     <div class="modal fade" id="run-mlgame-dialog" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
       <div class="modal-dialog" style="max-width: 800px; position: absolute; left: 50%; transform: translate(-50%, 0%);">
-        <div class="modal-content" style="width: 800px; border-radius: 25px; border: 1px solid #B7B7B7; box-shadow: 0px 4px 10px 0px #011C3C;">
+        <div class="modal-content" style="width: 800px; border-radius: 25px; border: 1px solid #B7B7B7; box-shadow: 0px 4px 10px 0px #011C3C; overflow: hidden;">
+          <img src="media/robot2.svg" style="position: fixed; bottom: -28px; right: -50px; z-index: 10;">
+          <img src="media/ufo2.svg" style="position: fixed; top: -70px; left: -75px; z-index: 10;">
           <div class="modal-header d-flex justify-content-center" style="background-color: #0039CF; color: white; font-size: 28px; font-weight: 800; border-radius: 25px 25px 0px 0px;">
             <span class="modal-title" id="game-play-title">遊戲設定</span>
           </div>
@@ -202,6 +204,14 @@
       <div class="d-flex justify-content-between" style="background-color: #E4F5FF; font-size: 16px; color: #000000; height: 50px; padding: 15px 10px; cursor: pointer;" onclick="Code.revealProject();">
         開啟專案位置
       </div>
+    </div>
+    <!-- Blockly icons -->
+    <div class="d-flex justify-content-left" id="blockly-icons" style="position: absolute; width: 600px; top: -50px; left: -800px; z-index: 100;">
+      <img src="media/zoom-in-icon.svg" style="width: 60px; cursor: pointer; margin-right: 60px;" onclick="Code.workspace.setScale(Code.workspace.getScale() + 0.1);">
+      <img src="media/zoom-out-icon.svg" style="width: 60px; cursor: pointer; margin-right: 60px;" onclick="Code.workspace.setScale(Code.workspace.getScale() - 0.1);">
+      <img src="media/undo-icon.svg" style="width: 52px; height: 45px; cursor: pointer; margin-top: 7.5px; margin-right: 60px;" onclick="Code.workspace.undo(false);">
+      <img src="media/redo-icon.svg" style="width: 52px; height: 45px; cursor: pointer; margin-top: 7.5px; margin-right: 60px;" onclick="Code.workspace.undo(true);">
+      <img src="media/stack-icon.svg" style="width: 60px; cursor: pointer;;" onclick="Code.workspace.trashcan.contentsIsOpen()? Code.workspace.trashcan.closeFlyout():Code.workspace.trashcan.openFlyout();">
     </div>
 
     <div class="d-flex" style="background: #EDEDED; height: 80px;">

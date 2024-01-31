@@ -1690,6 +1690,10 @@ Code.openProject = function() {
     Code.updateProjectList();
   });
   Code.updateProjectList();
+  window.menu.enableItem({id: 'reveal_project', enabled: true});
+  window.project.onExport((event) => {
+    Code.exportProject();
+  });
 };
 
 /**
@@ -2002,3 +2006,29 @@ window.deeplink.onLogin((event, token) => {
     value: 'login'
   });
 });
+window.menu.hide(false);
+window.project.onLoad(() => {
+  Code.loadProject();
+});
+window.project.onReveal((event) => {
+  Code.revealProject();
+});
+window.editor.onShowPython(() => {
+  Code.togglePython();
+});
+window.editor.onShowBlock(() => {
+  Code.togglePython();
+});
+window.editor.onSavePython(() => {
+  Code.savePython();
+});
+window.editor.onSaveBlock(() => {
+  Code.saveXml();
+});
+window.lang.onChange((e, lang) => {
+  Code.changeLanguage(lang);
+});
+window.onbeforeunload = (e) => {
+  if (Code.FOCUSED_FILE != '')
+    Code.saveXml(Code.FOCUSED_FILE);
+}

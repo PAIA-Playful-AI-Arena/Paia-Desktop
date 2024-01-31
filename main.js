@@ -42,6 +42,139 @@ function processUrl(input) {
   }
 }
 
+// The menubar template.
+const template = [
+  {
+    label: '檔案',
+    submenu: [
+      {
+        label: '載入專案',
+        id: 'load_project',
+        enabled: false,
+        click() {
+          mainWindow.webContents.send('load_project');
+        }
+      },
+      {
+        label: '另存專案',
+        id: 'export_project',
+        enabled: false,
+        click() {
+          mainWindow.webContents.send('export_project');
+        }
+      },
+      {
+        label: '開啟專案位置',
+        id: 'reveal_project',
+        enabled: false,
+        click() {
+          mainWindow.webContents.send('reveal_project');
+        }
+      },
+      { type: 'separator' },
+      {
+        label: '儲存積木',
+        id: 'save_block',
+        enabled: false,
+        click() {
+          mainWindow.webContents.send('save_block');
+        }
+      },
+      {
+        label: '儲存 Python',
+        id: 'save_python',
+        enabled: false,
+        click() {
+          mainWindow.webContents.send('save_python');
+        }
+      }
+      // {
+      //   label: '離開',
+      //   click() {
+      //     mainWindow.close();
+      //   }
+      // }
+    ]
+  },
+  {
+    label: '設定',
+    submenu: [
+      {
+        label: '語言',
+        submenu: [
+          {
+            label: '繁體中文',
+            id: 'lang_zh_hant',
+            enabled: true,
+            click() {
+              mainWindow.webContents.send('lang', 'zh_hant');
+            }
+          },
+          {
+            label: 'English',
+            id: 'lang_en',
+            enabled: true,
+            click() {
+              mainWindow.webContents.send('lang', 'en');
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    label: '檢視',
+    submenu: [
+      {
+        label: 'Python 程式碼',
+        id: 'show_python',
+        enabled: true,
+        click() {
+          mainWindow.webContents.send('show_python');
+        }
+      },
+      {
+        label: '積木',
+        id: 'show_block',
+        enabled: false,
+        click() {
+          mainWindow.webContents.send('show_block');
+        }
+      },
+      { type: 'separator' },
+      {
+        label: '重新載入',
+        accelerator: 'CmdOrCtrl+R',
+        click() {
+          mainWindow.webContents.reload();
+        }
+      },
+      {
+        label: '開發人員工具',
+        accelerator: 'F12',
+        click() {
+          mainWindow.webContents.openDevTools();
+        }
+      }
+    ]
+  },
+  // {
+  //   label: 'Help',
+  //   submenu: [
+  //     {
+  //       label: 'About',
+  //       click() {
+  //         openAboutWindow({
+  //           icon_path: path.join(__dirname, 'media', 'paia-logo.png'),
+  //           package_json_dir: __dirname,
+  //           bug_report_url: 'https://github.com/PAIA-Playful-AI-Arena/Paia-Desktop/issues'
+  //         });
+  //       }
+  //     }
+  //   ]
+  // }
+];
+
 function createWindow () {
   // Create the browser window.
   mainWindow = new BrowserWindow({
@@ -51,55 +184,6 @@ function createWindow () {
       webviewTag: true
     }
   });
-
-  // The menubar template.
-  const template = [
-    {
-      label: 'File',
-      submenu: [
-        {
-          label: 'Exit',
-          click() {
-              mainWindow.close();
-          }
-        }
-      ]
-    },
-    {
-      label: 'View',
-      submenu: [
-        {
-          label: 'Reload',
-          accelerator: 'CmdOrCtrl+R',
-          click() {
-            mainWindow.webContents.reload();
-          }
-        },
-        {
-          label: 'Toggle Developer Tools',
-          accelerator: 'F12',
-          click() {
-            mainWindow.webContents.openDevTools();
-          }
-        }
-      ]
-    },
-    {
-      label: 'Help',
-      submenu: [
-        {
-          label: 'About',
-          click() {
-            openAboutWindow({
-              icon_path: path.join(__dirname, 'media', 'paia-logo.png'),
-              package_json_dir: __dirname,
-              bug_report_url: 'https://github.com/PAIA-Playful-AI-Arena/Paia-Desktop/issues'
-            });
-          }
-        }
-      ]
-    }
-  ];
   
   mainWindow.maximize();
   Menu.setApplicationMenu(Menu.buildFromTemplate(template));
@@ -182,4 +266,16 @@ ipcMain.on('getVersion', (event) => {
 ipcMain.on('fixFocus', () => {
   mainWindow.blur();
   mainWindow.focus();
+});
+
+ipcMain.on('enableMenuItem', (event, options) => {
+  Menu.getApplicationMenu().getMenuItemById(options.id).enabled = options.enabled;
+});
+
+ipcMain.on('hideMenu', (event, hide) => {
+  if (hide) {
+    Menu.setApplicationMenu(null);
+  } else {
+    Menu.setApplicationMenu(Menu.buildFromTemplate(template));
+  }
 });

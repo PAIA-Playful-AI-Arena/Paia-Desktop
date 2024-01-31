@@ -49,6 +49,10 @@ let user_id = "";
 contextBridge.exposeInMainWorld('deeplink', {
   onLogin: (callback) => ipcRenderer.on('login', callback)
 });
+contextBridge.exposeInMainWorld('menu', {
+  hide: (hide) => ipcRenderer.send('hideMenu', hide),
+  enableItem: (options) => ipcRenderer.send('enableMenuItem', options)
+});
 contextBridge.exposeInMainWorld('shell', shell);
 contextBridge.exposeInMainWorld('clipboard', clipboard);
 contextBridge.exposeInMainWorld('dateformat', dateformat);
@@ -186,6 +190,56 @@ contextBridge.exposeInMainWorld('project', {
   },
   open: (pathname) => {
     ipcRenderer.send('openPath', pathname);
+  },
+  getLatest: (game) => {
+    const projects = store.get('project_latest');
+    if (game in projects) {
+      return projects[game];
+    } else {
+      return [];
+    }
+  },
+  saveLatest: (game, path) => {
+    const projects = store.get('project_latest');
+    if (game in projects) {
+      while (projects[game].indexOf(path) != -1) {
+        projects[game].splice(projects[game].indexOf(path), 1);
+      }
+      projects[game].unshift(path);
+      while (projects[game].length > 3) {
+        projects[game].pop();
+      }
+    } else {
+      projects[game] = [path];
+    }
+    store.set('project_latest', projects);
+  },
+  onLoad: (callback) => {
+    ipcRenderer.on('load_project', callback);
+    ipcRenderer.send('enableMenuItem', {id: 'load_project', enabled: true});
+  },
+  onExport: (callback) => {
+    ipcRenderer.on('export_project', callback);
+    ipcRenderer.send('enableMenuItem', {id: 'export_project', enabled: true});
+  },
+  onReveal: (callback) => {
+    ipcRenderer.on('reveal_project', callback);
+  }
+});
+contextBridge.exposeInMainWorld('editor', {
+  onShowPython: (callback) => {
+    ipcRenderer.on('show_python', callback);
+  },
+  onShowBlock: (callback) => {
+    ipcRenderer.on('show_block', callback);
+  },
+  onSavePython: (callback) => {
+    ipcRenderer.on('save_python', callback);
+    ipcRenderer.send('enableMenuItem', {id: 'save_python', enabled: true});
+  },
+  onSaveBlock: (callback) => {
+    ipcRenderer.on('save_block', callback);
+    ipcRenderer.send('enableMenuItem', {id: 'save_block', enabled: true});
   }
 });
 contextBridge.exposeInMainWorld('dir', {
@@ -196,6 +250,11 @@ contextBridge.exposeInMainWorld('dir', {
 contextBridge.exposeInMainWorld('repo', {
   download: (repo, dest, callback) => {
     download(repo, dest, callback);
+  }
+});
+contextBridge.exposeInMainWorld('lang', {
+  onChange: (callback) => {
+    ipcRenderer.on('lang', callback);
   }
 });
 contextBridge.exposeInMainWorld('paia', {

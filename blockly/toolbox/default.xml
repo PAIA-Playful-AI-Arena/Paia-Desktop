@@ -5,8 +5,8 @@
     <block type="logic_operation"></block>
     <block type="logic_negate"></block>
     <block type="logic_boolean"></block>
-    <block type="logic_null"></block>
-    <block type="logic_ternary"></block>
+    <!-- <block type="logic_null"></block> -->
+    <!-- <block type="logic_ternary"></block> -->
   </category>
   <category name="%{BKY_CATLOOPS}" colour="%{BKY_LOOPS_HUE}">
     <block type="controls_repeat_ext">
@@ -37,7 +37,7 @@
     <block type="controls_forEach">
       <value name="LIST">
         <block type="variables_get">
-          <field name="VAR">{listVariable}</field>
+          <field name="VAR" variabletype="Array">{listVariable}</field>
         </block>
       </value>
     </block>
@@ -91,7 +91,7 @@
     <block type="math_on_list">
       <value name="LIST">
         <block type="variables_get">
-          <field name="VAR">{listVariable}</field>
+          <field name="VAR" variabletype="Array">{listVariable}</field>
         </block>
       </value>
     </block>
@@ -152,7 +152,7 @@
     <block type="math_convert">
       <value name="STR">
         <block type="variables_get">
-          <field name="VAR">{textVariable}</field>
+          <field name="VAR" variabletype="String">{textVariable}</field>
         </block>
       </value>
     </block>
@@ -160,11 +160,11 @@
   <category name="%{BKY_CATTEXT}" colour="%{BKY_TEXTS_HUE}">
     <block type="text"></block>
     <block type="text_join"></block>
-    <block type="text_append">
+    <!-- <block type="text_append">
       <value name="TEXT">
         <shadow type="text"></shadow>
       </value>
-    </block>
+    </block> -->
     <block type="text_length">
       <value name="VALUE">
         <shadow type="text">
@@ -172,17 +172,17 @@
         </shadow>
       </value>
     </block>
-    <block type="text_isEmpty">
+    <!-- <block type="text_isEmpty">
       <value name="VALUE">
         <shadow type="text">
           <field name="TEXT"></field>
         </shadow>
       </value>
-    </block>
+    </block> -->
     <block type="text_indexOf">
       <value name="VALUE">
         <block type="variables_get">
-          <field name="VAR">{textVariable}</field>
+          <field name="VAR" variabletype="String">{textVariable}</field>
         </block>
       </value>
       <value name="FIND">
@@ -194,14 +194,14 @@
     <block type="text_charAt">
       <value name="VALUE">
         <block type="variables_get">
-          <field name="VAR">{textVariable}</field>
+          <field name="VAR" variabletype="String">{textVariable}</field>
         </block>
       </value>
     </block>
     <block type="text_getSubstring">
       <value name="STRING">
         <block type="variables_get">
-          <field name="VAR">{textVariable}</field>
+          <field name="VAR" variabletype="String">{textVariable}</field>
         </block>
       </value>
     </block>
@@ -232,66 +232,75 @@
       <mutation items="0"></mutation>
     </block>
     <block type="lists_create_with"></block>
-    <block type="lists_repeat">
-      <value name="NUM">
-        <shadow type="math_number">
-          <field name="NUM">5</field>
-        </shadow>
-      </value>
-    </block>
-    <block type="lists_length">
-      <value name="VALUE">
+    <block type="lists_insertIndex">
+      <value name="LIST">
         <block type="variables_get">
-          <field name="VAR">{listVariable}</field>
-        </block>
-      </value>
-    </block>
-    <block type="lists_isEmpty">
-      <value name="VALUE">
-        <block type="variables_get">
-          <field name="VAR">{listVariable}</field>
-        </block>
-      </value>
-    </block>
-    <block type="lists_indexOf">
-      <value name="VALUE">
-        <block type="variables_get">
-          <field name="VAR">{listVariable}</field>
+          <field name="VAR" variabletype="Array">{listVariable}</field>
         </block>
       </value>
     </block>
     <block type="lists_getIndex">
+      <field name="MODE">REMOVE</field>
       <value name="VALUE">
         <block type="variables_get">
-          <field name="VAR">{listVariable}</field>
+          <field name="VAR" variabletype="Array">{listVariable}</field>
         </block>
       </value>
     </block>
     <block type="lists_setIndex">
       <value name="LIST">
         <block type="variables_get">
-          <field name="VAR">{listVariable}</field>
-        </block>
-      </value>
-    </block>
-    <block type="lists_insertIndex">
-      <value name="LIST">
-        <block type="variables_get">
-          <field name="VAR">{listVariable}</field>
+          <field name="VAR" variabletype="Array">{listVariable}</field>
         </block>
       </value>
     </block>
     <block type="lists_extend">
       <value name="LIST">
         <block type="variables_get">
-          <field name="VAR">{listVariable}</field>
+          <field name="VAR" variabletype="Array">{listVariable}</field>
         </block>
       </value>
     </block>
+    <block type="lists_getIndex">
+      <field name="MODE">GET</field>
+      <value name="VALUE">
+        <block type="variables_get">
+          <field name="VAR" variabletype="Array">{listVariable}</field>
+        </block>
+      </value>
+    </block>
+    <block type="lists_indexOf">
+      <value name="VALUE">
+        <block type="variables_get">
+          <field name="VAR" variabletype="Array">{listVariable}</field>
+        </block>
+      </value>
+    </block>
+    <block type="lists_length">
+      <value name="VALUE">
+        <block type="variables_get">
+          <field name="VAR" variabletype="Array">{listVariable}</field>
+        </block>
+      </value>
+    </block>
+    <!-- <block type="lists_repeat">
+      <value name="NUM">
+        <shadow type="math_number">
+          <field name="NUM">5</field>
+        </shadow>
+      </value>
+    </block> -->
+    <!-- <block type="lists_isEmpty">
+      <value name="VALUE">
+        <block type="variables_get">
+          <field name="VAR" variabletype="Array">{listVariable}</field>
+        </block>
+      </value>
+    </block> -->
     <block type="lists_getSublist">
       <value name="LIST">
         <block type="variables_get">
-          <field name="VAR">{listVariable}</field>
+          <field name="VAR" variabletype="Array">{listVariable}</field>
         </block>
       </value>
     </block>
@@ -305,7 +314,7 @@
     <block type="lists_sort">
       <value name="LIST">
         <block type="variables_get">
-          <field name="VAR">{listVariable}</field>
+          <field name="VAR" variabletype="Array">{listVariable}</field>
         </block>
       </value>
     </block>
@@ -318,21 +327,21 @@
     <block type="dicts_get_keys">
       <value name="DICT">
         <block type="variables_get">
-          <field name="VAR">{dictVariable}</field>
+          <field name="VAR" variabletype="Dictionary">{dictVariable}</field>
         </block>
       </value>
     </block>
     <block type="dicts_get_value">
       <value name="DICT">
         <block type="variables_get">
-          <field name="VAR">{dictVariable}</field>
+          <field name="VAR" variabletype="Dictionary">{dictVariable}</field>
         </block>
       </value>
     </block>
     <block type="dicts_set_value">
       <value name="DICT">
         <block type="variables_get">
-          <field name="VAR">{dictVariable}</field>
+          <field name="VAR" variabletype="Dictionary">{dictVariable}</field>
         </block>
       </value>
     </block>
@@ -351,14 +360,14 @@
     <block type="ndarrays_create_with_list">
       <value name="LIST">
         <block type="variables_get">
-          <field name="VAR">{listVariable}</field>
+          <field name="VAR" variabletype="Array">{listVariable}</field>
         </block>
       </value>
     </block>
     <block type="ndarrays_to_list">
       <value name="ARRAY">
         <block type="variables_get">
-          <field name="VAR">{ndarrayVariable}</field>
+          <field name="VAR" variabletype="Array">{ndarrayVariable}</field>
         </block>
       </value>
     </block>
@@ -369,14 +378,14 @@
     <block type="model_train">
       <value name="MODEL">
         <block type="variables_get">
-          <field name="VAR">{modelVariable}</field>
+          <field name="VAR" variabletype="Model">{modelVariable}</field>
         </block>
       </value>
     </block>
     <block type="model_predict">
       <value name="MODEL">
         <block type="variables_get">
-          <field name="VAR">{modelVariable}</field>
+          <field name="VAR" variabletype="Model">{modelVariable}</field>
         </block>
       </value>
     </block>
@@ -390,22 +399,22 @@
       </value>
       <value name="TRAIN_DATA">
         <block type="variables_get">
-          <field name="VAR">{trainData}</field>
+          <field name="VAR" variabletype="Array">{trainData}</field>
         </block>
       </value>
       <value name="TEST_DATA">
         <block type="variables_get">
-          <field name="VAR">{testData}</field>
+          <field name="VAR" variabletype="Array">{testData}</field>
         </block>
       </value>
       <value name="TRAIN_TARGET">
         <block type="variables_get">
-          <field name="VAR">{trainTarget}</field>
+          <field name="VAR" variabletype="Array">{trainTarget}</field>
         </block>
       </value>
       <value name="TEST_TARGET">
         <block type="variables_get">
-          <field name="VAR">{testTarget}</field>
+          <field name="VAR" variabletype="Array">{testTarget}</field>
         </block>
       </value>
     </block>
@@ -421,36 +430,36 @@
     <block type="model_dl_train">
       <value name="MODEL">
         <block type="variables_get">
-          <field name="VAR">{dlModelVariable}</field>
+          <field name="VAR" variabletype="Model">{dlModelVariable}</field>
         </block>
       </value>
     </block>
     <block type="model_dl_summary">
       <value name="MODEL">
         <block type="variables_get">
-          <field name="VAR">{dlModelVariable}</field>
+          <field name="VAR" variabletype="Model">{dlModelVariable}</field>
         </block>
       </value>
     </block>
-    <block type="model_rl_create"></block>
+    <!-- <block type="model_rl_create"></block>
     <block type="model_rl_train">
       <value name="MODEL">
         <block type="variables_get">
-          <field name="VAR">{rlModelVariable}</field>
+          <field name="VAR" variabletype="Model">{rlModelVariable}</field>
         </block>
       </value>
     </block>
     <block type="model_rl_predict">
       <value name="MODEL">
         <block type="variables_get">
-          <field name="VAR">{rlModelVariable}</field>
+          <field name="VAR" variabletype="Model">{rlModelVariable}</field>
         </block>
       </value>
     </block>
     <block type="model_rl_set_parameter">
       <value name="MODEL">
         <block type="variables_get">
-          <field name="VAR">{rlModelVariable}</field>
+          <field name="VAR" variabletype="Model">{rlModelVariable}</field>
         </block>
       </value>
       <value name="VALUE">
@@ -458,9 +467,9 @@
           <field name="NUM">0</field>
         </shadow>
       </value>
-    </block>
+    </block> -->
   </category>
-  <category name="%{BKY_CATVARIABLES}" colour="%{BKY_VARIABLES_HUE}" custom="VARIABLE"></category>
+  <category name="%{BKY_CATVARIABLES}" colour="%{BKY_VARIABLES_HUE}" custom="CUSTOM_VARIABLE"></category>
   <category name="%{BKY_CATFUNCTIONS}" colour="%{BKY_PROCEDURES_HUE}" custom="PROCEDURE"></category>
   <category name="%{BKY_CATPLOT}" colour="%{BKY_PLOT_HUE}">
     <block type="plot_plot"></block>

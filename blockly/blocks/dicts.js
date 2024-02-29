@@ -1,5 +1,5 @@
 Blockly.Themes.Classic.blockStyles.dict_blocks = {
-  "colourPrimary": "#9AB1FF"
+  "colourPrimary": "#CED6FF"
 };
 
 Blockly.defineBlocksWithJsonArray([
@@ -95,18 +95,21 @@ Blockly.Blocks['dicts_create_with'] = {
     this.setStyle('dict_blocks');
     this.appendDummyInput('TITLE_TEXT')
         .appendField(Blockly.Msg['DICTS_CREATE_WITH_INPUT_WITH']);
+    this.appendEndRowInput('TITLE_END');
     this.appendValueInput('KEY0')
         .setAlign(Blockly.ALIGN_RIGHT)
         .appendField(Blockly.Msg['DICTS_CREATE_WITH_ITEM_KEY']);
     this.appendValueInput('VALUE0')
         .setAlign(Blockly.ALIGN_RIGHT)
         .appendField(Blockly.Msg['DICTS_CREATE_WITH_ITEM_VALUE']);
+    this.appendEndRowInput('END0');
     this.appendValueInput('KEY1')
         .setAlign(Blockly.ALIGN_RIGHT)
         .appendField(Blockly.Msg['DICTS_CREATE_WITH_ITEM_KEY']);
     this.appendValueInput('VALUE1')
         .setAlign(Blockly.ALIGN_RIGHT)
         .appendField(Blockly.Msg['DICTS_CREATE_WITH_ITEM_VALUE']);
+    this.appendEndRowInput('END1');
     
     this.setOutput(true, 'Dictionary');
     this.setMutator(new Blockly.icons.MutatorIcon(['dicts_create_with_item'], this));
@@ -120,14 +123,17 @@ Blockly.Blocks['dicts_create_with'] = {
   },
   domToMutation: function(container) {
     this.removeInput('TITLE_TEXT');
+    this.removeInput('TITLE_END');
     for (let i = 0; i < this.itemCount_; i++) {
       this.removeInput('KEY' + i);
       this.removeInput('VALUE' + i);
+      this.removeInput('END' + i);
     }
     this.itemCount_ = parseInt(container.getAttribute('items'), 10);
     if (this.itemCount_ > 0) {
       this.appendDummyInput('TITLE_TEXT')
           .appendField(Blockly.Msg['DICTS_CREATE_WITH_INPUT_WITH']);
+      this.appendEndRowInput('TITLE_END');
     } else {
       this.appendDummyInput('EMPTY')
           .appendField(Blockly.Msg['DICTS_CREATE_EMPTY_TITLE']);
@@ -141,6 +147,7 @@ Blockly.Blocks['dicts_create_with'] = {
           .setCheck(null)
           .setAlign(Blockly.ALIGN_RIGHT)
           .appendField(Blockly.Msg['DICTS_CREATE_WITH_ITEM_VALUE']);
+      this.appendEndRowInput('END' + i);
     }
   },
   decompose: function(workspace) {
@@ -161,9 +168,11 @@ Blockly.Blocks['dicts_create_with'] = {
       this.removeInput('EMPTY');
     } else {
       this.removeInput('TITLE_TEXT');
+      this.removeInput('TITLE_END');
       for (let i = this.itemCount_ - 1; i >= 0; i--) {
         this.removeInput('VALUE' + i);
         this.removeInput('KEY' + i);
+        this.removeInput('END' + i);
       }
     }
     this.itemCount_ = 0;
@@ -171,6 +180,7 @@ Blockly.Blocks['dicts_create_with'] = {
     let itemBlock = containerBlock.getInputTargetBlock('STACK');
     this.appendDummyInput('TITLE_TEXT')
         .appendField(Blockly.Msg['DICTS_CREATE_WITH_INPUT_WITH']);
+    this.appendEndRowInput('TITLE_END');
     while (itemBlock) {
       const key_input = this.appendValueInput('KEY' + this.itemCount_)
           .setAlign(Blockly.ALIGN_RIGHT)
@@ -178,6 +188,7 @@ Blockly.Blocks['dicts_create_with'] = {
       const value_input = this.appendValueInput('VALUE' + this.itemCount_)
           .setAlign(Blockly.ALIGN_RIGHT)
           .appendField(Blockly.Msg['DICTS_CREATE_WITH_ITEM_VALUE']);
+      this.appendEndRowInput('END' + this.itemCount_);
       // Reconnect any child blocks.
       if (itemBlock.keyConnection_) {
         key_input.connection.connect(itemBlock.keyConnection_);
@@ -190,6 +201,7 @@ Blockly.Blocks['dicts_create_with'] = {
     }
     if (this.itemCount_ == 0) {
       this.removeInput('TITLE_TEXT');
+      this.removeInput('TITLE_END');
       this.appendDummyInput('EMPTY')
           .appendField(Blockly.Msg['DICTS_CREATE_EMPTY_TITLE']);
     }

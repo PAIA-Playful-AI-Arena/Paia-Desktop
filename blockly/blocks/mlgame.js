@@ -1,17 +1,13 @@
 Blockly.Themes.Classic.blockStyles.logic_blocks = {
-  "colourPrimary": "#C1DBC8"
-};
-
-Blockly.Themes.Classic.blockStyles.loop_blocks = {
-  "colourPrimary": "#D1FBD3"
+  "colourPrimary": "#C2EBD0"
 };
 
 Blockly.Themes.Classic.blockStyles.variable_blocks = {
-  "colourPrimary": "#FFA2A2"
+  "colourPrimary": "#FFC1C9"
 };
 
 Blockly.Themes.Classic.blockStyles.mlgame_blocks = {
-  "colourPrimary": "#FFC7C7"
+  "colourPrimary": "#FFAFA4"
 };
 
 Blockly.Themes.Classic.blockStyles.other_blocks = {
@@ -25,7 +21,7 @@ Blockly.Blocks['mlplay_class'] = {
    */
   init: function() {
     this.jsonInit({
-      "message0": "MLPlay %1 %{BKY_MLPLAY_CLASS_INITIALIZE} %2 %{BKY_MLPLAY_CLASS_UPDATE} %3 %{BKY_MLPLAY_CLASS_RESET} %4",
+      "message0": "%{BKY_MLPLAY_CLASS_NAME} %1 %{BKY_MLPLAY_CLASS_INITIALIZE} %2 %{BKY_MLPLAY_CLASS_UPDATE} %3 %{BKY_MLPLAY_CLASS_RESET} %4",
       "args0": [
         {
           "type": "input_dummy",

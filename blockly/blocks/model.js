@@ -1,13 +1,13 @@
 Blockly.Themes.Classic.blockStyles.model_blocks = {
-  "colourPrimary": "#FFD3FB"
+  "colourPrimary": "#F8D5F8"
 };
 
 Blockly.Themes.Classic.blockStyles.model_dl_blocks = {
-  "colourPrimary": "#FFD3FB"
+  "colourPrimary": "#F8D5F8"
 };
 
 Blockly.Themes.Classic.blockStyles.model_rl_blocks = {
-  "colourPrimary": "#FFD3FB"
+  "colourPrimary": "#F8D5F8"
 };
 
 Blockly.defineBlocksWithJsonArray([
@@ -18,15 +18,18 @@ Blockly.defineBlocksWithJsonArray([
     "args0": [
       {
         "type": "input_value",
-        "name": "X"
+        "name": "X",
+        "check": "Array"
       },
       {
         "type": "input_value",
-        "name": "Y"
+        "name": "Y",
+        "check": "Array"
       },
       {
         "type": "input_value",
-        "name": "MODEL"
+        "name": "MODEL",
+        "check": "Model"
       }
     ],
     "inputsInline": true,
@@ -42,15 +45,17 @@ Blockly.defineBlocksWithJsonArray([
     "args0": [
       {
         "type": "input_value",
-        "name": "MODEL"
+        "name": "MODEL",
+        "check": "Model"
       },
       {
         "type": "input_value",
-        "name": "X"
+        "name": "X",
+        "check": "Array"
       }
     ],
     "inputsInline": true,
-    "output": null,
+    "output": "Array",
     "style": "model_blocks",
     "tooltip": "%{BKY_MODEL_PREDICT_TOOLTIP}"
   },
@@ -61,11 +66,13 @@ Blockly.defineBlocksWithJsonArray([
     "args0": [
       {
         "type": "input_value",
-        "name": "TRUE"
+        "name": "TRUE",
+        "check": "Array"
       },
       {
         "type": "input_value",
-        "name": "PRED"
+        "name": "PRED",
+        "check": "Array"
       }
     ],
     "inputsInline": true,
@@ -80,11 +87,13 @@ Blockly.defineBlocksWithJsonArray([
     "args0": [
       {
         "type": "input_value",
-        "name": "TRUE"
+        "name": "TRUE",
+        "check": "Array"
       },
       {
         "type": "input_value",
-        "name": "PRED"
+        "name": "PRED",
+        "check": "Array"
       },
       {
         "type": "field_dropdown",
@@ -108,11 +117,13 @@ Blockly.defineBlocksWithJsonArray([
     "args0": [
       {
         "type": "input_value",
-        "name": "X"
+        "name": "X",
+        "check": "Array"
       },
       {
         "type": "input_value",
-        "name": "Y"
+        "name": "Y",
+        "check": "Array"
       },
       {
         "type": "input_value",
@@ -129,19 +140,23 @@ Blockly.defineBlocksWithJsonArray([
       },
       {
         "type": "input_value",
-        "name": "TRAIN_DATA"
+        "name": "TRAIN_DATA",
+        "check": "Array"
       },
       {
         "type": "input_value",
-        "name": "TEST_DATA"
+        "name": "TEST_DATA",
+        "check": "Array"
       },
       {
         "type": "input_value",
-        "name": "TRAIN_TARGET"
+        "name": "TRAIN_TARGET",
+        "check": "Array"
       },
       {
         "type": "input_value",
-        "name": "TEST_TARGET"
+        "name": "TEST_TARGET",
+        "check": "Array"
       },
       {
         "type": "input_end_row"
@@ -160,11 +175,13 @@ Blockly.defineBlocksWithJsonArray([
     "args0": [
       {
         "type": "input_value",
-        "name": "X"
+        "name": "X",
+        "check": "Array"
       },
       {
         "type": "input_value",
-        "name": "Y"
+        "name": "Y",
+        "check": "Array"
       },
       {
         "type": "input_value",
@@ -181,7 +198,7 @@ Blockly.defineBlocksWithJsonArray([
       }
     ],
     "inputsInline": true,
-    "output": null,
+    "output": "Array",
     "style": "model_blocks",
     "tooltip": "%{BKY_MODEL_K_FOLD_TOOLTIP}"
   },
@@ -480,32 +497,32 @@ Blockly.defineBlocksWithJsonArray([
       }
     ],
     "inputsInline": true,
-    "output": null,
+    "output": 'Model',
     'style': 'model_dl_blocks',
     "tooltip": "建立 Transformer 模型"
   },
   // Block for training deep learning modal.
   {
     "type": "model_dl_train",
-    "message0": "使用訓練資料：%1 %2 目標：%3 %4 訓練 %5 批次大小：%6 訓練次數：%7",
+    "message0": "使用特徵資料：%1 對應數值：%2 %3 訓練 %4 批次大小：%5 訓練次數：%6",
     "args0": [
       {
         "type": "input_value",
-        "name": "X"
+        "name": "X",
+        "check": "Array"
+      },
+      {
+        "type": "input_value",
+        "name": "Y",
+        "check": "Array"
       },
       {
         "type": "input_end_row",
       },
       {
         "type": "input_value",
-        "name": "Y"
-      },
-      {
-        "type": "input_end_row",
-      },
-      {
-        "type": "input_value",
-        "name": "MODEL"
+        "name": "MODEL",
+        "check": "Model"
       },
       {
         "type": "field_number",
@@ -533,7 +550,8 @@ Blockly.defineBlocksWithJsonArray([
     "args0": [
       {
         "type": "input_value",
-        "name": "MODEL"
+        "name": "MODEL",
+        "check": "Model"
       }
     ],
     "previousStatement": null,
@@ -548,23 +566,28 @@ Blockly.defineBlocksWithJsonArray([
     "args0": [
       {
         "type": "input_value",
-        "name": "STATE"
+        "name": "STATE",
+        "check": "Number"
       },
       {
         "type": "input_value",
-        "name": "ACTION"
+        "name": "ACTION",
+        "check": "Number"
       },
       {
         "type": "input_value",
-        "name": "REWARD"
+        "name": "REWARD",
+        "check": "Number"
       },
       {
         "type": "input_value",
-        "name": "NEXT_STATE"
+        "name": "NEXT_STATE",
+        "check": "Number"
       },
       {
         "type": "input_value",
-        "name": "MODEL"
+        "name": "MODEL",
+        "check": "Model"
       }
     ],
     "inputsInline": true,
@@ -576,15 +599,17 @@ Blockly.defineBlocksWithJsonArray([
   // Use rl model to predict.
   {
     "type": "model_rl_predict",
-    "message0": "使用 %1 預測狀態 %2 對應的行動",
+    "message0": "使用 %1 推論狀態 %2 對應的行動",
     "args0": [
       {
         "type": "input_value",
-        "name": "MODEL"
+        "name": "MODEL",
+        "check": "Model"
       },
       {
         "type": "input_value",
-        "name": "STATE"
+        "name": "STATE",
+        "check": "Number"
       }
     ],
     "inputsInline": true,
@@ -652,7 +677,7 @@ Blockly.Blocks["model_create_classification"] = {
         .appendField(modelMenu, 'MODEL')
         .appendField(Blockly.Msg['MODEL_CLASSIFICATION']);
     this.setInputsInline(true);
-    this.setOutput(true);
+    this.setOutput(true, 'Model');
     this.setTooltip(Blockly.Msg['MODEL_CREATE_CLASSIFICATION_TOOLTIP']);
     this.paramCount_ = 0;
   },
@@ -770,7 +795,7 @@ Blockly.Blocks["model_create_regression"] = {
         .appendField(modelMenu, 'MODEL')
         .appendField(Blockly.Msg['MODEL_REGRESSION']);
     this.setInputsInline(true);
-    this.setOutput(true);
+    this.setOutput(true, 'Model');
     this.setTooltip(Blockly.Msg['MODEL_CREATE_REGRESSION_TOOLTIP']);
     this.paramCount_ = 0;
   },
@@ -915,7 +940,7 @@ Blockly.Blocks['model_dl_create'] = {
     this.layers_ = [];
     this.updateLayers_();
     this.setInputsInline(false);
-    this.setOutput(true);
+    this.setOutput(true, 'Model');
     this.setMutator(new Blockly.icons.MutatorIcon([
       'model_dl_dense_layer',
       'model_dl_recurrent_layer',
@@ -1256,7 +1281,7 @@ Blockly.Blocks["model_rl_create"] = {
         .appendField(modelMenu, 'MODEL')
         .appendField('強化學習模型');
     this.setInputsInline(true);
-    this.setOutput(true);
+    this.setOutput(true, 'Model');
     this.setTooltip('設定參數來建立一個強化學習模型');
     this.paramCount_ = 0;
   },

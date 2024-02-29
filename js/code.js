@@ -95,6 +95,11 @@ Code.LANGUAGE_RTL = ['ar', 'fa', 'he', 'lki'];
 Code.workspace = null;
 
 /**
+ * Dragging blocks.
+ */
+Code.draggingBlocks = null;
+
+/**
  * Extracts a parameter from the URL.
  * If the parameter is absent default_value is returned.
  * @param {string} name The name of the parameter.
@@ -1268,7 +1273,32 @@ Code.init = async function() {
       if (Code.FOCUSED_FILE != "") {
         Code.FILE_LIST[Code.FOCUSED_FILE].settings = {x: Code.workspace.scrollX, y: Code.workspace.scrollY, scale: Code.workspace.scale};
       }
+      if (e.type == "drag") {
+        if (e.isStart) {
+          Code.draggingBlocks = e.blocks;
+        } else {
+          Code.draggingBlocks = null;
+        }
+      }
     }
+  });
+
+  Blockly.browserEvents.bind(document.getElementById('stack-icon'), 'pointerover', null, (e) => {
+    if (Code.draggingBlocks !== null)
+      $('#stack-icon').addClass('shake');
+  });
+
+  Blockly.browserEvents.bind(document.getElementById('stack-icon'), 'pointerout', null, (e) => {
+    $('#stack-icon').removeClass('shake');
+  });
+  
+  Blockly.browserEvents.bind(document.getElementById('stack-icon'), 'pointerup', null, (e) => {
+    if (Code.draggingBlocks !== null) {
+      const undoStack = Code.workspace.getUndoStack();
+      Code.draggingBlocks[0].dispose();
+      const undoStack2 = Code.workspace.getUndoStack();
+    }
+    $('#stack-icon').removeClass('shake');
   });
   
   // Overide prompt function because prompt is not implemented in Electron.

@@ -207,11 +207,11 @@
     </div>
     <!-- Blockly icons -->
     <div class="d-flex justify-content-left" id="blockly-icons" style="position: absolute; width: 600px; top: -50px; left: -800px; z-index: 100;">
-      <img src="media/zoom-in-icon.svg" style="width: 60px; cursor: pointer; margin-right: 60px;" onclick="Code.workspace.setScale(Code.workspace.getScale() + 0.1);">
-      <img src="media/zoom-out-icon.svg" style="width: 60px; cursor: pointer; margin-right: 60px;" onclick="Code.workspace.setScale(Code.workspace.getScale() - 0.1);">
+      <img src="media/zoom-in-icon.svg" style="width: 60px; cursor: pointer; margin-right: 60px;" onclick="Code.workspace.zoomCenter(1);">
+      <img src="media/zoom-out-icon.svg" style="width: 60px; cursor: pointer; margin-right: 60px;" onclick="Code.workspace.zoomCenter(-1);">
       <img src="media/undo-icon.svg" style="width: 52px; height: 45px; cursor: pointer; margin-top: 7.5px; margin-right: 60px;" onclick="Code.workspace.undo(false);">
       <img src="media/redo-icon.svg" style="width: 52px; height: 45px; cursor: pointer; margin-top: 7.5px; margin-right: 60px;" onclick="Code.workspace.undo(true);">
-      <img src="media/stack-icon.svg" style="width: 60px; cursor: pointer;;" onclick="Code.workspace.trashcan.contentsIsOpen()? Code.workspace.trashcan.closeFlyout():Code.workspace.trashcan.openFlyout();">
+      <img src="media/stack-icon.svg" id="stack-icon" style="width: 60px; cursor: pointer;;" onclick="Code.workspace.trashcan.contentsIsOpen()? Code.workspace.trashcan.closeFlyout():Code.workspace.trashcan.openFlyout();">
     </div>
 
     <div class="d-flex" style="background: #EDEDED; height: 80px;">

@@ -447,7 +447,7 @@ pre.content {
   ry: 5px;
 }
 
-.blocklyTrash, .blocklyZoom {
+.blocklyTrash {
   display: none;
 }
 

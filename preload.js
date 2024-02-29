@@ -1,7 +1,7 @@
 const { contextBridge, ipcRenderer, clipboard, shell } = require('electron');
 const { PythonShell } = require('python-shell');
 const path = require('path');
-const fs = require('fs');
+const fs = require('fs-extra');
 const os = require('os');
 const https = require('https');
 const { Buffer } = require('node:buffer');

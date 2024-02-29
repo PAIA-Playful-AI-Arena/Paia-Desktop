@@ -216,13 +216,17 @@
 
     <div class="d-flex" style="background: #EDEDED; height: 80px;">
       <img src="media/paia-logo.png" id="game-logo" style="width: 46px; height: 46px; margin: 17px 0px 17px 17px;">
-      <div id="project-title" style="width: 200px; margin: 17px 17px 17px 18px; font-family: Inter; font-size: 32px; font-weight: 500; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;"></div>
+      <form name="project-title-form" action="javascript:Code.changeProjectName();">
+        <input id="project-title" style="width: 200px; margin: 17px 17px 17px 18px; border-width: 0px; background-color: #EDEDED; font-family: Inter; font-size: 32px; font-weight: 500; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;" onfocusout="Code.changeProjectName();">
+      </form>
       
       <!-- Collect filelist -->
       <div class="dropdown" id="group-collect-dropdown" style="margin: 17px 0px;">
         <button class="dropdown-toggle d-flex" type="button" id="group-collect-button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="width: 140px; height: 46px; border-radius: 15px; border-width: 0px; outline: 1px solid #676767; background: #FFF; color: #00000000; vertical-align: baseline; padding: 11px 0px 6px 12px;">
           <img src="media/state-unexecuted.svg" id="group-collect-state" style="width: 20px;">
-          <div id="group-collect-name" style="max-width: 100px; font-size: 16px; color: black; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; margin: 0px auto 0px 15px;">蒐集</div>
+          <form action="javascript:$('#group-collect-name').blur();">
+            <input id="group-collect-name" style="max-width: 65px; border-width: 0px; font-size: 16px; color: black; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; margin: 0px auto 0px 15px; cursor: pointer;" onfocusout="Code.changeFileName();" disabled>
+          </form>
           <img src="media/add-icon.svg" class="group-new" id="group-collect-new" style="width: 15px; padding-top: 3px;" onclick="(function(event){ event.stopPropagation(); Code.newXml('collect');})(event);">
         </button>
         <div class="dropdown-menu" id="group-collect-list" aria-labelledby="group-collect-button" style="min-width: 0px; max-height: calc(100vh - 100px); background: #EDEDED; border-radius: 15px; border-color: #B7B7B7; padding: 0px; overflow-y: auto; overflow-x: hidden;"></div>
@@ -234,7 +238,9 @@
       <div class="dropdown" id="group-train-dropdown" style="margin: 17px 0px;">
         <button class="dropdown-toggle d-flex" type="button" id="group-train-button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="width: 140px; height: 46px; border-radius: 15px; border-width: 0px; outline: 1px solid #676767; background: #FFF; color: #00000000; vertical-align: baseline; padding: 11px 0px 6px 12px;">
           <img src="media/state-unexecuted.svg" id="group-train-state" style="width: 20px;">
-          <div id="group-train-name" style="max-width: 100px; font-size: 16px; color: black; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; margin: 0px auto 0px 15px;">訓練</div>
+          <form action="javascript:$('#group-train-name').blur();">
+            <input id="group-train-name" style="max-width: 65px; border-width: 0px; font-size: 16px; color: black; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; margin: 0px auto 0px 15px; cursor: pointer;" onfocusout="Code.changeFileName();" disabled>
+          </form>
           <img src="media/add-icon.svg" class="group-new" id="group-train-new" style="width: 15px; padding-top: 3px;" onclick="(function(event){ event.stopPropagation(); Code.newXml('train');})(event);">
         </button>
         <div class="dropdown-menu" id="group-train-list" aria-labelledby="group-train-button" style="min-width: 0px; max-height: calc(100vh - 100px); background: #EDEDED; border-radius: 15px; border-color: #B7B7B7; padding: 0px; overflow-y: auto; overflow-x: hidden;"></div>
@@ -246,7 +252,9 @@
       <div class="dropdown" id="group-test-dropdown" style="margin: 17px 0px;">
         <button class="dropdown-toggle d-flex" type="button" id="group-test-button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="width: 140px; height: 46px; border-radius: 15px; border-width: 0px; outline: 1px solid #676767; background: #FFF; color: #00000000; vertical-align: baseline; padding: 11px 0px 6px 12px;">
           <img src="media/state-unexecuted.svg" id="group-test-state" style="width: 20px;">
-          <div id="group-test-name" style="max-width: 100px; font-size: 16px; color: black; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; margin: 0px auto 0px 15px;">測試</div>
+          <form action="javascript:$('#group-test-name').blur();">
+            <input id="group-test-name" style="max-width: 65px; border-width: 0px; font-size: 16px; color: black; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; margin: 0px auto 0px 15px; cursor: pointer;" onfocusout="Code.changeFileName();" disabled>
+          </form>
           <img src="media/add-icon.svg" class="group-new" id="group-test-new" style="width: 15px; padding-top: 3px;" onclick="(function(event){ event.stopPropagation(); Code.newXml('test');})(event);">
         </button>
         <div class="dropdown-menu" id="group-test-list" aria-labelledby="group-test-button" style="min-width: 0px; max-height: calc(100vh - 100px); background: #EDEDED; border-radius: 15px; border-color: #B7B7B7; padding: 0px; overflow-y: auto; overflow-x: hidden;"></div>
@@ -258,11 +266,15 @@
       <div class="dropdown" id="group-other-dropdown" style="margin: 17px 0px;">
         <button class="dropdown-toggle d-flex" type="button" id="group-other-button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="width: 140px; height: 46px; border-radius: 15px; border-width: 0px; outline: 1px solid #676767; background: #FFF; color: #00000000; vertical-align: baseline; padding: 11px 0px 6px 12px;">
           <img src="media/state-unexecuted.svg" id="group-other-state" style="width: 20px;">
-          <div id="group-other-name" style="max-width: 100px; font-size: 16px; color: black; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; margin: 0px auto 0px 15px;">未分類</div>
+          <form action="javascript:$('#group-other-name').blur();">
+            <input id="group-other-name" style="max-width: 65px; border-width: 0px; font-size: 16px; color: black; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; margin: 0px auto 0px 15px; cursor: pointer;" onfocusout="Code.changeFileName();" disabled>
+          </form>
           <img src="media/add-icon.svg" class="group-new" id="group-other-new" style="width: 15px; padding-top: 3px;" onclick="(function(event){ event.stopPropagation(); Code.newXml('other');})(event);">
         </button>
         <div class="dropdown-menu" id="group-other-list" aria-labelledby="group-other-button" style="min-width: 0px; max-height: calc(100vh - 100px); background: #EDEDED; border-radius: 15px; border-color: #B7B7B7; padding: 0px; overflow-y: auto; overflow-x: hidden;"></div>
       </div>
+
+      <img src="media/edit-icon.svg" id="game-logo" style="width: 20px; height: 20px; margin: 30px 0px 17px 30px; cursor: pointer;" onclick="Code.editFileName();">
 
       <!-- Login button -->
       <div class="ml-auto dropdown" style="margin-top: 5px;">

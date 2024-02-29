@@ -459,6 +459,14 @@ pre.content {
   filter: invert(0.8);
 }
 
+input:focus {
+  outline-color: #0039CF;
+}
+
+input:disabled {
+  background-color: transparent;
+}
+
 @keyframes MoveUpDown {
   0%, 100% {
     transform: translateY(0);

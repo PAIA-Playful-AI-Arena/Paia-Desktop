@@ -1411,14 +1411,15 @@ Code.init = async function() {
   (['collect', 'train', 'test', 'other']).forEach(group => {
     $(`#group-${group}-dropdown`).on('show.bs.dropdown', function () {
       if (group == Code.FOCUSED_GROUP) {
-        $(`#group-${group}-name`).html(`${MSG[group]}`);
+        $(`#group-${group}-name`).val(`${MSG[group]}`);
       }
     });
     $(`#group-${group}-dropdown`).on('hide.bs.dropdown', function () {
       if (group == Code.FOCUSED_GROUP) {
-        $(`#group-${group}-name`).html(Code.FILE_LIST[Code.FOCUSED_FILE].name);
+        $(`#group-${group}-name`).val(Code.FILE_LIST[Code.FOCUSED_FILE].name);
       }
     });
+    $(`#group-${group}-button`).dropdown("update");
   });
 
   // GA4
@@ -1447,7 +1448,7 @@ Code.initLanguage = function() {
   document.getElementById('en').textContent = MSG['en'];
   document.getElementById('zh-hant').textContent = MSG['zh_hant'];
   (['collect', 'train', 'test', 'other']).forEach((group) => {
-    document.getElementById(`group-${group}-name`).textContent = MSG[group];
+    document.getElementById(`group-${group}-name`).value = MSG[group];
   })
 };
 
@@ -1797,7 +1798,7 @@ Code.updateLibraryList = function() {
  * Update project files dropdown list.
  */
 Code.updateProjectList = function() {
-  (['collect', 'train', 'test', 'other']).forEach(group => {
+  for (const group of ['collect', 'train', 'test', 'other']) {
     $(`#group-${group}-list`).empty();
     const groupPath = window.path.join(Code.PROJECT_PATH, group);
     if (!window.fs.existsSync(groupPath)) {
@@ -1827,7 +1828,7 @@ Code.updateProjectList = function() {
         }
       }
     });
-  });
+  };
 };
 
 /**
@@ -1838,7 +1839,8 @@ Code.updateProjectFileList = function(parent='') {
     $(`#project-file-list`).empty();
   window.fs.readdirSync(window.path.join(Code.PROJECT_PATH, parent), { recursive: true }).forEach(file => {
     if (window.path.extname(file) == '') {
-      Code.updateProjectFileList(window.path.join(parent, file));
+      if (file != "__pycache__")
+        Code.updateProjectFileList(window.path.join(parent, file));
     } else {
       const $file = $(`<div title="${window.path.join(parent, file)}" style="white-space: nowrap; text-overflow: ellipsis; overflow: hidden; padding: 5px 0px;">${window.path.join(parent, file)}</div>`);
       $(`#project-file-list`).append($file);
@@ -1947,16 +1949,11 @@ Code.openXml = function() {
  * Let user select the path to a xml file and load it. 
  */
 Code.newXml = function(group) {
-  const name = `${MSG[group]}.xml`;
-  const xmlPath = window.path.save({
-    title: "新增 XML 檔",
-    defaultPath: window.path.join(Code.PROJECT_PATH, group, name),
-    filters: [
-        {name: 'XML', extensions: ['xml']}
-    ]
-  });
-  if (xmlPath === undefined) {
-    return;
+  let index = 1;
+  let xmlPath = window.path.join(Code.PROJECT_PATH, group, `${MSG[group]}${index}.xml`);
+  while (window.fs.existsSync(xmlPath)) {
+    index++;
+    xmlPath = window.path.join(Code.PROJECT_PATH, group, `${MSG[group]}${index}.xml`);
   }
   const xmlText = "<xml></xml>";
   window.file.write(xmlPath, xmlText);
@@ -1990,29 +1987,31 @@ Code.loadXml = function(xmlPath) {
     Code.saveXml(Code.FOCUSED_FILE);
   }
   // Load xml to workspace.
+  const curXml = Blockly.Xml.workspaceToDom(Code.workspace);
   try {
     const xmlText = window.file.read(xmlPath);
     const xml = Blockly.utils.xml.textToDom(xmlText);
-    Code.workspace.clear();
-    Blockly.Xml.domToWorkspace(xml, Code.workspace);
-    Code.FILE_LIST[xmlPath].settings = {x: Code.workspace.scrollX, y: Code.workspace.scrollY, scale: Code.workspace.scale};
-    Code.FILE_LIST[xmlPath].isLoading = true;
-    if (Code.FOCUSED_FILE != '') {
-      Code.FILE_LIST[Code.FOCUSED_FILE].$button.css("border", "1px solid #676767");
-    }
-    Code.FILE_LIST[xmlPath].$button.css("border", "2px solid #0039CF");
-    Code.FOCUSED_FILE = xmlPath;
-    if (Code.FOCUSED_GROUP != '') {
-      $(`#group-${Code.FOCUSED_GROUP}-button`).css("outline", "1px solid #676767");
-      $(`#group-${Code.FOCUSED_GROUP}-name`).html(MSG[Code.FOCUSED_GROUP]);
-    }
-    $(`#group-${group}-button`).css("outline", "3px solid #0039CF");
-    $(`#group-${group}-name`).html(Code.FILE_LIST[xmlPath].name);
-    $(`#group-${group}-state`).attr("src" , Code.FILE_LIST[xmlPath].$state.attr("src"));
-    Code.FOCUSED_GROUP = group;
+    Blockly.Xml.clearWorkspaceAndLoadFromXml(xml, Code.workspace);
   } catch (err) {
     window.popup.alert(err);
+    Blockly.Xml.clearWorkspaceAndLoadFromXml(curXml, Code.workspace);
+    return;
   }
+  Code.FILE_LIST[xmlPath].settings = {x: Code.workspace.scrollX, y: Code.workspace.scrollY, scale: Code.workspace.scale};
+  Code.FILE_LIST[xmlPath].isLoading = true;
+  if (Code.FOCUSED_FILE != '') {
+    Code.FILE_LIST[Code.FOCUSED_FILE].$button.css("border", "1px solid #676767");
+  }
+  Code.FILE_LIST[xmlPath].$button.css("border", "2px solid #0039CF");
+  Code.FOCUSED_FILE = xmlPath;
+  if (Code.FOCUSED_GROUP != '') {
+    $(`#group-${Code.FOCUSED_GROUP}-button`).css("outline", "1px solid #676767");
+    $(`#group-${Code.FOCUSED_GROUP}-name`).val(MSG[Code.FOCUSED_GROUP]);
+  }
+  $(`#group-${group}-button`).css("outline", "3px solid #0039CF");
+  $(`#group-${group}-name`).val(Code.FILE_LIST[xmlPath].name);
+  $(`#group-${group}-state`).attr("src" , Code.FILE_LIST[xmlPath].$state.attr("src"));
+  Code.FOCUSED_GROUP = group;
 };
 
 /**
@@ -2067,11 +2066,13 @@ Code.saveXml = function(xmlPath=null) {
   const configPath = window.path.join(Code.PROJECT_PATH, 'project.json');
   if (window.fs.existsSync(configPath)) {
     const config = JSON.parse(window.file.read(configPath));
+    config.last_saved = xmlPath;
     config.saved_at = dateformat(new Date(), "yyyy-mm-dd HH:MM:ss");
     window.file.write(configPath, JSON.stringify(config));
   } else {
     window.file.write(configPath, JSON.stringify({
       game: Code.GAME,
+      last_saved: xmlPath,
       saved_at: dateformat(new Date(), "yyyy-mm-dd HH:MM:ss")
     }));
   }
@@ -2339,6 +2340,7 @@ Code.newProject = function() {
         game: Code.GAME,
         created_at: dateformat(new Date(), "yyyy-mm-dd HH:MM:ss"),
         saved_at: dateformat(new Date(), "yyyy-mm-dd HH:MM:ss"),
+        last_saved: ""
       }));
       Code.openProject(project_path);
     } else if (window.popup.confirm(`${project_path} 已存在，是否改為載入此專案？`)) {
@@ -2374,7 +2376,7 @@ Code.openProject = function(path) {
   }
   Code.PROJECT_PATH = path;
   Code.PROJECT = window.path.basename(Code.PROJECT_PATH);
-  $('#project-title').html(Code.PROJECT);
+  $('#project-title').val(Code.PROJECT);
   $('#project-title').attr("title", Code.PROJECT_PATH);
   window.project.saveLatest(Code.GAME, Code.PROJECT_PATH);
   window.file.watch(Code.PROJECT_PATH, (eventType, filename) => {
@@ -2383,14 +2385,22 @@ Code.openProject = function(path) {
   });
   Code.updateProjectList();
   Code.updateProjectFileList();
-  const start = window.path.join(Code.PROJECT_PATH, 'collect', '蒐集.xml');
-  if (window.fs.existsSync(start)) {
-    Code.loadXml(start, "collect");
-  }
   window.menu.enableItem({id: 'reveal_project', enabled: true});
   window.project.onExport((event) => {
     Code.exportProject();
   });
+  let start = window.path.join(Code.PROJECT_PATH, 'collect', '蒐集.xml');
+  const configPath = window.path.join(Code.PROJECT_PATH, 'project.json');
+  if (window.fs.existsSync(configPath)) {
+    const config = JSON.parse(window.file.read(configPath));
+    if (config.last_saved)
+      start = config.last_saved;
+  }
+  if (window.fs.existsSync(start)) {
+    Code.loadXml(start, "collect");
+  } else {
+    Code.newXml("collect");
+  }
   $('#project-dialog').modal('hide');
 };
 
@@ -2420,6 +2430,74 @@ Code.exportProject = function() {
     window.dir.copy(Code.PROJECT_PATH, dest);
     window.path.open(dest);
   }
+};
+
+/**
+ * Change project name.
+ */
+Code.changeProjectName = function() {
+  const oldName = Code.PROJECT_PATH;
+  const newName = window.path.join(window.path.dirname(Code.PROJECT_PATH), $('#project-title').val());
+  if (oldName == newName)
+    return;
+  if (window.fs.existsSync(newName)) {
+    window.popup.alert(`${newName} 已存在`);
+    $('#project-title').val(Code.PROJECT);
+    return;
+  }
+  if (Code.FOCUSED_FILE != '')
+    Code.saveXml(Code.FOCUSED_FILE);
+  try {
+    window.fs.copySync(oldName, newName);
+  } catch (err) {
+    window.popup.alert(err);
+    $('#project-title').val(Code.PROJECT);
+    return;
+  }
+  Code.openProject(newName);
+  try {
+    window.fs.removeSync(oldName);
+  } catch (err) {
+    window.popup.alert(err);
+    return;
+  }
+};
+
+/**
+ * Make file name editable.
+ */
+Code.editFileName = function() {
+  if (Code.FOCUSED_FILE == '' || Code.FOCUSED_GROUP == '')
+    return;
+  $(`#group-${Code.FOCUSED_GROUP}-name`).prop('disabled', false);
+  $(`#group-${Code.FOCUSED_GROUP}-button`).prop('disabled', true);
+  $(`#group-${Code.FOCUSED_GROUP}-name`).css('cursor', 'text');
+  $(`#group-${Code.FOCUSED_GROUP}-name`).trigger('focus');
+};
+
+/**
+ * Change file name.
+ */
+Code.changeFileName = function() {
+  if (Code.FOCUSED_FILE == '' || Code.FOCUSED_GROUP == '')
+    return;
+  Code.saveXml(Code.FOCUSED_FILE);
+  const oldName = Code.FOCUSED_FILE;
+  const newName = window.path.join(window.path.dirname(Code.FOCUSED_FILE), $(`#group-${Code.FOCUSED_GROUP}-name`).val() + '.xml');
+  $(`#group-${Code.FOCUSED_GROUP}-name`).prop('disabled', true);
+  $(`#group-${Code.FOCUSED_GROUP}-button`).prop('disabled', false);
+  $(`#group-${Code.FOCUSED_GROUP}-name`).css('cursor', 'pointer');
+  if (oldName == newName)
+    return;
+  if (window.fs.existsSync(newName)) {
+    window.popup.alert(`${newName} 已存在`);
+    $(`#group-${Code.FOCUSED_GROUP}-name`).val(Code.FILE_LIST[Code.FOCUSED_FILE].name);
+    return;
+  }
+  window.fs.renameSync(oldName, newName);
+  Code.updateProjectList();
+  Code.FOCUSED_FILE = '';
+  Code.loadXml(newName);
 };
 
 /**

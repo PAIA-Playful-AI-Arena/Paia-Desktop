@@ -10,11 +10,13 @@ Blockly.defineBlocksWithJsonArray([
     "args0": [
       {
         "type": "input_value",
-        "name": "X"
+        "name": "X",
+        "check": "Array"
       },
       {
         "type": "input_value",
-        "name": "Y"
+        "name": "Y",
+        "check": "Array"
       },
       {
         "type": "field_dropdown",

@@ -576,6 +576,377 @@ Code.init = async function() {
   }
 
   class CustomConstantProvider extends Blockly.zelos.ConstantProvider {
+    
+    SHAPES = {HEXAGONAL: 1, ROUND: 2, SQUARE: 3, PUZZLE: 4, TRAPEZOID: 5, PARALLELOGRAM: 6, NOTCH: 7};
+
+    SHAPE_IN_SHAPE_PADDING = {
+      1: {
+        // Outer shape: hexagon.
+        0: 5 * this.GRID_UNIT, // Field in hexagon.
+        1: 2 * this.GRID_UNIT, // Hexagon in hexagon.
+        2: 5 * this.GRID_UNIT, // Round in hexagon.
+        3: 5 * this.GRID_UNIT, // Square in hexagon.
+        4: 5 * this.GRID_UNIT, // Puzzle in hexagon.
+        5: 5 * this.GRID_UNIT, // Trapezoid in hexagon.
+        6: 5 * this.GRID_UNIT, // Parallelogram in hexagon.
+      },
+      2: {
+        // Outer shape: round.
+        0: 3 * this.GRID_UNIT, // Field in round.
+        1: 3 * this.GRID_UNIT, // Hexagon in round.
+        2: 2 * this.GRID_UNIT, // Round in round.
+        3: 4 * this.GRID_UNIT, // Square in round.
+        4: 4 * this.GRID_UNIT, // Puzzle in round.
+        5: 5 * this.GRID_UNIT, // Trapezoid in round.
+        6: 5 * this.GRID_UNIT, // Parallelogram in round.
+      },
+      3: {
+        // Outer shape: square.
+        0: 8 * this.GRID_UNIT, // Field in square.
+        1: 5 * this.GRID_UNIT, // Hexagon in square.
+        2: 8 * this.GRID_UNIT, // Round in square.
+        3: 2 * this.GRID_UNIT, // Square in square.
+        4: 5 * this.GRID_UNIT, // Puzzle in square.
+        5: 5 * this.GRID_UNIT, // Trapezoid in square.
+        6: 5 * this.GRID_UNIT, // Parallelogram in square.
+      },
+      4: {
+        // Outer shape: puzzle.
+        0: 3 * this.GRID_UNIT, // Field in puzzle.
+        1: 2 * this.GRID_UNIT, // Hexagon in puzzle.
+        2: 2 * this.GRID_UNIT, // Round in puzzle.
+        3: 2 * this.GRID_UNIT, // Square in puzzle.
+        4: 3 * this.GRID_UNIT, // Puzzle in puzzle.
+        5: 5 * this.GRID_UNIT, // Trapezoid in puzzle.
+        6: 5 * this.GRID_UNIT, // Parallelogram in puzzle.
+      },
+      5: {
+        // Outer shape: trapezoid.
+        0: 5 * this.GRID_UNIT, // Field in trapezoid.
+        1: 5 * this.GRID_UNIT, // Hexagon in trapezoid.
+        2: 5 * this.GRID_UNIT, // Round in trapezoid.
+        3: 5 * this.GRID_UNIT, // Square in trapezoid.
+        4: 5 * this.GRID_UNIT, // Puzzle in trapezoid.
+        5: 2 * this.GRID_UNIT, // Trapezoid in trapezoid.
+        6: 5 * this.GRID_UNIT, // Parallelogram in trapezoid.
+      },
+      6: {
+        // Outer shape: parallelogram.
+        0: 8 * this.GRID_UNIT, // Field in parallelogram.
+        1: 5 * this.GRID_UNIT, // Hexagon in parallelogram.
+        2: 5 * this.GRID_UNIT, // Round in parallelogram.
+        3: 5 * this.GRID_UNIT, // Square in parallelogram.
+        4: 5 * this.GRID_UNIT, // Puzzle in parallelogram.
+        5: 5 * this.GRID_UNIT, // Trapezoid in parallelogram.
+        6: 2 * this.GRID_UNIT, // Parallelogram in parallelogram.
+      },
+    };
+
+    init() {
+      super.init();
+      this.PUZZLE_TAB = this.makePuzzle();
+      this.TRAPEZOID = this.makeTrapezoid();
+      this.PARALLELOGRAM = this.makeParallelogram();
+    }
+
+    makeSquared() {
+      const maxWidth = this.MAX_DYNAMIC_CONNECTION_SHAPE_WIDTH;
+
+      function makeMainPath(height, up, right) {
+        const halfHeight = height / 2;
+        const width = halfHeight > maxWidth ? maxWidth : halfHeight;
+        const forward = up ? -1 : 1;
+        const direction = right ? -1 : 1;
+        const dy = (forward * height);
+        if (right) {
+          return (
+            Blockly.utils.svgPaths.lineOnAxis('h', width) +
+            Blockly.utils.svgPaths.lineTo(direction * width, dy)
+          );
+        } else {
+            return (
+            Blockly.utils.svgPaths.lineTo(-direction * width, dy) +
+            Blockly.utils.svgPaths.lineOnAxis('h', width)
+          );
+        }
+      }
+
+      return {
+        type: this.SHAPES.SQUARE,
+        isDynamic: true,
+        width(height) {
+          const halfHeight = height / 2;
+          return halfHeight > maxWidth ? maxWidth : halfHeight;
+        },
+        height(height) {
+          return height;
+        },
+        connectionOffsetY(connectionHeight) {
+          return connectionHeight / 2;
+        },
+        connectionOffsetX(connectionWidth) {
+          return -connectionWidth;
+        },
+        pathDown(height) {
+          return makeMainPath(height, false, false);
+        },
+        pathUp(height) {
+          return makeMainPath(height, true, false);
+        },
+        pathRightDown(height) {
+          return makeMainPath(height, false, true);
+        },
+        pathRightUp(height) {
+          return makeMainPath(height, false, true);
+        },
+      };
+    }
+
+    makePuzzle() {
+      const radius = this.CORNER_RADIUS;
+      const tabWidth = this.TAB_WIDTH;
+      const tabHeight = this.TAB_HEIGHT;
+  
+      function makeMainPath(height, up, right) {
+        if (right) {
+          const innerHeight = height - radius * 2;
+          return (
+            Blockly.utils.svgPaths.arc(
+              'a',
+              '0 0,1',
+              radius,
+              Blockly.utils.svgPaths.point((up ? -1 : 1) * radius, (up ? -1 : 1) * radius),
+            ) +
+            Blockly.utils.svgPaths.lineOnAxis('v', (right ? 1 : -1) * innerHeight) +
+            Blockly.utils.svgPaths.arc(
+              'a',
+              '0 0,1',
+              radius,
+              Blockly.utils.svgPaths.point((up ? 1 : -1) * radius, (up ? -1 : 1) * radius),
+            )
+          );
+        } else {
+          const forward = up ? -1 : 1;
+          const back = -forward;
+          const overlap = 2.5;
+          const innerHeight = (height - radius - tabHeight - 2 * overlap + 1) / 2;
+          const halfHeight = tabHeight / 2;
+          const width = tabWidth;
+          const control1Y = halfHeight + overlap;
+          const control2Y = halfHeight + 0.5;
+          const control3Y = overlap; // 2.5
+
+          const endPoint1 = Blockly.utils.svgPaths.point(-width, forward * halfHeight);
+          const endPoint2 = Blockly.utils.svgPaths.point(width, forward * halfHeight);
+
+          return (
+            Blockly.utils.svgPaths.arc(
+              'a',
+              '0 0,1',
+              radius,
+              Blockly.utils.svgPaths.point((up ? -1 : 1) * radius, (up ? -1 : 1) * radius),
+            ) +
+            Blockly.utils.svgPaths.lineOnAxis('v', (right ? 1 : -1) * innerHeight) +
+            Blockly.utils.svgPaths.curve('c', [
+              Blockly.utils.svgPaths.point(0, forward * control1Y),
+              Blockly.utils.svgPaths.point(-width, back * control2Y),
+              endPoint1,
+            ]) +
+            Blockly.utils.svgPaths.curve('s', [
+              Blockly.utils.svgPaths.point(width, back * control3Y),
+              endPoint2,
+            ]) +
+            Blockly.utils.svgPaths.lineOnAxis('v', (right ? 1 : -1) * innerHeight) +
+            Blockly.utils.svgPaths.arc(
+              'a',
+              '0 0,1',
+              radius,
+              Blockly.utils.svgPaths.point((up ? 1 : -1) * radius, (up ? -1 : 1) * radius),
+            )
+          );
+        }
+      }
+  
+      return {
+        type: this.SHAPES.PUZZLE,
+        isDynamic: true,
+        width(_height) {
+          return tabWidth;
+        },
+        height(height) {
+          return height;
+        },
+        connectionOffsetY(connectionHeight) {
+          return connectionHeight / 2;
+        },
+        connectionOffsetX(connectionWidth) {
+          return -connectionWidth;
+        },
+        pathDown(height) {
+          return makeMainPath(height, false, false);
+        },
+        pathUp(height) {
+          return makeMainPath(height, true, false);
+        },
+        pathRightDown(height) {
+          return makeMainPath(height, false, true);
+        },
+        pathRightUp(height) {
+          return makeMainPath(height, false, true);
+        },
+      };
+    }
+
+    makeTrapezoid() {
+      const maxWidth = this.MAX_DYNAMIC_CONNECTION_SHAPE_WIDTH;
+
+      function makeMainPath(height, up, right) {
+        const halfHeight = height / 2;
+        const width = halfHeight > maxWidth ? maxWidth : halfHeight;
+        const forward = up ? -1 : 1;
+        const direction = right ? -1 : 1;
+        const dy = (forward * height);
+        if (right) {
+          return (
+            Blockly.utils.svgPaths.lineTo(-direction * width, dy) +
+            Blockly.utils.svgPaths.lineOnAxis('h', -width)
+          );
+        } else {
+          return (
+            Blockly.utils.svgPaths.lineOnAxis('h', -width) +
+            Blockly.utils.svgPaths.lineTo(direction * width, dy)
+          );
+        }
+      }
+
+      return {
+        type: this.SHAPES.TRAPEZOID,
+        isDynamic: true,
+        width(height) {
+          const halfHeight = height / 2;
+          return halfHeight > maxWidth ? maxWidth : halfHeight;
+        },
+        height(height) {
+          return height;
+        },
+        connectionOffsetY(connectionHeight) {
+          return connectionHeight / 2;
+        },
+        connectionOffsetX(connectionWidth) {
+          return -connectionWidth;
+        },
+        pathDown(height) {
+          return makeMainPath(height, false, false);
+        },
+        pathUp(height) {
+          return makeMainPath(height, true, false);
+        },
+        pathRightDown(height) {
+          return makeMainPath(height, false, true);
+        },
+        pathRightUp(height) {
+          return makeMainPath(height, false, true);
+        },
+      };
+    }
+
+    makeParallelogram() {
+      const maxWidth = this.MAX_DYNAMIC_CONNECTION_SHAPE_WIDTH;
+
+      function makeMainPath(height, up, right) {
+        const halfHeight = height / 2;
+        const width = halfHeight > maxWidth ? maxWidth : halfHeight;
+        const forward = up ? -1 : 1;
+        const direction = right ? -1 : 1;
+        const dy = (forward * height);
+        return (
+          Blockly.utils.svgPaths.lineOnAxis('h', (right ? 1 : -1) * width) +
+          Blockly.utils.svgPaths.lineTo(direction * width, dy)
+        );
+      }
+
+      return {
+        type: this.SHAPES.PARALLELOGRAM,
+        isDynamic: true,
+        width(height) {
+          const halfHeight = height / 2;
+          return halfHeight > maxWidth ? maxWidth : halfHeight;
+        },
+        height(height) {
+          return height;
+        },
+        connectionOffsetY(connectionHeight) {
+          return connectionHeight / 2;
+        },
+        connectionOffsetX(connectionWidth) {
+          return -connectionWidth;
+        },
+        pathDown(height) {
+          return makeMainPath(height, false, false);
+        },
+        pathUp(height) {
+          return makeMainPath(height, true, false);
+        },
+        pathRightDown(height) {
+          return makeMainPath(height, false, true);
+        },
+        pathRightUp(height) {
+          return makeMainPath(height, false, true);
+        },
+      };
+    }
+    
+    shapeFor(connection) {
+      let checks = connection.getCheck();
+      if (!checks && connection.targetConnection) {
+        checks = connection.targetConnection.getCheck();
+      }
+      let outputShape;
+      switch (connection.type) {
+        case Blockly.ConnectionType.INPUT_VALUE:
+        case Blockly.ConnectionType.OUTPUT_VALUE:
+          outputShape = connection.getSourceBlock().getOutputShape();
+          // If the block has an output shape set, use that instead.
+          if (outputShape !== null) {
+            switch (outputShape) {
+              case this.SHAPES.HEXAGONAL:
+                return this.HEXAGONAL;
+              case this.SHAPES.ROUND:
+                return this.ROUNDED;
+              case this.SHAPES.SQUARE:
+                return this.SQUARED;
+              case this.SHAPES.PUZZLE:
+                return this.PUZZLE_TAB;
+            }
+          }
+          // Includes doesn't work in IE.
+          if (checks && checks.indexOf('Boolean') !== -1) {
+            return this.HEXAGONAL;
+          }
+          if (checks && checks.indexOf('Number') !== -1) {
+            return this.ROUNDED;
+          }
+          if (checks && checks.indexOf('String') !== -1) {
+            return this.PUZZLE_TAB;
+          }
+          if (checks && checks.indexOf('Array') !== -1) {
+            return this.SQUARED;
+          }
+          if (checks && checks.indexOf('Dictionary') !== -1) {
+            return this.TRAPEZOID;
+          }
+          if (checks && checks.indexOf('Model') !== -1) {
+            return this.PARALLELOGRAM;
+          }
+          return this.ROUNDED;
+        case Blockly.ConnectionType.PREVIOUS_STATEMENT:
+        case Blockly.ConnectionType.NEXT_STATEMENT:
+          return this.NOTCH;
+        default:
+          throw Error('Unknown type');
+      }
+    }
+
     getCSS_(selector) {
       return [
         /* eslint-disable indent */
@@ -604,6 +975,12 @@ Code.init = async function() {
         // Flyout labels.
         `${selector} .blocklyFlyoutLabelText {`,
         `fill: #575E75;`,
+        `}`,
+        
+        // Flyout buttons.
+        `${selector} .blocklyFlyoutButton {`,
+        `fill: #E4F5FF;`,
+        `cursor: pointer;`,
         `}`,
   
         // Bubbles.
@@ -658,14 +1035,62 @@ Code.init = async function() {
         `}`,
       ];
     }
-  }
+  } 
+
+  class CustomRenderInfo extends Blockly.zelos.RenderInfo { 
+    getInRowSpacing_(prev, next) {
+      if (!prev || !next) {
+        if (
+          this.outputConnection &&
+          this.outputConnection.isDynamicShape &&
+          !this.hasStatementInput &&
+          !this.bottomRow.hasNextConnection
+        ) {
+          if ((this.outputConnection.shape.type == this.constants_.SHAPES.SQUARE ||
+            this.outputConnection.shape.type == this.constants_.SHAPES.PUZZLE) && next && next.icon)
+            return this.constants_.MEDIUM_PADDING;
+          if ((this.outputConnection.shape.type == this.constants_.SHAPES.TRAPEZOID ||
+            this.outputConnection.shape.type == this.constants_.SHAPES.SQUARE ||
+            this.outputConnection.shape.type == this.constants_.SHAPES.PARALLELOGRAM) &&
+            ((prev && prev.parentInput && prev.parentInput.sourceBlock && prev.parentInput.sourceBlock.icons.length != 0) ||
+            (next && next.icon)))
+            return this.constants_.MEDIUM_PADDING;
+          return this.constants_.NO_PADDING;
+        }
+      }
+      if (!prev) {
+        // Statement input padding.
+        if (next && Blockly.blockRendering.Types.isStatementInput(next)) {
+          return this.constants_.STATEMENT_INPUT_PADDING_LEFT;
+        }
+      }
+      // Spacing between a rounded corner and a previous or next connection.
+      if (prev && Blockly.blockRendering.Types.isLeftRoundedCorner(prev) && next) {
+        if (Blockly.blockRendering.Types.isPreviousConnection(next) || Blockly.blockRendering.Types.isNextConnection(next)) {
+          return next.notchOffset - this.constants_.CORNER_RADIUS;
+        }
+      }
+      // Spacing between a square corner and a hat.
+      if (prev && Blockly.blockRendering.Types.isLeftSquareCorner(prev) && next && Blockly.blockRendering.Types.isHat(next)) {
+        return this.constants_.NO_PADDING;
+      }
+      return this.constants_.MEDIUM_PADDING;
+    }
+  };
 
   class CustomRenderer extends Blockly.zelos.Renderer { 
     makeConstants_() {
       return new CustomConstantProvider();
     }
+
+    makeRenderInfo_(block) {
+      return new CustomRenderInfo(this, block);
+    }
   };
+  // const DebugRenderer = createNewRenderer(CustomRenderer);
+  // Blockly.blockRendering.register('custom_renderer', DebugRenderer);
   Blockly.blockRendering.register('custom_renderer', CustomRenderer);
+  Blockly.Msg["MLPLAY_CLASS_NAME"] = Code.GAME;
   
   // Initialize blockly workspace.
   Code.workspace = Blockly.inject('content_blocks', {
@@ -691,6 +1116,123 @@ Code.init = async function() {
       wheel: true
     }
   });
+
+  var stringButtonClickHandler = function(button) {
+    Blockly.Variables.createVariableButtonHandler(
+      button.getTargetWorkspace(),
+      undefined,
+      'String',
+    );
+  };
+  var numberButtonClickHandler = function(button) {
+    Blockly.Variables.createVariableButtonHandler(
+      button.getTargetWorkspace(),
+      undefined,
+      'Number',
+    );
+  };
+  var arrayButtonClickHandler = function(button) {
+    Blockly.Variables.createVariableButtonHandler(
+      button.getTargetWorkspace(),
+      undefined,
+      'Array',
+    );
+  };
+  var dictButtonClickHandler = function(button) {
+    Blockly.Variables.createVariableButtonHandler(
+      button.getTargetWorkspace(),
+      undefined,
+      'Dictionary',
+    );
+  };
+  var modelButtonClickHandler = function(button) {
+    Blockly.Variables.createVariableButtonHandler(
+      button.getTargetWorkspace(),
+      undefined,
+      'Model',
+    );
+  };
+
+  var flyoutCategoryBlocks = function(workspace) {
+    const variableModelList = workspace.getAllVariables();
+  
+    const xmlList = [];
+    if (variableModelList.length > 0) {
+      if (Blockly.Blocks['variables_set_dynamic']) {
+        const firstVariable = variableModelList[variableModelList.length - 1];
+        const block = Blockly.utils.xml.createElement('block');
+        block.setAttribute('type', 'variables_set');
+        block.setAttribute('gap', '24');
+        block.appendChild(Blockly.Variables.generateVariableFieldDom(firstVariable));
+        xmlList.push(block);
+      }
+      if (Blockly.Blocks['variables_get_dynamic']) {
+        variableModelList.sort(Blockly.VariableModel.compareByName);
+        for (let i = 0, variable; (variable = variableModelList[i]); i++) {
+          const block = Blockly.utils.xml.createElement('block');
+          block.setAttribute('type', 'variables_get');
+          block.setAttribute('gap', '8');
+          block.appendChild(Blockly.Variables.generateVariableFieldDom(variable));
+          xmlList.push(block);
+        }
+      }
+    }
+    return xmlList;
+  }
+
+  var flyoutCategory = function(workspace) {
+    let xmlList = new Array();
+    let button = document.createElement('button');
+    button.setAttribute('text', Blockly.Msg['NEW_STRING_VARIABLE']);
+    button.setAttribute('callbackKey', 'CREATE_VARIABLE_STRING');
+    xmlList.push(button);
+    button = document.createElement('button');
+    button.setAttribute('text', Blockly.Msg['NEW_NUMBER_VARIABLE']);
+    button.setAttribute('callbackKey', 'CREATE_VARIABLE_NUMBER');
+    xmlList.push(button);
+    button = document.createElement('button');
+    button.setAttribute('text', Blockly.Msg['NEW_ARRAY_VARIABLE']);
+    button.setAttribute('callbackKey', 'CREATE_VARIABLE_ARRAY');
+    xmlList.push(button);
+    button = document.createElement('button');
+    button.setAttribute('text', Blockly.Msg['NEW_DICT_VARIABLE']);
+    button.setAttribute('callbackKey', 'CREATE_VARIABLE_DICT');
+    xmlList.push(button);
+    button = document.createElement('button');
+    button.setAttribute('text', Blockly.Msg['NEW_MODEL_VARIABLE']);
+    button.setAttribute('callbackKey', 'CREATE_VARIABLE_MODEL');
+    xmlList.push(button);
+  
+    workspace.registerButtonCallback(
+      'CREATE_VARIABLE_NUMBER',
+      numberButtonClickHandler,
+    );
+    workspace.registerButtonCallback(
+      'CREATE_VARIABLE_STRING',
+      stringButtonClickHandler,
+    );
+    workspace.registerButtonCallback(
+      'CREATE_VARIABLE_ARRAY',
+      arrayButtonClickHandler,
+    );
+    workspace.registerButtonCallback(
+      'CREATE_VARIABLE_DICT',
+      dictButtonClickHandler,
+    );
+    workspace.registerButtonCallback(
+      'CREATE_VARIABLE_MODEL',
+      modelButtonClickHandler,
+    );
+  
+    const blockList = flyoutCategoryBlocks(workspace);
+    xmlList = xmlList.concat(blockList);
+    return xmlList;
+  }
+
+  Code.workspace.registerToolboxCategoryCallback(
+    "CUSTOM_VARIABLE",
+    flyoutCategory,
+  );
   
   // Set callback function when workspace is changed.
   Code.workspace.addChangeListener((e) => {

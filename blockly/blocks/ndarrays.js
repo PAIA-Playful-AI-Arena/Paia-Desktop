@@ -157,7 +157,8 @@ Blockly.Blocks['ndarrays_create_with'] = {
     // Add new inputs.
     for (let i = 0; i < this.dimCount_; i++) {
       if (!this.getInput('DIM' + i)) {
-        const input = this.appendValueInput('DIM' + i);
+        const input = this.appendValueInput('DIM' + i)
+                          .setCheck(['Number']);;
         if (i === 0) {
           input.appendField(Blockly.Msg['NDARRAYS_CREATE_WITH_DIM_WITH']);
         } else {

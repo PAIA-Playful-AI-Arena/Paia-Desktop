@@ -360,7 +360,7 @@ contextBridge.exposeInMainWorld('paia', {
     return `${env.parsed.PAIA_APP_HOST}/ads`
   },
   adsConsole: () => {
-    return `${env.parsed.PAIA_APP_HOST_STAGE}/adsconsole`
+    return `${env.parsed.PAIA_APP_HOST}/adsconsole`
   },
   redirect: () => {
     return `${env.parsed.PAIA_APP_HOST}/login?app=true`

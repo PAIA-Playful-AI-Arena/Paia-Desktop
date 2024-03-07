@@ -2206,9 +2206,7 @@ Code.play = function() {
     total_args = total_args.concat(['-i', file_name])
   }
   total_args = total_args.concat(['-f', fps, window.path.join(__dirname, 'games', Code.GAME).replace('app.asar', 'app.asar.unpacked')]).concat(args);
-  const state = window.python_env.getCustom();
-  const python_path = (state.custom_python)? state.custom_python_path :
-    window.path.join(__dirname, 'python', 'dist', 'interpreter', 'interpreter').replace('app.asar', 'app.asar.unpacked');
+  const python_path = window.path.join(__dirname, 'python', 'dist', 'interpreter', 'interpreter').replace('app.asar', 'app.asar.unpacked');
   const options = {
     mode: 'text',
     pythonPath: python_path,
@@ -2233,9 +2231,7 @@ Code.play = function() {
 Code.execute = function() {
   const file_name = Code.saveTmpPython(Code.PROJECT_PATH);
   const file_path = window.path.join(Code.PROJECT_PATH, file_name);
-  const state = window.python_env.getCustom();
-  const python_path = (state.custom_python)? state.custom_python_path :
-    window.path.join(__dirname, 'python', 'dist', 'interpreter', 'interpreter').replace('app.asar', 'app.asar.unpacked');
+  const python_path = window.path.join(__dirname, 'python', 'dist', 'interpreter', 'interpreter').replace('app.asar', 'app.asar.unpacked');
   const options = {
     mode: 'text',
     pythonPath: python_path,

@@ -275,6 +275,9 @@ contextBridge.exposeInMainWorld('editor', {
 contextBridge.exposeInMainWorld('dir', {
   copy: (src, dest) => {
     copyDir(src, dest);
+  },
+  isDirectory: (dir) => {
+    return (fs.existsSync(dir) && fs.lstatSync(dir).isDirectory());
   }
 });
 contextBridge.exposeInMainWorld('repo', {

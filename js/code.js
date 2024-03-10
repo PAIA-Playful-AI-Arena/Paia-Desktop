@@ -2389,7 +2389,7 @@ Code.openProject = function(path) {
   const configPath = window.path.join(Code.PROJECT_PATH, 'project.json');
   if (window.fs.existsSync(configPath)) {
     const config = JSON.parse(window.file.read(configPath));
-    if (config.last_saved)
+    if (config.last_saved && config.last_saved.endsWith(".xml"))
       start = config.last_saved;
   }
   if (window.fs.existsSync(start)) {

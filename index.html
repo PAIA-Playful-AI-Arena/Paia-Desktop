@@ -209,9 +209,10 @@
         if (window.fs.existsSync(configPath)) {
           const config = JSON.parse(window.file.read(configPath));
           let coverPath = window.path.join(project, "cover.svg");
-          if (!window.fs.existsSync(coverPath)) {
+          if (config.last_saved.endsWith(".py"))
+            coverPath = "media/python-logo.png";
+          else if (!window.fs.existsSync(coverPath))
             coverPath = "media/paia-logo.png";
-          }
           $('#latest-projects').append(
             `<div style="margin-right: 80px; cursor: pointer" title="${project}" onclick="new_project('${dirent}', '${version}', '${logoPath}', '${index}');">
               <div class="d-flex justify-content-center" style="height: 180px; width: 180px; padding: 10px; border-radius: 15px; border: 1px solid #B6B6B6;">

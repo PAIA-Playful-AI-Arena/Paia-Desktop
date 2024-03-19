@@ -50,6 +50,7 @@ const template = [
       {
         label: '載入專案',
         id: 'load_project',
+        accelerator: 'CmdOrCtrl+L',
         enabled: false,
         click() {
           mainWindow.webContents.send('load_project');
@@ -66,6 +67,7 @@ const template = [
       {
         label: '開啟專案位置',
         id: 'reveal_project',
+        accelerator: 'CmdOrCtrl+O',
         enabled: false,
         click() {
           mainWindow.webContents.send('reveal_project');
@@ -75,6 +77,7 @@ const template = [
       {
         label: '儲存積木',
         id: 'save_block',
+        accelerator: 'CmdOrCtrl+S',
         enabled: false,
         click() {
           mainWindow.webContents.send('save_block');
@@ -87,13 +90,15 @@ const template = [
         click() {
           mainWindow.webContents.send('save_python');
         }
+      },
+      { type: 'separator' },
+      {
+        label: '離開',
+        accelerator: 'CmdOrCtrl+Q',
+        click() {
+          mainWindow.close();
+        }
       }
-      // {
-      //   label: '離開',
-      //   click() {
-      //     mainWindow.close();
-      //   }
-      // }
     ]
   },
   {
@@ -128,6 +133,7 @@ const template = [
       {
         label: 'Python 程式碼',
         id: 'show_python',
+        accelerator: 'CmdOrCtrl+P',
         enabled: true,
         click() {
           mainWindow.webContents.send('show_python');
@@ -136,6 +142,7 @@ const template = [
       {
         label: '積木',
         id: 'show_block',
+        accelerator: 'CmdOrCtrl+B',
         enabled: false,
         click() {
           mainWindow.webContents.send('show_block');

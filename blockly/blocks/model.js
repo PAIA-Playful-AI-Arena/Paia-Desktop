@@ -209,7 +209,7 @@ Blockly.defineBlocksWithJsonArray([
     'nextStatement': null,
     'enableContextMenu': false,
     'style': 'model_dl_blocks',
-    'tooltip': '深度學習模型的輸入',
+    'tooltip': '深度學習模型的輸入'
   },
   // Block representing the dense layer in deep learning modal mutator.
   {
@@ -243,6 +243,7 @@ Blockly.defineBlocksWithJsonArray([
     ],
     "previousStatement": null,
     "nextStatement": null,
+    'enableContextMenu': false,
     'style': 'model_dl_blocks',
     "tooltip": "在深度學習模型中加入一層全連接層"
   },
@@ -274,6 +275,7 @@ Blockly.defineBlocksWithJsonArray([
     ],
     "previousStatement": null,
     "nextStatement": null,
+    'enableContextMenu': false,
     'style': 'model_dl_blocks',
     "tooltip": "在深度學習模型中加入一層循環層"
   },
@@ -297,6 +299,7 @@ Blockly.defineBlocksWithJsonArray([
     ],
     "previousStatement": null,
     "nextStatement": null,
+    'enableContextMenu': false,
     'style': 'model_dl_blocks',
     "tooltip": "在深度學習模型中加入一層嵌入層"
   },
@@ -320,6 +323,7 @@ Blockly.defineBlocksWithJsonArray([
     ],
     "previousStatement": null,
     "nextStatement": null,
+    'enableContextMenu': false,
     'style': 'model_dl_blocks',
     "tooltip": "在深度學習模型中加入一層 Transformer 編碼層"
   },
@@ -361,6 +365,7 @@ Blockly.defineBlocksWithJsonArray([
     ],
     "previousStatement": null,
     "nextStatement": null,
+    'enableContextMenu': false,
     'style': 'model_dl_blocks',
     "tooltip": "在深度學習模型中加入一層卷積層"
   },
@@ -410,6 +415,7 @@ Blockly.defineBlocksWithJsonArray([
     ],
     "previousStatement": null,
     "nextStatement": null,
+    'enableContextMenu': false,
     'style': 'model_dl_blocks',
     "tooltip": "在深度學習模型中加入一層池化層"
   },
@@ -442,6 +448,7 @@ Blockly.defineBlocksWithJsonArray([
       }
     ],
     "previousStatement": null,
+    'enableContextMenu': false,
     'style': 'model_dl_blocks',
     "tooltip": "設定深度學習模型的損失函數"
   },
@@ -896,6 +903,7 @@ Blockly.Blocks['model_dl_reshape_layer'] = {
     this.setPreviousStatement(true);
     this.setNextStatement(true);
     this.setTooltip('');
+    this.contextMenu = false;
     this.dim_ = 0;
     this.shape_ = null;
   },

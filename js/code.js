@@ -75,6 +75,9 @@ Code.FOCUSED_FILE = "";
  */
 Code.FOCUSED_GROUP = "";
 
+Code.copyData = null;
+Code.copyWorkspace = null;
+
 /**
  * Lookup for names of supported languages.  Keys should be in ISO 639 format.
  */
@@ -543,42 +546,6 @@ Code.init = async function() {
     Blockly.registry.Type.TOOLBOX_ITEM,
     Blockly.ToolboxCategory.registrationName,
     CustomCategory, true);
-
-  class CustomContinuousFlyout extends ContinuousFlyout {
-    constructor(workspaceOptions) {
-      super(workspaceOptions);
-      this.autoClose = true;
-    }
-  }
-
-  class CustomContinuousToolbox extends ContinuousToolbox {
-    init() {
-      super.init();
-      this.getFlyout().hide();
-      this.workspace_.addChangeListener((e) => {
-        if (
-          e.type === Blockly.Events.CLICK
-        ) {
-          this.refreshSelection();
-        }
-      });
-    }
-    refreshSelection() {
-      this.getFlyout().hide();
-    }
-    updateFlyout_(_oldItem, newItem) {
-      if (newItem) {
-        const target = this.getFlyout().getCategoryScrollPosition(
-          newItem.name_,
-        ).y;
-        this.getFlyout().scrollTo(target);
-      }
-      this.getFlyout().show(this.getInitialFlyoutContents_());
-    }
-    getX() {
-      return super.getX();
-    }
-  }
 
   class CustomConstantProvider extends Blockly.zelos.ConstantProvider {
     
@@ -1096,6 +1063,8 @@ Code.init = async function() {
   // Blockly.blockRendering.register('custom_renderer', DebugRenderer);
   Blockly.blockRendering.register('custom_renderer', CustomRenderer);
   Blockly.Msg["MLPLAY_CLASS_NAME"] = Code.GAME;
+
+  Code.registerShortcuts();
   
   // Initialize blockly workspace.
   Code.workspace = Blockly.inject('content_blocks', {
@@ -2734,6 +2703,112 @@ Code.deleteFilesetFile = function(index, filename) {
       Code.showFilesets();
     })
   }
+};
+
+Code.registerShortcuts = function() {
+  const ctrlC = Blockly.ShortcutRegistry.registry.createSerializedKey(Blockly.utils.KeyCodes.C, [
+    Blockly.utils.KeyCodes.CTRL,
+  ]);
+  const altC = Blockly.ShortcutRegistry.registry.createSerializedKey(Blockly.utils.KeyCodes.C, [
+    Blockly.utils.KeyCodes.ALT,
+  ]);
+  const metaC = Blockly.ShortcutRegistry.registry.createSerializedKey(Blockly.utils.KeyCodes.C, [
+    Blockly.utils.KeyCodes.META,
+  ]);
+
+  const copyShortcut = {
+    name: Blockly.ShortcutItems.names.COPY,
+    allowCollision: true,
+    preconditionFn(workspace) {
+      const selected = Blockly.common.getSelected();
+      return (
+        !workspace.options.readOnly &&
+        !Blockly.Gesture.inProgress() &&
+        selected != null &&
+        selected.isDeletable() &&
+        selected.isMovable() &&
+        !selected.workspace.isMutator &&
+        Blockly.isCopyable(selected)
+      );
+    },
+    callback(workspace, e) {
+      // Prevent the default copy behavior, which may beep or otherwise indicate
+      // an error due to the lack of a selection.
+      e.preventDefault();
+      workspace.hideChaff();
+      const selected = Blockly.common.getSelected();
+      if (!selected || !Blockly.isCopyable(selected)) return false;
+      Code.copyData = selected.toCopyData();
+      Code.copyWorkspace = selected.workspace;
+      return !!Code.copyData;
+    },
+    keyCodes: [ctrlC, altC, metaC],
+  };
+  Blockly.ShortcutRegistry.registry.register(copyShortcut, true);
+
+  const ctrlX = Blockly.ShortcutRegistry.registry.createSerializedKey(Blockly.utils.KeyCodes.X, [
+    Blockly.utils.KeyCodes.CTRL,
+  ]);
+  const altX = Blockly.ShortcutRegistry.registry.createSerializedKey(Blockly.utils.KeyCodes.X, [
+    Blockly.utils.KeyCodes.ALT,
+  ]);
+  const metaX = Blockly.ShortcutRegistry.registry.createSerializedKey(Blockly.utils.KeyCodes.X, [
+    Blockly.utils.KeyCodes.META,
+  ]);
+
+  const cutShortcut = {
+    name: Blockly.ShortcutItems.names.CUT,
+    allowCollision: true,
+    preconditionFn(workspace) {
+      const selected = Blockly.common.getSelected();
+      return (
+        !workspace.options.readOnly &&
+        !Blockly.Gesture.inProgress() &&
+        selected != null &&
+        selected instanceof Blockly.BlockSvg &&
+        selected.isDeletable() &&
+        selected.isMovable() &&
+        !selected.workspace.isFlyout &&
+        !selected.workspace.isMutator
+      );
+    },
+    callback(workspace) {
+      const selected = Blockly.common.getSelected();
+      if (!selected || !Blockly.isCopyable(selected)) return false;
+      Code.copyData = selected.toCopyData();
+      Code.copyWorkspace = selected.workspace;
+      selected.checkAndDelete();
+      return true;
+    },
+    keyCodes: [ctrlX, altX, metaX],
+  };
+
+  Blockly.ShortcutRegistry.registry.register(cutShortcut, true);
+
+  const ctrlV = Blockly.ShortcutRegistry.registry.createSerializedKey(Blockly.utils.KeyCodes.V, [
+    Blockly.utils.KeyCodes.CTRL,
+  ]);
+  const altV = Blockly.ShortcutRegistry.registry.createSerializedKey(Blockly.utils.KeyCodes.V, [
+    Blockly.utils.KeyCodes.ALT,
+  ]);
+  const metaV = Blockly.ShortcutRegistry.registry.createSerializedKey(Blockly.utils.KeyCodes.V, [
+    Blockly.utils.KeyCodes.META,
+  ]);
+
+  const pasteShortcut = {
+    name: Blockly.ShortcutItems.names.PASTE,
+    allowCollision: true,
+    preconditionFn(workspace) {
+      return !workspace.options.readOnly && !Blockly.Gesture.inProgress();
+    },
+    callback() {
+      if (!Code.copyData || !Code.copyWorkspace) return false;
+      return !!Blockly.clipboard.paste(Code.copyData, Code.copyWorkspace);
+    },
+    keyCodes: [ctrlV, altV, metaV],
+  };
+
+  Blockly.ShortcutRegistry.registry.register(pasteShortcut, true);
 };
 
 // Load the Code demo's language strings.

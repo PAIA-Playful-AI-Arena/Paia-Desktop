@@ -1807,7 +1807,7 @@ Code.updateProjectFileList = function(parent='') {
   if (parent == '')
     $(`#project-file-list`).empty();
   window.fs.readdirSync(window.path.join(Code.PROJECT_PATH, parent), { recursive: true }).forEach(file => {
-    if (window.dir.isDirectory(file)) {
+    if (window.dir.isDirectory(window.path.join(Code.PROJECT_PATH, parent, file))) {
       if (file != "__pycache__")
         Code.updateProjectFileList(window.path.join(parent, file));
     } else {

@@ -549,7 +549,7 @@ Code.init = async function() {
 
   class CustomConstantProvider extends Blockly.zelos.ConstantProvider {
     
-    SHAPES = {HEXAGONAL: 1, ROUND: 2, SQUARE: 3, PUZZLE: 4, TRAPEZOID: 5, PARALLELOGRAM: 6, NOTCH: 7};
+    SHAPES = {HEXAGONAL: 1, ROUND: 2, SQUARE: 3, PUZZLE: 4, TRAPEZOID: 5, PARALLELOGRAM: 6, WAVE: 7, NOTCH: 8};
 
     SHAPE_IN_SHAPE_PADDING = {
       1: {
@@ -561,16 +561,18 @@ Code.init = async function() {
         4: 5 * this.GRID_UNIT, // Puzzle in hexagon.
         5: 5 * this.GRID_UNIT, // Trapezoid in hexagon.
         6: 5 * this.GRID_UNIT, // Parallelogram in hexagon.
+        7: 5 * this.GRID_UNIT, // Wave in hexagon.
       },
       2: {
         // Outer shape: round.
         0: 3 * this.GRID_UNIT, // Field in round.
         1: 3 * this.GRID_UNIT, // Hexagon in round.
         2: 2 * this.GRID_UNIT, // Round in round.
-        3: 4 * this.GRID_UNIT, // Square in round.
+        3: 8 * this.GRID_UNIT, // Square in round.
         4: 4 * this.GRID_UNIT, // Puzzle in round.
-        5: 5 * this.GRID_UNIT, // Trapezoid in round.
-        6: 5 * this.GRID_UNIT, // Parallelogram in round.
+        5: 8 * this.GRID_UNIT, // Trapezoid in round.
+        6: 9 * this.GRID_UNIT, // Parallelogram in round.
+        7: 5 * this.GRID_UNIT, // Wave in round.
       },
       3: {
         // Outer shape: square.
@@ -579,8 +581,9 @@ Code.init = async function() {
         2: 8 * this.GRID_UNIT, // Round in square.
         3: 2 * this.GRID_UNIT, // Square in square.
         4: 5 * this.GRID_UNIT, // Puzzle in square.
-        5: 5 * this.GRID_UNIT, // Trapezoid in square.
-        6: 5 * this.GRID_UNIT, // Parallelogram in square.
+        5: 8 * this.GRID_UNIT, // Trapezoid in square.
+        6: 8 * this.GRID_UNIT, // Parallelogram in square.
+        7: 5 * this.GRID_UNIT, // Wave in square.
       },
       4: {
         // Outer shape: puzzle.
@@ -591,16 +594,18 @@ Code.init = async function() {
         4: 3 * this.GRID_UNIT, // Puzzle in puzzle.
         5: 5 * this.GRID_UNIT, // Trapezoid in puzzle.
         6: 5 * this.GRID_UNIT, // Parallelogram in puzzle.
+        7: 5 * this.GRID_UNIT, // Wave in puzzle.
       },
       5: {
         // Outer shape: trapezoid.
         0: 5 * this.GRID_UNIT, // Field in trapezoid.
         1: 5 * this.GRID_UNIT, // Hexagon in trapezoid.
         2: 5 * this.GRID_UNIT, // Round in trapezoid.
-        3: 5 * this.GRID_UNIT, // Square in trapezoid.
+        3: 8 * this.GRID_UNIT, // Square in trapezoid.
         4: 5 * this.GRID_UNIT, // Puzzle in trapezoid.
         5: 2 * this.GRID_UNIT, // Trapezoid in trapezoid.
-        6: 5 * this.GRID_UNIT, // Parallelogram in trapezoid.
+        6: 8 * this.GRID_UNIT, // Parallelogram in trapezoid.
+        7: 5 * this.GRID_UNIT, // Wave in trapezoid.
       },
       6: {
         // Outer shape: parallelogram.
@@ -611,6 +616,18 @@ Code.init = async function() {
         4: 5 * this.GRID_UNIT, // Puzzle in parallelogram.
         5: 5 * this.GRID_UNIT, // Trapezoid in parallelogram.
         6: 2 * this.GRID_UNIT, // Parallelogram in parallelogram.
+        7: 5 * this.GRID_UNIT, // Wave in parallelogram.
+      },
+      7: {
+        // Outer shape: wave.
+        0: 8 * this.GRID_UNIT, // Field in wave.
+        1: 5 * this.GRID_UNIT, // Hexagon in wave.
+        2: 9 * this.GRID_UNIT, // Round in wave.
+        3: 5 * this.GRID_UNIT, // Square in wave.
+        4: 5 * this.GRID_UNIT, // Puzzle in wave.
+        5: 5 * this.GRID_UNIT, // Trapezoid in wave.
+        6: 2 * this.GRID_UNIT, // Parallelogram in wave.
+        7: 2 * this.GRID_UNIT, // Wave in wave.
       },
     };
 
@@ -619,6 +636,7 @@ Code.init = async function() {
       this.PUZZLE_TAB = this.makePuzzle();
       this.TRAPEZOID = this.makeTrapezoid();
       this.PARALLELOGRAM = this.makeParallelogram();
+      this.WAVE = this.makeWave();
     }
 
     makeSquared() {
@@ -867,6 +885,83 @@ Code.init = async function() {
         },
       };
     }
+
+    makeWave() {
+      const maxWidth = this.MAX_DYNAMIC_CONNECTION_SHAPE_WIDTH;
+  
+      function makeMainPath(height, up, right) {
+        const halfHeight = height / 2;
+        const width = halfHeight > maxWidth ? maxWidth : halfHeight;
+        const forward = up ? -1 : 1;
+        const direction = right ? -1 : 1;
+        const dy = (forward * height);
+        if (right) {
+          return (
+            Blockly.utils.svgPaths.lineOnAxis('h', width / 2) +
+            Blockly.utils.svgPaths.curve('q', [
+              Blockly.utils.svgPaths.point(width / 3, forward * halfHeight / 2),
+              Blockly.utils.svgPaths.point(0, forward * height / 2)
+            ]) +
+            Blockly.utils.svgPaths.curve('q', [
+              Blockly.utils.svgPaths.point(-width / 3, forward * halfHeight / 2),
+              Blockly.utils.svgPaths.point(0, forward * height / 2)
+            ]) +
+            // Blockly.utils.svgPaths.curve('q', [
+            //   Blockly.utils.svgPaths.point(width / 4, forward * halfHeight / 3),
+            //   Blockly.utils.svgPaths.point(0, forward * height / 3)
+            // ]) +
+            Blockly.utils.svgPaths.lineOnAxis('h', -width / 2)
+          );
+        } else {
+          return (
+            Blockly.utils.svgPaths.lineOnAxis('h', -width / 2) +
+            Blockly.utils.svgPaths.curve('q', [
+              Blockly.utils.svgPaths.point(-width / 3, forward * halfHeight / 2),
+              Blockly.utils.svgPaths.point(0, forward * height / 2)
+            ]) +
+            Blockly.utils.svgPaths.curve('q', [
+              Blockly.utils.svgPaths.point(width / 3, forward * halfHeight / 2),
+              Blockly.utils.svgPaths.point(0, forward * height / 2)
+            ]) +
+            // Blockly.utils.svgPaths.curve('q', [
+            //   Blockly.utils.svgPaths.point(-width / 4, forward * halfHeight / 3),
+            //   Blockly.utils.svgPaths.point(0, forward * height / 3)
+            // ]) +
+            Blockly.utils.svgPaths.lineOnAxis('h', width / 2)
+          )
+        }
+      }
+  
+      return {
+        type: this.SHAPES.WAVE,
+        isDynamic: true,
+        width(height) {
+          const halfHeight = height / 2;
+          return halfHeight > maxWidth ? maxWidth : halfHeight;
+        },
+        height(height) {
+          return height;
+        },
+        connectionOffsetY(connectionHeight) {
+          return connectionHeight / 2;
+        },
+        connectionOffsetX(connectionWidth) {
+          return -connectionWidth;
+        },
+        pathDown(height) {
+          return makeMainPath(height, false, false);
+        },
+        pathUp(height) {
+          return makeMainPath(height, true, false);
+        },
+        pathRightDown(height) {
+          return makeMainPath(height, false, true);
+        },
+        pathRightUp(height) {
+          return makeMainPath(height, false, true);
+        },
+      };
+    }
     
     shapeFor(connection) {
       let checks = connection.getCheck();
@@ -889,6 +984,8 @@ Code.init = async function() {
                 return this.SQUARED;
               case this.SHAPES.PUZZLE:
                 return this.PUZZLE_TAB;
+              case this.SHAPES.WAVE:
+                return this.WAVE;
             }
           }
           // Includes doesn't work in IE.
@@ -910,7 +1007,7 @@ Code.init = async function() {
           if (checks && checks.indexOf('Model') !== -1) {
             return this.PARALLELOGRAM;
           }
-          return this.ROUNDED;
+          return this.WAVE;
         case Blockly.ConnectionType.PREVIOUS_STATEMENT:
         case Blockly.ConnectionType.NEXT_STATEMENT:
           return this.NOTCH;
@@ -1126,6 +1223,11 @@ Code.init = async function() {
       'Model',
     );
   };
+  var generalButtonClickHandler = function(button) {
+    Blockly.Variables.createVariableButtonHandler(
+      button.getTargetWorkspace()
+    );
+  };
 
   var flyoutCategoryBlocks = function(workspace) {
     const variableModelList = workspace.getAllVariables();
@@ -1176,6 +1278,10 @@ Code.init = async function() {
     button.setAttribute('text', Blockly.Msg['NEW_MODEL_VARIABLE']);
     button.setAttribute('callbackKey', 'CREATE_VARIABLE_MODEL');
     xmlList.push(button);
+    button = document.createElement('button');
+    button.setAttribute('text', Blockly.Msg['NEW_VARIABLE']);
+    button.setAttribute('callbackKey', 'CREATE_VARIABLE');
+    xmlList.push(button);
   
     workspace.registerButtonCallback(
       'CREATE_VARIABLE_NUMBER',
@@ -1196,6 +1302,10 @@ Code.init = async function() {
     workspace.registerButtonCallback(
       'CREATE_VARIABLE_MODEL',
       modelButtonClickHandler,
+    );
+    workspace.registerButtonCallback(
+      'CREATE_VARIABLE',
+      generalButtonClickHandler,
     );
   
     const blockList = flyoutCategoryBlocks(workspace);

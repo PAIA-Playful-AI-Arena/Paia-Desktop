@@ -1351,6 +1351,11 @@ Code.deleteFilesetFile = function(index, filename) {
   }
 };
 
+Code.showGroupdropdown = function(group, show) {
+  if (show != $(`#group-${group}-list`).hasClass('show'))
+    $(`#group-${group}-button`).trigger("click");
+};
+
 // Load the Code demo's language strings.
 document.write('<script src="js/ui_msg/' + Code.LANG + '.js"></script>\n');
 

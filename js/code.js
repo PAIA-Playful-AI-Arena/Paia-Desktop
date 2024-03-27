@@ -2815,6 +2815,11 @@ Code.deleteFilesetFile = function(index, filename) {
   }
 };
 
+Code.showGroupdropdown = function(group, show) {
+  if (show != $(`#group-${group}-list`).hasClass('show'))
+    $(`#group-${group}-button`).trigger("click");
+};
+
 Code.registerShortcuts = function() {
   const ctrlC = Blockly.ShortcutRegistry.registry.createSerializedKey(Blockly.utils.KeyCodes.C, [
     Blockly.utils.KeyCodes.CTRL,

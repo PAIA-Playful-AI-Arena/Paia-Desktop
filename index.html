@@ -37,6 +37,20 @@
         </div>
       </div>
     </div>
+    <!-- My games dialog -->
+    <div class="modal fade" id="my-games-dialog" data-keyboard="true">
+      <div class="modal-dialog modal-dialog-centered" style="max-width: 1000px; position: absolute; left: 50%; transform: translate(-50%, 0%);">
+        <div class="modal-content" style="width: 1000px; min-height: 400px; border-radius: 25px;">
+          <div class="modal-header d-flex justify-content-center" style="background-color: #0039CF; color: white; font-size: 28px; font-weight: 800; border-radius: 25px 25px 0px 0px; cursor: pointer;">
+            <span class="modal-title" id="game-play-title">我的遊戲</span>
+          </div>
+          <div class="modal-body list-group list-group-flush" id="my-games-list" style="padding: 20px;"></div>
+          <div class="modal-footer d-flex justify-content-center pt-4">
+            <button type="button" class="btn px-4" data-dismiss="modal" style="background-color: #0039CF; color: white; font-size: 24px; font-weight: 800; border-radius: 15px; border: 2px solid #0039CF;">確定</button>
+          </div>
+        </div>
+      </div>
+    </div>
     <!-- Game dialog -->
     <div class="modal fade" id="game-dialog" tabindex="-1" data-backdrop="true" data-keyboard="true">
       <div class="modal-dialog" style="max-width: 1200px; position: absolute; left: 50%; transform: translate(-50%, 0%);">
@@ -89,6 +103,9 @@
           <h6 id="user-name" class="pt-2" style="max-width: 150px; font-size: 13px; color: white; position: absolute; left: 43px; transform: translate(-50%, 0%); text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">未登入</h6>
         </button>
         <div class="dropdown-menu dropdown-menu-right mt-4 mr-2" id="login-menu" aria-labelledby="login-button" style="min-width: 0px; background: #EEF9FE; border-color: #3764F9;">
+          <a class="dropdown-item py-0 px-5" href="javascript:show_my_games();" style="font-size: 16px; margin-bottom: 4px;">
+            我的遊戲
+          </a>
           <a class="dropdown-item py-0 px-5" href="javascript:logout()" style="font-size: 16px;">
             <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 10 10" fill="none" style="vertical-align: baseline">
               <path d="M4.5 2.22222L3.8 3L5.1 4.44444H0V5.55556H5.1L3.8 7L4.5 7.77778L7 5L4.5 2.22222ZM9 8.88889H5V10H9C9.55 10 10 9.5 10 8.88889V1.11111C10 0.5 9.55 0 9 0H5V1.11111H9V8.88889Z" fill="#0039CF"/>
@@ -247,6 +264,65 @@
         });
       }
     }
+  };
+  async function show_my_games() {
+    $('#my-games-list').empty();
+    const gameListDir = window.path.join(window.path.__dirname(), 'games').replace('app.asar', 'app.asar.unpacked');
+    window.fs.readdirSync(gameListDir).forEach(dirent => {
+      const gameDir = window.path.join(gameListDir, dirent);
+      const configPath = window.path.join(gameDir, 'game_config.json');
+      if (window.fs.existsSync(configPath)) {
+        const config = JSON.parse(window.file.read(configPath));
+        const logoPath = (config.logo !== undefined)? window.path.join(gameDir, config.logo[0]) : "media/paia-logo.png";
+        const gameName = (config.game_name !== undefined)? config.game_name : dirent;
+        const description = (config.description !== undefined)? config.description : "";
+        const url = (config.url !== undefined)? config.url : "None";
+        const version = (config.version !== undefined)? config.version : "unknown version";
+        switch (Math.floor(Math.random() * 4)) {
+          case 0:
+            $('#my-games-list').append(`
+              <div class="list-group-item d-flex padding: 10px">
+                <img src="${logoPath}" style="width: 45px; height: 45px; margin-right: 15px;">
+                <div style="font-size: 24px; font-weight: 700; padding-top: 4px">${gameName}</div>
+                <button type="button" class="ml-auto btn"style="color: #0039CF; background-color: white; font-size: 16px; border-radius: 15px; border: 1px solid #0039CF;">試用</button>
+                <button type="button" class="btn"style="color: white; background-color: #0039CF; font-size: 16px; border-radius: 15px; border: 1px solid #0039CF; margin-left: 8px;">購買</button>
+                <div style="font-size: 16px; padding-top: 8px; margin-left: 20px; color: gray">尚未購買</div>
+              </div>
+            `);
+            break;
+          case 1:
+            $('#my-games-list').append(`
+              <div class="list-group-item d-flex padding: 10px">
+                <img src="${logoPath}" style="width: 45px; height: 45px; margin-right: 15px;">
+                <div style="font-size: 24px; font-weight: 700; padding-top: 4px">${gameName}</div>
+                <button type="button" class="ml-auto btn"style="color: white; background-color: #0039CF; font-size: 16px; border-radius: 15px; border: 1px solid #0039CF;">購買</button>
+                <div style="font-size: 16px; padding-top: 8px; margin-left: 36px; color: gray">試用中</div>
+              </div>
+            `);
+            break;
+          case 2:
+            $('#my-games-list').append(`
+              <div class="list-group-item d-flex padding: 10px">
+                <img src="${logoPath}" style="width: 45px; height: 45px; margin-right: 15px;">
+                <div style="font-size: 24px; font-weight: 700; padding-top: 4px">${gameName}</div>
+                <button type="button" class="ml-auto btn"style="color: white; background-color: #0039CF; font-size: 16px; border-radius: 15px; border: 1px solid #0039CF;">購買</button>
+                <div style="font-size: 16px; padding-top: 8px; margin-left: 20px; color: gray">試用結束</div>
+              </div>
+            `);
+            break;
+          default:
+            $('#my-games-list').append(`
+              <div class="list-group-item d-flex padding: 10px">
+                <img src="${logoPath}" style="width: 45px; height: 45px; margin-right: 15px;">
+                <div style="font-size: 24px; font-weight: 700; padding-top: 4px">${gameName}</div>
+                <div class="ml-auto" style="font-size: 16px; padding-top: 8px; color: gray">已購買</div>
+              </div>
+            `);
+            break;
+        }
+      }
+    });
+    $('#my-games-dialog').modal('show');
   };
   function new_project(dirent, version, logoPath, latest=-1) {
     if ($('#editor-mode').attr("mode") == "block") {

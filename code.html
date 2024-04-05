@@ -215,6 +215,11 @@
     </div>
 
     <div class="d-flex" style="background: #EDEDED; height: 80px;">
+      <button onclick="location.href='index.html'" style="height: 46px; border: 0px; margin: 18px 30px 0px; padding: 0px;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="36" height="35" viewBox="0 0 36 35" fill="#777">
+          <path d="M15.9304 6.66868C17.0892 5.56442 18.9108 5.56442 20.0696 6.66868L27.0696 13.3393C27.6638 13.9055 28 14.6904 28 15.5111V28.7647C28 29.8693 27.1046 30.7647 26 30.7647C24.8954 30.7647 24 29.8693 24 28.7647V21.0588C24 19.402 22.6569 18.0588 21 18.0588H15C13.3431 18.0588 12 19.402 12 21.0588V28.7647C12 29.8693 11.1046 30.7647 10 30.7647C8.89543 30.7647 8 29.8693 8 28.7647V15.5111C8 14.6904 8.33624 13.9055 8.9304 13.3393L15.9304 6.66868ZM20.0696 0.972211C18.9108 -0.132047 17.0892 -0.132048 15.9304 0.972211L1.1022 15.1026C-0.0182527 16.1703 0.737463 18.0588 2.28519 18.0588C3.23225 18.0588 4 18.8266 4 19.7736V32C4 33.6569 5.34315 35 7 35H13C14.6569 35 16 33.6569 16 32V24.2941C16 23.1896 16.8954 22.2941 18 22.2941C19.1046 22.2941 20 23.1896 20 24.2941V32C20 33.6569 21.3431 35 23 35H29C30.6569 35 32 33.6569 32 32V19.7736C32 18.8266 32.7677 18.0588 33.7148 18.0588C35.2625 18.0588 36.0183 16.1703 34.8978 15.1026L20.0696 0.972211Z" fill="#777777"/>
+        </svg>
+      </button>
       <img src="media/paia-logo.png" id="game-logo" style="width: 46px; height: 46px; margin: 17px 0px 17px 17px;">
       <form name="project-title-form" action="javascript:Code.changeProjectName();">
         <input id="project-title" style="width: 200px; margin: 17px 17px 17px 18px; border-width: 0px; background-color: #EDEDED; font-family: Inter; font-size: 32px; font-weight: 500; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;" onfocusout="Code.changeProjectName();">
@@ -347,17 +352,12 @@
         </div>
       </div>
       <nav class="" id="sidebar" style="background: #EDEDED; overflow-y: auto;">
-        <button onclick="location.href='index.html'" style="height: 36px; border: 0px; margin: 20px 36px 0px; padding: 0px;">
-          <svg xmlns="http://www.w3.org/2000/svg" width="36" height="35" viewBox="0 0 36 35" fill="#777">
-            <path d="M15.9304 6.66868C17.0892 5.56442 18.9108 5.56442 20.0696 6.66868L27.0696 13.3393C27.6638 13.9055 28 14.6904 28 15.5111V28.7647C28 29.8693 27.1046 30.7647 26 30.7647C24.8954 30.7647 24 29.8693 24 28.7647V21.0588C24 19.402 22.6569 18.0588 21 18.0588H15C13.3431 18.0588 12 19.402 12 21.0588V28.7647C12 29.8693 11.1046 30.7647 10 30.7647C8.89543 30.7647 8 29.8693 8 28.7647V15.5111C8 14.6904 8.33624 13.9055 8.9304 13.3393L15.9304 6.66868ZM20.0696 0.972211C18.9108 -0.132047 17.0892 -0.132048 15.9304 0.972211L1.1022 15.1026C-0.0182527 16.1703 0.737463 18.0588 2.28519 18.0588C3.23225 18.0588 4 18.8266 4 19.7736V32C4 33.6569 5.34315 35 7 35H13C14.6569 35 16 33.6569 16 32V24.2941C16 23.1896 16.8954 22.2941 18 22.2941C19.1046 22.2941 20 23.1896 20 24.2941V32C20 33.6569 21.3431 35 23 35H29C30.6569 35 32 33.6569 32 32V19.7736C32 18.8266 32.7677 18.0588 33.7148 18.0588C35.2625 18.0588 36.0183 16.1703 34.8978 15.1026L20.0696 0.972211Z" fill="#777777"/>
-          </svg>
-        </button>
-        <button onclick="$('#project-file-window').css('display', ($('#project-file-window').css('display') == 'none')? 'block':'none');" style="height: 36px; border: 0px; margin: 50px 36px 50px; padding: 0px;">
+        <button onclick="$('#project-file-window').css('display', ($('#project-file-window').css('display') == 'none')? 'block':'none');" style="height: 36px; border: 0px; margin: 30px 36px 50px; padding: 0px;">
           <svg width="36" height="34" viewBox="0 0 44 34" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M39.6 4.25H22L17.6 0H4.4C1.98 0 0.022 1.9125 0.022 4.25L0 29.75C0 32.0875 1.98 34 4.4 34H39.6C42.02 34 44 32.0875 44 29.75V8.5C44 6.1625 42.02 4.25 39.6 4.25ZM39.6 29.75H4.4V8.5H39.6V29.75Z" fill="#777777"/>
           </svg>
         </button>
-        <button onclick="$('#console-dialog').css('display', ($('#console-dialog').css('display') == 'none')? 'block':'none');" style="height: 40px; border: 0px; margin: calc(100vh - 530px) 34px 20px; padding: 0px;">
+        <button onclick="$('#console-dialog').css('display', ($('#console-dialog').css('display') == 'none')? 'block':'none');" style="height: 40px; border: 0px; margin: calc(100vh - 450px) 34px 20px; padding: 0px;">
           <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40" fill="none">
             <path d="M33.3334 15V8.33333H6.66671V15H33.3334ZM33.3334 18.3333H6.66671V31.6667H33.3334V18.3333ZM5.00004 5H35C35.4421 5 35.866 5.17559 36.1786 5.48816C36.4911 5.80072 36.6667 6.22464 36.6667 6.66667V33.3333C36.6667 33.7754 36.4911 34.1993 36.1786 34.5118C35.866 34.8244 35.4421 35 35 35H5.00004C4.55801 35 4.13409 34.8244 3.82153 34.5118C3.50897 34.1993 3.33337 33.7754 3.33337 33.3333V6.66667C3.33337 6.22464 3.50897 5.80072 3.82153 5.48816C4.13409 5.17559 4.55801 5 5.00004 5ZM8.33337 20H13.3334V28.3333H8.33337V20ZM8.33337 10H11.6667V13.3333H8.33337V10ZM15 10H18.3334V13.3333H15V10Z" fill="#777777"/>
             </svg>

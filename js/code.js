@@ -581,7 +581,7 @@ Code.init = async function() {
         2: 8 * this.GRID_UNIT, // Round in square.
         3: 2 * this.GRID_UNIT, // Square in square.
         4: 5 * this.GRID_UNIT, // Puzzle in square.
-        5: 8 * this.GRID_UNIT, // Trapezoid in square.
+        5: 14 * this.GRID_UNIT, // Trapezoid in square.
         6: 8 * this.GRID_UNIT, // Parallelogram in square.
         7: 5 * this.GRID_UNIT, // Wave in square.
       },
@@ -624,7 +624,7 @@ Code.init = async function() {
         1: 5 * this.GRID_UNIT, // Hexagon in wave.
         2: 9 * this.GRID_UNIT, // Round in wave.
         3: 5 * this.GRID_UNIT, // Square in wave.
-        4: 5 * this.GRID_UNIT, // Puzzle in wave.
+        4: 6 * this.GRID_UNIT, // Puzzle in wave.
         5: 5 * this.GRID_UNIT, // Trapezoid in wave.
         6: 2 * this.GRID_UNIT, // Parallelogram in wave.
         7: 2 * this.GRID_UNIT, // Wave in wave.
@@ -906,10 +906,6 @@ Code.init = async function() {
               Blockly.utils.svgPaths.point(-width / 3, forward * halfHeight / 2),
               Blockly.utils.svgPaths.point(0, forward * height / 2)
             ]) +
-            // Blockly.utils.svgPaths.curve('q', [
-            //   Blockly.utils.svgPaths.point(width / 4, forward * halfHeight / 3),
-            //   Blockly.utils.svgPaths.point(0, forward * height / 3)
-            // ]) +
             Blockly.utils.svgPaths.lineOnAxis('h', -width / 2)
           );
         } else {
@@ -923,10 +919,6 @@ Code.init = async function() {
               Blockly.utils.svgPaths.point(width / 3, forward * halfHeight / 2),
               Blockly.utils.svgPaths.point(0, forward * height / 2)
             ]) +
-            // Blockly.utils.svgPaths.curve('q', [
-            //   Blockly.utils.svgPaths.point(-width / 4, forward * halfHeight / 3),
-            //   Blockly.utils.svgPaths.point(0, forward * height / 3)
-            // ]) +
             Blockly.utils.svgPaths.lineOnAxis('h', width / 2)
           )
         }

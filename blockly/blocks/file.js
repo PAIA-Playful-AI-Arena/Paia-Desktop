@@ -123,7 +123,7 @@ Blockly.defineBlocksWithJsonArray([
       }
     ],
     "inputsInline": true,
-    "output": null,
+    "output": "Boolean",
     "style": "file_blocks",
     "tooltip": ""
   }

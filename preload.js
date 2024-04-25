@@ -352,7 +352,26 @@ contextBridge.exposeInMainWorld('paia', {
     try {
       const response = await paiaAPI("GET", "user/me", null, 'USER_TOKEN');
       const content = await response.json();
-      user_id = content.id.toString();
+      return {ok: response.ok, content: content};
+    } catch(error) {
+      console.error("Error:", error);
+      return {ok: false, content: error};
+    }
+  },
+  game: async () => {
+    try {
+      const response = await paiaAPI("GET", "game", null, 'USER_TOKEN');
+      const content = await response.json();
+      return {ok: response.ok, content: content};
+    } catch(error) {
+      console.error("Error:", error);
+      return {ok: false, content: error};
+    }
+  },
+  gamePermission: async (id) => {
+    try {
+      const response = await paiaAPI("GET", `desktop/game/${id}/permission`, null, 'USER_TOKEN');
+      const content = await response.json();
       return {ok: response.ok, content: content};
     } catch(error) {
       console.error("Error:", error);

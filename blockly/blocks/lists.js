@@ -51,7 +51,7 @@ Blockly.Blocks['lists_indexOf'] = {
         },
         {
           "type": "input_value",
-          "name": "find",
+          "name": "FIND",
         }
       ],
       "output": "Number",

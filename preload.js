@@ -310,7 +310,7 @@ contextBridge.exposeInMainWorld('paia', {
       }
       const data = { refresh: refresh_token };
       try {
-        const response = await paiaAPI("POST", "auth/token/refresh", data, null, ver="v1");
+        const response = await paiaAPI("POST", "auth/refresh", data, null);
         if (response.ok) {
           const content = await response.json();
           access_token = content.access;

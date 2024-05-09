@@ -37,12 +37,35 @@
         </div>
       </div>
     </div>
+    <!-- Key permission dialog -->
+    <div class="modal fade" id="key-dialog" data-keyboard="true">
+      <div class="modal-dialog modal-dialog-centered" style="max-width: 600px; position: absolute; left: 50%; transform: translate(-50%, 0%);">
+        <div class="modal-content" style="width: 600px; border-radius: 25px;">
+          <div class="modal-header d-flex justify-content-center" style="background-color: #0039CF; color: white; font-size: 28px; font-weight: 800; border-radius: 25px 25px 0px 0px; cursor: pointer;">
+            <span class="modal-title" id="my-games-title">啟用遊戲</span>
+          </div>
+          <form name="key-permission" action="javascript:game_key_verify();" style="color: #0039CF; font-size: 20px; font-family: Inter;">
+            <div class="modal-body">
+              <div class="form-group" style="margin-bottom: 40px;">
+                <label for="">遊戲金鑰驗證</label>
+                <input type="text" class="form-control" id="game-key" pattern="[\w\- ]{1,64}" required>
+              </div>
+              <div id="key-msg" class="text-center" style="color: red; font-size: 20px; margin-bottom: 20px;"></div>
+            </div>
+            <div class="modal-footer d-flex justify-content-center">
+              <button type="submit" class="btn px-4" style="color: white; background-color: #0039CF; font-size: 24px; font-weight: 800; border-radius: 15px; border: 2px solid #0039CF;">確定</button>
+              <button type="button" class="btn px-4" data-dismiss="modal" style="color: #0039CF; background-color: white; font-size: 24px; font-weight: 800; border-radius: 15px; border: 2px solid #0039CF;">取消</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
     <!-- My games dialog -->
     <div class="modal fade" id="my-games-dialog" data-keyboard="true">
       <div class="modal-dialog modal-dialog-centered" style="max-width: 1000px; position: absolute; left: 50%; transform: translate(-50%, 0%);">
         <div class="modal-content" style="width: 1000px; min-height: 400px; border-radius: 25px;">
           <div class="modal-header d-flex justify-content-center" style="background-color: #0039CF; color: white; font-size: 28px; font-weight: 800; border-radius: 25px 25px 0px 0px; cursor: pointer;">
-            <span class="modal-title" id="game-play-title">我的遊戲</span>
+            <span class="modal-title" id="my-games-title">我的遊戲</span>
           </div>
           <div class="modal-body list-group list-group-flush" id="my-games-list" style="padding: 20px;"></div>
           <div class="modal-footer d-flex justify-content-center pt-4">
@@ -312,7 +335,27 @@
         const version = (config.version !== undefined)? config.version : "unknown version";
         window.paia.gamePermission(config.id).then((res) => {
           if (res.ok) {
-            if (res.content.usable) {
+            if (res.content.trial_max > 0) {
+              if (res.content.trial_count < res.content.trial_max) {
+                $('#my-games-list').append(`
+                  <div class="list-group-item d-flex padding: 10px">
+                    <img src="${logoPath}" style="width: 45px; height: 45px; margin-right: 15px;">
+                    <div style="font-size: 24px; font-weight: 700; padding-top: 4px">${gameName}</div>
+                    <button onclick="show_key_dialog();" type="button" class="ml-auto btn"style="color: white; background-color: #0039CF; font-size: 16px; border-radius: 15px; border: 1px solid #0039CF;">啟用</button>
+                    <div style="font-size: 16px; padding-top: 8px; margin-left: 36px; color: gray">試用中</div>
+                  </div>
+                `);
+              } else {
+                $('#my-games-list').append(`
+                  <div class="list-group-item d-flex padding: 10px">
+                    <img src="${logoPath}" style="width: 45px; height: 45px; margin-right: 15px;">
+                    <div style="font-size: 24px; font-weight: 700; padding-top: 4px">${gameName}</div>
+                    <button onclick="show_key_dialog();" type="button" class="ml-auto btn"style="color: white; background-color: #0039CF; font-size: 16px; border-radius: 15px; border: 1px solid #0039CF;">啟用</button>
+                    <div style="font-size: 16px; padding-top: 8px; margin-left: 20px; color: gray">試用結束</div>
+                  </div>
+                `);
+              }
+            } else if (res.content.usable) {
               $('#my-games-list').append(`
                 <div class="list-group-item d-flex padding: 10px">
                   <img src="${logoPath}" style="width: 45px; height: 45px; margin-right: 15px;">
@@ -320,40 +363,37 @@
                   <div class="ml-auto" style="font-size: 16px; padding-top: 8px; color: gray">已購買</div>
                 </div>
               `);
-            } else if (res.content.trial_count > 0) {
-              $('#my-games-list').append(`
-                <div class="list-group-item d-flex padding: 10px">
-                  <img src="${logoPath}" style="width: 45px; height: 45px; margin-right: 15px;">
-                  <div style="font-size: 24px; font-weight: 700; padding-top: 4px">${gameName}</div>
-                  <button type="button" class="ml-auto btn"style="color: white; background-color: #0039CF; font-size: 16px; border-radius: 15px; border: 1px solid #0039CF;">購買</button>
-                  <div style="font-size: 16px; padding-top: 8px; margin-left: 36px; color: gray">試用中</div>
-                </div>
-              `);
             } else {
               $('#my-games-list').append(`
                 <div class="list-group-item d-flex padding: 10px">
                   <img src="${logoPath}" style="width: 45px; height: 45px; margin-right: 15px;">
                   <div style="font-size: 24px; font-weight: 700; padding-top: 4px">${gameName}</div>
-                  <button type="button" class="ml-auto btn"style="color: white; background-color: #0039CF; font-size: 16px; border-radius: 15px; border: 1px solid #0039CF;">購買</button>
-                  <div style="font-size: 16px; padding-top: 8px; margin-left: 20px; color: gray">試用結束</div>
+                  <button onclick="window.paia.gameTrial(${config.id}); $('#my-games-dialog').modal('hide');" type="button" class="ml-auto btn"style="color: #0039CF; background-color: white; font-size: 16px; border-radius: 15px; border: 1px solid #0039CF;">試用</button>
+                  <button onclick="show_key_dialog();" type="button" class="btn"style="color: white; background-color: #0039CF; font-size: 16px; border-radius: 15px; border: 1px solid #0039CF; margin-left: 8px;">啟用</button>
+                  <div style="font-size: 16px; padding-top: 8px; margin-left: 20px; color: gray">尚未購買</div>
                 </div>
               `);
             }
-          } else {
-            $('#my-games-list').append(`
-              <div class="list-group-item d-flex padding: 10px">
-                <img src="${logoPath}" style="width: 45px; height: 45px; margin-right: 15px;">
-                <div style="font-size: 24px; font-weight: 700; padding-top: 4px">${gameName}</div>
-                <button type="button" class="ml-auto btn"style="color: #0039CF; background-color: white; font-size: 16px; border-radius: 15px; border: 1px solid #0039CF;">試用</button>
-                <button type="button" class="btn"style="color: white; background-color: #0039CF; font-size: 16px; border-radius: 15px; border: 1px solid #0039CF; margin-left: 8px;">購買</button>
-                <div style="font-size: 16px; padding-top: 8px; margin-left: 20px; color: gray">尚未購買</div>
-              </div>
-            `);
           }
         });
       });
     }
     $('#my-games-dialog').modal('show');
+  };
+  function show_key_dialog() {
+    $('#my-games-dialog').modal('hide');
+    $('#key-msg').html("");
+    $('#key-dialog').modal('show');
+  }
+  async function game_key_verify() {
+    window.paia.gameKey($('#game-key').val()).then((res) => {
+      if (res.ok) {
+        $('#key-msg').html("驗證成功");
+        $('#key-dialog').modal('hide');
+      } else {
+        $('#key-msg').html("金鑰錯誤");
+      }
+    });
   };
   function new_project(dirent, version, logoPath, latest=-1) {
     if ($('#editor-mode').attr("mode") == "block") {

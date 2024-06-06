@@ -388,6 +388,16 @@ contextBridge.exposeInMainWorld('paia', {
       return {ok: false, content: error};
     }
   },
+  gameTrialIncrease: async (id) => {
+    try {
+      const response = await paiaAPI("PATCH", `desktop/game_permission/${id}/increase`, null, 'USER_TOKEN');
+      const content = await response.json();
+      return {ok: response.ok, content: content};
+    } catch(error) {
+      console.error("Error:", error);
+      return {ok: false, content: error};
+    }
+  },
   gameKey: async (key) => {
     try {
       const response = await paiaAPI("PUT", `desktop/game_permission`, {key: key}, 'USER_TOKEN');
@@ -397,6 +407,42 @@ contextBridge.exposeInMainWorld('paia', {
       console.error("Error:", error);
       return {ok: false, content: error};
     }
+  },
+  gameId: (name) => {
+    switch (name) {
+      case "arkanoid":
+        return 1;
+      case "RacingCar":
+      case "racing_car":
+        return 2;
+      case "pingpong":
+        return 3;
+      case "Maze_Car":
+      case "maze_car":
+        return 4;
+      case "TankMan":
+        return 5;
+      case "dont_touch":
+        return 6;
+    }
+    return -1;
+  },
+  gameName: (id) => {
+    switch (id) {
+      case 1:
+        return "arkanoid";
+      case 2:
+        return "racing_car";
+      case 3:
+        return "pingpong";
+      case 4:
+        return "maze_car";
+      case 5:
+        return "TankMan";
+      case 6:
+        return "dont_touch";
+    }
+    return `${env.parsed.PAIA_APP_HOST}/ads`
   },
   ads: () => {
     return `${env.parsed.PAIA_APP_HOST}/ads`

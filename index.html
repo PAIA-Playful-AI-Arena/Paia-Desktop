@@ -37,6 +37,19 @@
         </div>
       </div>
     </div>
+    <!-- Message dialog -->
+    <div class="modal fade" id="msg-dialog" data-keyboard="true">
+      <div class="modal-dialog modal-dialog-centered" style="max-width: 600px; position: absolute; left: 50%; transform: translate(-50%, 0%);">
+        <div class="modal-content p-3" style="width: 600px; min-height: 400px; border-radius: 25px;">
+          <div class="modal-body">
+            <h5 id="msg-dialog-msg" class="text-center" style="padding-top: 80px; color: #0039CF; font-size: 24px; font-weight: 800;"></h5>
+          </div>
+          <div class="modal-footer d-flex justify-content-center pt-4">
+            <button type="button" class="btn px-4" data-dismiss="modal" style="color: #0039CF; background-color: white; font-size: 24px; font-weight: 800; border-radius: 15px; border: 2px solid #0039CF;">確定</button>
+          </div>
+        </div>
+      </div>
+    </div>
     <!-- Key permission dialog -->
     <div class="modal fade" id="key-dialog" data-keyboard="true">
       <div class="modal-dialog modal-dialog-centered" style="max-width: 600px; position: absolute; left: 50%; transform: translate(-50%, 0%);">
@@ -68,8 +81,9 @@
             <span class="modal-title" id="my-games-title">我的遊戲</span>
           </div>
           <div class="modal-body list-group list-group-flush" id="my-games-list" style="padding: 20px;"></div>
-          <div class="modal-footer d-flex justify-content-center pt-4">
-            <button type="button" class="btn px-4" data-dismiss="modal" style="background-color: #0039CF; color: white; font-size: 24px; font-weight: 800; border-radius: 15px; border: 2px solid #0039CF;">確定</button>
+          <div class="modal-footer d-flex justify-content-center">
+            <button onclick="show_key_dialog();" type="button" class="btn px-4" data-dismiss="modal" style="background-color: #0039CF; color: white; font-size: 24px; font-weight: 800; border-radius: 15px; border: 2px solid #0039CF;">啟用</button>
+            <button type="button" class="btn px-4" data-dismiss="modal" style="background-color: white; color: #0039CF; font-size: 24px; font-weight: 800; border-radius: 15px; border: 2px solid #0039CF;">關閉</button>
           </div>
         </div>
       </div>
@@ -102,7 +116,7 @@
                 <p class="text-left mb-auto" id="game-description" style="width: 413px; color: #000; font-size: 16px; font-weight: 600; max-height: 150px; overflow: auto;"></p>
                 <div class="d-flex justify-content-left">
                   <button class="btn btn-primary mr-3" id="open-project" style="width: 200px; height: 50px; border-radius: 25px; border: 1px solid #FFF; background: #3764F9; box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25); font-size: 24px; font-weight: 800;" onclick="new_project();">新增專案</button>
-                  <button class="btn btn-primary mr-3" id="buy-game" style="width: 150px; height: 50px; border-radius: 25px; border: 1px solid #FFF; background: #AA3D3D; box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25); font-size: 24px; font-weight: 800;">購買</button>
+                  <button onclick="show_key_dialog();" class="btn btn-primary mr-3" id="buy-game" style="width: 150px; height: 50px; border-radius: 25px; border: 1px solid #FFF; background: #AA3D3D; box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25); font-size: 24px; font-weight: 800;">啟用</button>
                   <button class="btn btn-primary mr-3" id="try-game" style="width: 150px; height: 50px; border-radius: 25px; border: 1px solid #FFF; background: #4483B5; box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25); font-size: 24px; font-weight: 800;">試用</button>
                   <p id="game-status" style="color: gray; font-size: 16px; font-weight: 600; margin: 13px;"></p>
                 </div>
@@ -248,6 +262,7 @@
       $('#game-description').html(description);
       $('#game-vision').attr("src", logoPath);
       $('#open-project').attr("onclick", `new_project('${dirent}', '${version}', '${logoPath}');`);
+      $('#try-game').attr("onclick", `start_trial('${name}');`);
       $('#latest-projects').empty();
       const projects = window.project.getLatest(name);
       for (let index = 0; index < projects.length; index++) {
@@ -256,7 +271,7 @@
         if (window.fs.existsSync(configPath)) {
           const config = JSON.parse(window.file.read(configPath));
           let coverPath = window.path.join(project, "cover.svg");
-          if (config.last_saved.endsWith(".py"))
+          if (config.last_saved && config.last_saved.endsWith(".py"))
             coverPath = "media/python-logo.png";
           else if (!window.fs.existsSync(coverPath))
             coverPath = "media/paia-logo.png";
@@ -293,34 +308,48 @@
           }
         });
       }
-      switch (Math.floor(Math.random() * 4)) {
-        case 0:
-          $('#open-project').hide();
-          $('#buy-game').show();
-          $('#try-game').show();
-          $('#latest-projects-container').hide();
-          $('#game-status').html('尚未購買');
-          break;
-        case 1:
-          $('#open-project').show();
-          $('#buy-game').show();
-          $('#try-game').hide();
-          $('#latest-projects-container').show();
-          $('#game-status').html('試用中');
-          break;
-        case 2:
-          $('#open-project').hide();
-          $('#buy-game').show();
-          $('#try-game').hide();
-          $('#latest-projects-container').hide();
-          $('#game-status').html('試用結束');
-          break;
-        default:
-          $('#open-project').show();
-          $('#buy-game').hide();
-          $('#try-game').hide();
-          $('#latest-projects-container').show();
-          break;
+      const id = window.paia.gameId(name);
+      if (id > 0) {
+        window.paia.gamePermission(id).then((res) => {
+          if (res.ok) {
+            switch (res.content.state) {
+              case "usable":
+                $('#open-project').show();
+                $('#buy-game').hide();
+                $('#try-game').hide();
+                $('#latest-projects-container').show();
+                $('#game-status').html('');
+                break;
+              case "locked":
+                $('#open-project').hide();
+                $('#buy-game').show();
+                $('#try-game').show();
+                $('#latest-projects-container').hide();
+                $('#game-status').html('尚未啟用');
+                break;
+              case "trying":
+                $('#open-project').show();
+                $('#buy-game').show();
+                $('#try-game').hide();
+                $('#latest-projects-container').show();
+                $('#game-status').html(`試用中，剩餘 ${res.content.trial_max - res.content.trial_count} 次執行次數`);
+                break;
+              case "expired":
+                $('#open-project').hide();
+                $('#buy-game').show();
+                $('#try-game').hide();
+                $('#latest-projects-container').show();
+                $('#game-status').html(`試用結束`);
+                break;
+            }
+          }
+        });
+      } else {
+        $('#open-project').show();
+        $('#buy-game').hide();
+        $('#try-game').hide();
+        $('#latest-projects-container').show();
+        $('#game-status').html('');
       }
     }
   };
@@ -335,44 +364,44 @@
         const version = (config.version !== undefined)? config.version : "unknown version";
         window.paia.gamePermission(config.id).then((res) => {
           if (res.ok) {
-            if (res.content.trial_max > 0) {
-              if (res.content.trial_count < res.content.trial_max) {
+            switch (res.content.state) {
+              case "usable":
                 $('#my-games-list').append(`
                   <div class="list-group-item d-flex padding: 10px">
                     <img src="${logoPath}" style="width: 45px; height: 45px; margin-right: 15px;">
                     <div style="font-size: 24px; font-weight: 700; padding-top: 4px">${gameName}</div>
-                    <button onclick="show_key_dialog();" type="button" class="ml-auto btn"style="color: white; background-color: #0039CF; font-size: 16px; border-radius: 15px; border: 1px solid #0039CF;">啟用</button>
-                    <div style="font-size: 16px; padding-top: 8px; margin-left: 36px; color: gray">試用中</div>
+                    <div class="ml-auto" style="font-size: 16px; padding-top: 8px; color: gray">已啟用</div>
                   </div>
                 `);
-              } else {
+                break;
+              case "locked":
                 $('#my-games-list').append(`
                   <div class="list-group-item d-flex padding: 10px">
                     <img src="${logoPath}" style="width: 45px; height: 45px; margin-right: 15px;">
                     <div style="font-size: 24px; font-weight: 700; padding-top: 4px">${gameName}</div>
-                    <button onclick="show_key_dialog();" type="button" class="ml-auto btn"style="color: white; background-color: #0039CF; font-size: 16px; border-radius: 15px; border: 1px solid #0039CF;">啟用</button>
-                    <div style="font-size: 16px; padding-top: 8px; margin-left: 20px; color: gray">試用結束</div>
+                    <button onclick="start_trial('${gameName}');" type="button" class="ml-auto btn"style="color: #0039CF; background-color: white; font-size: 16px; border-radius: 15px; border: 1px solid #0039CF;">試用</button>
+                    <div style="font-size: 16px; padding-top: 8px; margin-left: 20px; color: gray">尚未啟用</div>
                   </div>
                 `);
-              }
-            } else if (res.content.usable) {
-              $('#my-games-list').append(`
-                <div class="list-group-item d-flex padding: 10px">
-                  <img src="${logoPath}" style="width: 45px; height: 45px; margin-right: 15px;">
-                  <div style="font-size: 24px; font-weight: 700; padding-top: 4px">${gameName}</div>
-                  <div class="ml-auto" style="font-size: 16px; padding-top: 8px; color: gray">已購買</div>
-                </div>
-              `);
-            } else {
-              $('#my-games-list').append(`
-                <div class="list-group-item d-flex padding: 10px">
-                  <img src="${logoPath}" style="width: 45px; height: 45px; margin-right: 15px;">
-                  <div style="font-size: 24px; font-weight: 700; padding-top: 4px">${gameName}</div>
-                  <button onclick="window.paia.gameTrial(${config.id}); $('#my-games-dialog').modal('hide');" type="button" class="ml-auto btn"style="color: #0039CF; background-color: white; font-size: 16px; border-radius: 15px; border: 1px solid #0039CF;">試用</button>
-                  <button onclick="show_key_dialog();" type="button" class="btn"style="color: white; background-color: #0039CF; font-size: 16px; border-radius: 15px; border: 1px solid #0039CF; margin-left: 8px;">啟用</button>
-                  <div style="font-size: 16px; padding-top: 8px; margin-left: 20px; color: gray">尚未購買</div>
-                </div>
-              `);
+                break;
+              case "trying":
+                $('#my-games-list').append(`
+                  <div class="list-group-item d-flex padding: 10px">
+                    <img src="${logoPath}" style="width: 45px; height: 45px; margin-right: 15px;">
+                    <div style="font-size: 24px; font-weight: 700; padding-top: 4px">${gameName}</div>
+                    <div class="ml-auto" style="font-size: 16px; padding-top: 8px; color: gray">試用中</div>
+                  </div>
+                `);
+                break;
+              case "expired":
+                $('#my-games-list').append(`
+                  <div class="list-group-item d-flex padding: 10px">
+                    <img src="${logoPath}" style="width: 45px; height: 45px; margin-right: 15px;">
+                    <div style="font-size: 24px; font-weight: 700; padding-top: 4px">${gameName}</div>
+                    <div class="ml-auto" style="font-size: 16px; padding-top: 8px; color: gray">試用結束</div>
+                  </div>
+                `);
+                break;
             }
           }
         });
@@ -380,20 +409,37 @@
     }
     $('#my-games-dialog').modal('show');
   };
+  function start_trial(name) {
+    $('#my-games-dialog').modal('hide');
+    $('#game-dialog').modal('hide');
+    const id = window.paia.gameId(name);
+    if (id > 0) {
+      window.paia.gameTrial(id).then((res) => {
+        if (res.ok) {
+          $('#msg-dialog-msg').html(`開始試用 ${name}，剩餘 ${res.content.trial_max} 次執行次數`);
+        } else {
+          $('#msg-dialog-msg').html(res.content.detail);
+        }
+      });
+      $('#msg-dialog').modal('show');
+    }
+  };
   function show_key_dialog() {
     $('#my-games-dialog').modal('hide');
+    $('#game-dialog').modal('hide');
     $('#key-msg').html("");
     $('#key-dialog').modal('show');
-  }
-  async function game_key_verify() {
+  };
+  function game_key_verify() {
+    $('#key-dialog').modal('hide');
     window.paia.gameKey($('#game-key').val()).then((res) => {
       if (res.ok) {
-        $('#key-msg').html("驗證成功");
-        $('#key-dialog').modal('hide');
+        $('#msg-dialog-msg').html(`${window.paia.gameName(res.content[0].game_id)} 啟用成功`);
       } else {
-        $('#key-msg').html("金鑰錯誤");
+        $('#msg-dialog-msg').html("金鑰錯誤");
       }
     });
+    $('#msg-dialog').modal('show');
   };
   function new_project(dirent, version, logoPath, latest=-1) {
     if ($('#editor-mode').attr("mode") == "block") {

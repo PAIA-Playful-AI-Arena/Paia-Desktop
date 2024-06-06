@@ -2233,7 +2233,26 @@ Code.savePython = function() {
 /**
  * Show dialog for playing or run the code. 
  */
-Code.run = function() {
+Code.run = async function() {
+  // Check trial
+  const id = window.paia.gameId(Code.GAME);
+  if (id > 0) {
+    const permission = await window.paia.gamePermission(id);
+    if (!permission.ok || permission.content.state == "locked") {
+      $('#msg-dialog-msg').html("授權錯誤，無法執行程式。");
+      $('#msg-dialog').modal('show');
+      return;
+    }
+    if (permission.content.state == "expired") {
+      $('#msg-dialog-msg').html("試用結束，無法執行程式。");
+      $('#msg-dialog').modal('show');
+      return;
+    }
+    if (permission.content.state == "trying") {
+      window.paia.gameTrialIncrease(id);
+    }
+  }
+
   // Set PAIA ads url
   if ($("#paia-ads").attr("src") == "") {
     $("#paia-ads").attr("src", window.paia.adsConsole());

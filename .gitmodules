@@ -25,3 +25,6 @@
 [submodule "games/swimming-squid"]
 	path = games/swimming-squid
 	url = https://github.com/PAIA-Playful-AI-Arena/swimming-squid
+[submodule "games/swimming_squid_battle"]
+	path = games/swimming_squid_battle
+	url = https://github.com/PAIA-Playful-AI-Arena/swimming_squid_battle

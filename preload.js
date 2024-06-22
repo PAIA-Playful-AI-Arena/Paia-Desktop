@@ -424,6 +424,10 @@ contextBridge.exposeInMainWorld('paia', {
         return 5;
       case "dont_touch":
         return 6;
+      case "swimming-squid":
+        return 7;
+      case "swimming_squid_battle":
+        return 8;
     }
     return -1;
   },
@@ -441,6 +445,10 @@ contextBridge.exposeInMainWorld('paia', {
         return "TankMan";
       case 6:
         return "dont_touch";
+      case 7:
+        return "swimming-squid";
+      case 8:
+        return "swimming_squid_battle";
     }
     return `${env.parsed.PAIA_APP_HOST}/ads`
   },

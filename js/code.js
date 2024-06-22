@@ -2422,11 +2422,17 @@ Code.newProject = function() {
       } else {
         window.fs.mkdirSync(window.path.join(project_path, "other"));
       }
+      let start = "";
+      const config_path = window.path.join(example_path, "start.json");
+      if (window.fs.existsSync(config_path)) {
+        const config = JSON.parse(window.file.read(config_path));
+        start = window.path.join(project_path, config.start);
+      } 
       window.file.write(window.path.join(project_path, "project.json"), JSON.stringify({
         game: Code.GAME,
         created_at: dateformat(new Date(), "yyyy-mm-dd HH:MM:ss"),
         saved_at: dateformat(new Date(), "yyyy-mm-dd HH:MM:ss"),
-        last_saved: ""
+        last_saved: start
       }));
       Code.openProject(project_path);
     } else if (window.popup.confirm(`${project_path} 已存在，是否改為載入此專案？`)) {
@@ -2483,7 +2489,7 @@ Code.openProject = function(path) {
       start = config.last_saved;
   }
   if (window.fs.existsSync(start)) {
-    Code.loadXml(start, "collect");
+    Code.loadXml(start);
   } else {
     Code.newXml("collect");
   }

@@ -274,7 +274,7 @@ contextBridge.exposeInMainWorld('editor', {
 });
 contextBridge.exposeInMainWorld('dir', {
   copy: (src, dest) => {
-    copyDir(src, dest);
+    copyDir(src, dest, path.join(dest, path.basename(src)));
   },
   isDirectory: (dir) => {
     return (fs.existsSync(dir) && fs.lstatSync(dir).isDirectory());
@@ -549,7 +549,7 @@ const gaAPI = function(name, params) {
   });
 }
 
-const copyDir = function(src, dest) {
+const copyDir = function(src, dest, skip) {
   try {
     const destDir = path.join(dest, path.basename(src));
     if (!fs.existsSync(destDir)) {
@@ -560,7 +560,8 @@ const copyDir = function(src, dest) {
       files.forEach((file) => {
         const curSrc = path.join(src, file);
         if (fs.lstatSync(curSrc).isDirectory()) {
-          copyDir(curSrc, destDir);
+          if (path.relative(curSrc, skip).length != 0)
+            copyDir(curSrc, destDir, skip);
         } else {
           fs.copyFileSync(curSrc, path.join(destDir, file));
         }

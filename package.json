@@ -25,13 +25,13 @@
   "license": "MIT",
   "devDependencies": {
     "@blockly/dev-tools": "^7.1.6",
-    "@electron-forge/cli": "^6.2.1",
-    "@electron-forge/maker-deb": "^6.2.1",
-    "@electron-forge/maker-dmg": "^6.2.1",
-    "@electron-forge/maker-rpm": "^6.2.1",
-    "@electron-forge/maker-squirrel": "^6.2.1",
-    "@electron-forge/maker-zip": "^6.2.1",
-    "electron": "^25.3.1"
+    "@electron-forge/cli": "^7.4.0",
+    "@electron-forge/maker-deb": "^7.4.0",
+    "@electron-forge/maker-dmg": "^7.4.0",
+    "@electron-forge/maker-rpm": "^7.4.0",
+    "@electron-forge/maker-squirrel": "^7.4.0",
+    "@electron-forge/maker-zip": "^7.4.0",
+    "electron": "^31.1.0"
   },
   "dependencies": {
     "@blockly/continuous-toolbox": "^5.0.8",
@@ -59,71 +59,5 @@
     "showdown": "^1.9.1",
     "uuid": "^8.3.2",
     "vex-js": "^4.1.0"
-  },
-  "config": {
-    "forge": {
-      "packagerConfig": {
-        "icon": "media/paia-logo",
-        "ignore": [
-          "/.gitignore",
-          "/.gitmodules",
-          "/.vscode",
-          "/js/blocks",
-          "/js/generators",
-          "/js/i18n",
-          "/js/mlgame",
-          "/js/msg",
-          "/js/build.py",
-          "(.*)__pycache__",
-          "/python/build",
-          "/python/interpreter.spec",
-          "/python/interpreter.py",
-          "/python/.gitignore",
-          "/python/requirements.txt",
-          "/python/README.md",
-          "/venv"
-        ],
-        "asar": {
-          "unpackDir": "{python,games,custom_blocks}"
-        },
-        "protocols": [
-          {
-            "name": "Electron Fiddle",
-            "schemes": [
-              "paia-dekstop"
-            ]
-          }
-        ]
-      },
-      "makers": [
-        {
-          "name": "@electron-forge/maker-squirrel"
-        },
-        {
-          "name": "@electron-forge/maker-dmg",
-          "platforms": [
-            "darwin"
-          ]
-        },
-        {
-          "name": "@electron-forge/maker-deb",
-          "config": {
-            "options": {
-              "icon": "media/paia-logo.png",
-              "bin": "PAIA Desktop"
-            }
-          }
-        },
-        {
-          "name": "@electron-forge/maker-rpm",
-          "config": {
-            "options": {
-              "icon": "media/paia-logo.png",
-              "bin": "PAIA Desktop"
-            }
-          }
-        }
-      ]
-    }
   }
 }

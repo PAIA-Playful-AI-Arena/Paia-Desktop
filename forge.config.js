@@ -37,6 +37,9 @@ module.exports = {
         ]
       }
     ],
+    "windowsSign": {
+      "signWithParams": ""
+    },
     "osxSign": {},
     "osxNotarize": {
       "appleId": process.env.APPLE_ID,
@@ -46,7 +49,10 @@ module.exports = {
   },
   "makers": [
     {
-      "name": "@electron-forge/maker-squirrel"
+      "name": "@electron-forge/maker-squirrel",
+      "config": {
+        "signWithParams": ""
+      }
     },
     {
       "name": "@electron-forge/maker-dmg",
@@ -70,6 +76,20 @@ module.exports = {
           "icon": "media/paia-logo.png",
           "bin": "PAIA Desktop"
         }
+      }
+    }
+  ],
+  "publishers": [
+    {
+      "name": "@electron-forge/publisher-github",
+      "config": {
+        "repository": {
+          "owner": "PAIA-Playful-AI-Arena",
+          "name": "Paia-Desktop"
+        },
+        "authToken": process.env.GITHUB_TOKEN,
+        "prerelease": false,
+        "draft": true
       }
     }
   ]

@@ -2119,7 +2119,7 @@ Code.saveXml = function(xmlPath=null) {
   if (xmlPath === null) {
     xmlPath = window.path.save({
       title: "儲存 XML 檔",
-      defaultPath: window.path.join(Code.PROJECT_PATH, Code.FOCUSED_XML),
+      defaultPath: Code.FOCUSED_FILE,
       filters: [
           {name: 'XML', extensions: ['xml']}
       ]

@@ -15,7 +15,7 @@
       <div class="modal-dialog modal-dialog-centered" style="max-width: 600px; position: absolute; left: 50%; transform: translate(-50%, 0%);">
         <div class="modal-content p-3" style="width: 600px; min-height: 400px; border-radius: 25px;">
           <div class="modal-body">
-            <h5 class="text-center" style="padding-top: 80px; color: #0039CF; font-size: 36px; font-weight: 800;">遊戲更新中</h5>
+            <h5 class="text-center" style="padding-top: 80px; color: #0039CF; font-size: 36px; font-weight: 800;">遊戲下載中</h5>
             <div class="d-flex justify-content-center" style="margin-top: 30px;">
               <div class="spinner-border" style="width: 50px; height: 50px; color: #0039CF;" role="status"></div>
             </div>
@@ -99,7 +99,7 @@
           <div class="modal-body" style="background-color: #BFFBFF; height: 400px; border-radius: 25px 25px 0px 0px; padding: 50px 120px 30px;">
             <div class="d-flex justify-content-between">
               <div class="d-flex justify-content-left">
-                <h5 class="text-center" id="game-name" style="color: #011C3C; font-size: 48px; font-weight: 800;"></h5>
+                <h5 class="text-center" id="game-name" style="color: #011C3C; font-size: 48px; font-weight: 800; max-width: 550px; text-overflow: ellipsis; overflow: hidden;"></h5>
                 <div class="dropdown" id="game-version-dropdown" style="margin-left: 20px;">
                   <div class="dropdown-toggle text-center" id="game-version-button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="color: #011C3C; font-size: 24px; font-weight: 500; padding-top: 20px; cursor: pointer;"></div>
                   <div class="dropdown-menu" id="game-version-list" aria-labelledby="game-version-button" style="max-height: 250px; background: white; overflow-y: auto;"></div>
@@ -115,7 +115,7 @@
               <div class="d-flex align-items-start flex-column" style="height: 212px;">
                 <p class="text-left mb-auto" id="game-description" style="width: 413px; color: #000; font-size: 16px; font-weight: 600; max-height: 150px; overflow: auto;"></p>
                 <div class="d-flex justify-content-left">
-                  <button class="btn btn-primary mr-3" id="open-project" style="width: 200px; height: 50px; border-radius: 25px; border: 1px solid #FFF; background: #3764F9; box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25); font-size: 24px; font-weight: 800;" onclick="new_project();">新增專案</button>
+                  <button class="btn btn-primary mr-3" id="open-project" style="width: 200px; height: 50px; border-radius: 25px; border: 1px solid #FFF; background: #3764F9; box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25); font-size: 24px; font-weight: 800;">新增專案</button>
                   <button onclick="show_key_dialog();" class="btn btn-primary mr-3" id="buy-game" style="width: 150px; height: 50px; border-radius: 25px; border: 1px solid #FFF; background: #AA3D3D; box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25); font-size: 24px; font-weight: 800;">啟用</button>
                   <button class="btn btn-primary mr-3" id="try-game" style="width: 150px; height: 50px; border-radius: 25px; border: 1px solid #FFF; background: #4483B5; box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25); font-size: 24px; font-weight: 800;">試用</button>
                   <p id="game-status" style="color: gray; font-size: 16px; font-weight: 600; margin: 13px;"></p>
@@ -218,30 +218,25 @@
   async function update_game_list() {
     $('#game_list').empty();
     const gameListDir = window.path.join(window.path.__dirname(), 'games').replace('app.asar', 'app.asar.unpacked');
-    window.fs.readdirSync(gameListDir).forEach(dirent => {
-      const gameDir = window.path.join(gameListDir, dirent);
-      const configPath = window.path.join(gameDir, 'game_config.json');
-      if (window.fs.existsSync(configPath)) {
-        const config = JSON.parse(window.file.read(configPath));
-        const logoPath = (config.logo !== undefined)? window.path.join(gameDir, config.logo[0]) : "media/paia-logo.png";
-        const gameName = (config.game_name !== undefined)? config.game_name : dirent;
-        const description = (config.description !== undefined)? config.description : "";
-        const url = (config.url !== undefined)? config.url : "None";
-        const version = (config.version !== undefined)? config.version : "unknown version";
+    if (!window.fs.existsSync(gameListDir))
+      window.fs.mkdirSync(gameListDir);
+    const games = await window.paia.game();
+    if (games.ok) {
+      games.content.forEach(game => {
         $('#game_list').append(
-          `<div class="card" style="margin-bottom: 200px; cursor: pointer;" onclick="javascript:prompt_game(name='${gameName}', description='${description}', dirent='${dirent}', version='${version}', url='${url}', logoPath='${logoPath.replaceAll('\\', '/')}');">
+          `<div class="card" style="margin-bottom: 200px; cursor: pointer;" onclick="javascript:prompt_game(${game.id});">
             <div class="card-body d-flex justify-content-center">
-              <img class="card-logo" src="${logoPath}" style="max-width: 250px; max-height: 250px;">
+              <img class="card-logo" src="${game.logo}" style="max-width: 250px; min-height: 250px; max-height: 250px; object-fit: contain;">
             </div>
             <div class="card-cover" style="overflow: hidden">
-              <p class="p-5 h-100" style="overflow-y: auto;">${description}</p>
+              <p class="p-5 h-100" style="overflow-y: auto;">${game.description}</p>
             </div>
             <div class="card-footer">
-              <h6 class="text-center" style="font-size: 24px; color: white;">${gameName}</h6>
+              <h6 class="text-center" style="font-size: 24px; color: white;">${game.name}</h6>
             </div>
           </div>`);
-      }
-    });
+      });
+    }
     $('#game_list').append(
       `<div class="card" style="margin-bottom: 200px; cursor: pointer;">
         <div class="card-body d-flex justify-content-center">
@@ -251,144 +246,119 @@
           <h6 class="text-center" style="font-size: 24px; color: white;">廣告</h6>
         </div>
       </div>`);
-  };
-  async function update_game_list_() {
-    $('#game_list').empty();
-    const gameListDir = window.path.join(window.path.__dirname(), 'games').replace('app.asar', 'app.asar.unpacked');
-    window.fs.readdirSync(gameListDir).forEach(dirent => {
-      const gameDir = window.path.join(gameListDir, dirent);
-      const configPath = window.path.join(gameDir, 'game_config.json');
-      if (window.fs.existsSync(configPath)) {
-        const config = JSON.parse(window.file.read(configPath));
-        const logoPath = (config.logo !== undefined)? window.path.join(gameDir, config.logo[0]) : "media/paia-logo.png";
-        const gameName = (config.game_name !== undefined)? config.game_name : dirent;
-        const description = (config.description !== undefined)? config.description : "";
-        const url = (config.url !== undefined)? config.url : "None";
-        const version = (config.version !== undefined)? config.version : "unknown version";
-        $('#game_list').append(
-          `<div class="card" style="margin-bottom: 200px; cursor: pointer;" onclick="javascript:prompt_game(name='${gameName}', description='${description}', dirent='${dirent}', version='${version}', url='${url}', logoPath='${logoPath.replaceAll('\\', '/')}');">
-            <div class="card-body d-flex justify-content-center">
-              <img class="card-logo" src="${logoPath}" style="max-width: 250px; max-height: 250px;">
-            </div>
-            <div class="card-cover" style="overflow: hidden">
-              <p class="p-5 h-100" style="overflow-y: auto;">${description}</p>
-            </div>
-            <div class="card-footer">
-              <h6 class="text-center" style="font-size: 24px; color: white;">${gameName}</h6>
-            </div>
-          </div>`);
-      }
+    $("#paia-ads").attr("src", window.paia.ads());
+    const webview = document.getElementById('paia-ads');
+    webview.addEventListener('dom-ready', function() {
+      webview.setZoomFactor(0.77);
+      webview.insertCSS('body { overflow: hidden; }');
     });
-    $('#game_list').append(
-      `<div class="card" style="margin-bottom: 200px; cursor: pointer;">
-        <div class="card-body d-flex justify-content-center">
-          <webview id="paia-ads" src="" style="width:100%; height:250px;"></webview>
-        </div>
-        <div class="card-footer">
-          <h6 class="text-center" style="font-size: 24px; color: white;">廣告</h6>
-        </div>
-      </div>`);
+    webview.addEventListener('will-navigate', (e) => {
+    webview.stop();
+    window.shell.openExternal(e.url);
+  });
   };
-  async function prompt_game(name, description, dirent, version, url, logoPath) {
+  async function prompt_game(id) {
     const auth = await window.paia.auth();
     if (!auth.ok) {
       $('#login-dialog').modal('show');
+      return;
+    }
+    const game = await window.paia.game(id);
+    if (!game.ok) {
+      return;
+    }
+    const configPath = window.path.join(window.path.__dirname(), 'games', game.content.name, 'game_config.json').replace('app.asar', 'app.asar.unpacked');
+    let gameConfig = null;
+    let version = game.content.release[0];
+    if (window.fs.existsSync(configPath))
+      gameConfig = JSON.parse(window.file.read(configPath));
+    const isInstalled = gameConfig !== null;
+    if (!isInstalled) {
+      $('#game-version-button').html("下載遊戲");
+    } else if (!game.content.release.includes(gameConfig.version)) {
+      $('#game-version-button').html("需更新版本");
     } else {
-      $('#game-name').html(name);
+      version = gameConfig.version;
       $('#game-version-button').html(version);
-      $('#game-description').html(description);
-      $('#game-vision').attr("src", logoPath);
-      $('#open-project').attr("onclick", `new_project('${dirent}', '${version}', '${logoPath}');`);
-      $('#try-game').attr("onclick", `start_trial('${name}');`);
-      $('#latest-projects').empty();
-      const projects = window.project.getLatest(name);
-      for (let index = 0; index < projects.length; index++) {
-        const project = projects[index];
-        const configPath = window.path.join(project, 'project.json');
-        if (window.fs.existsSync(configPath)) {
-          const config = JSON.parse(window.file.read(configPath));
-          let coverPath = window.path.join(project, "cover.svg");
-          if (config.last_saved && config.last_saved.endsWith(".py"))
-            coverPath = "media/python-logo.png";
-          else if (!window.fs.existsSync(coverPath))
-            coverPath = "media/paia-logo.png";
-          $('#latest-projects').append(
-            `<div style="margin-right: 80px; cursor: pointer" title="${project}" onclick="new_project('${dirent}', '${version}', '${logoPath}', '${index}');">
-              <div class="d-flex justify-content-center" style="height: 180px; width: 180px; padding: 10px; border-radius: 15px; border: 1px solid #B6B6B6;">
-                <img src="${coverPath}" style="max-height: 160px; max-width: 160px;">
-              </div>
-              <h5 class="text-center mt-2" id="game-name" style="color: #000; font-size: 20px; font-weight: 800;">${window.path.basename(project)}</h5>
-              <h6 class="text-center" id="game-name" style="color: #B6B6B6; font-size: 14px; font-weight: 800;">${config.saved_at}</h5>
-            </div>`);
-        }
-      }
-      $('#latest-projects').append(
-        `<div>
-          <div style="height: 180px; width: 180px; border-radius: 15px; border: 1px solid #B6B6B6; padding: 70px; cursor: pointer" onclick="new_project('${dirent}', '${version}', '${logoPath}');">
-            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40" fill="none">
-              <path d="M40 22.8571H22.8571V40H17.1429V22.8571H0V17.1429H17.1429V0H22.8571V17.1429H40V22.8571Z" fill="#B6B6B6"/>
-            </svg>
-          </div>
-          <h5 class="text-center mt-2" id="game-name" style="color: #000; font-size: 20px; font-weight: 800;">其他...</h5>
-        </div>`);
-      $('#game-version-list').empty();
-      $('#game-dialog').modal('show');
-      if (url.indexOf("github.com") != -1) {
-        const data = url.substring(url.indexOf("github.com") + 11).split('/');
-        const owner = data[0];
-        const repo = data[1];
-        window.api.github("GET", `repos/${owner}/${repo}/tags`, null).then((res) => {
-          if (res.ok) {
-            res.content.forEach((tag) => {
-              $('#game-version-list').append($(`<a class="dropdown-item" href="#" onclick="git_download('${name}', '${tag.name}');">${tag.name}</a>`));
-            });
-          }
-        });
-      }
-      const id = window.paia.gameId(name);
-      if (id > 0) {
-        window.paia.gamePermission(id).then((res) => {
-          if (res.ok) {
-            switch (res.content.state) {
-              case "usable":
-                $('#open-project').show();
-                $('#buy-game').hide();
-                $('#try-game').hide();
-                $('#latest-projects-container').show();
-                $('#game-status').html('');
-                break;
-              case "locked":
-                $('#open-project').hide();
-                $('#buy-game').show();
-                $('#try-game').show();
-                $('#latest-projects-container').hide();
-                $('#game-status').html('尚未啟用');
-                break;
-              case "trying":
-                $('#open-project').show();
-                $('#buy-game').show();
-                $('#try-game').hide();
-                $('#latest-projects-container').show();
-                $('#game-status').html(`試用中，剩餘 ${res.content.trial_max - res.content.trial_count} 次執行次數`);
-                break;
-              case "expired":
-                $('#open-project').hide();
-                $('#buy-game').show();
-                $('#try-game').hide();
-                $('#latest-projects-container').show();
-                $('#game-status').html(`試用結束`);
-                break;
-            }
-          }
-        });
-      } else {
-        $('#open-project').show();
-        $('#buy-game').hide();
-        $('#try-game').hide();
-        $('#latest-projects-container').show();
-        $('#game-status').html('');
+    }
+    $('#game-name').html(game.content.name);
+    $('#game-description').html(game.content.description);
+    $('#game-vision').attr("src", game.content.logo);
+    $('#open-project').attr("onclick", `new_project('${id}', '${game.content.name}', '${version}', '${game.content.logo}');`);
+    $('#try-game').attr("onclick", `start_trial('${id}');`);
+    $('#latest-projects').empty();
+    const projects = window.project.getLatest(game.content.name);
+    for (let index = 0; index < projects.length; index++) {
+      const project = projects[index];
+      const configPath = window.path.join(project, 'project.json');
+      if (window.fs.existsSync(configPath)) {
+        const config = JSON.parse(window.file.read(configPath));
+        let coverPath = window.path.join(project, "cover.svg");
+        if (config.last_saved && config.last_saved.endsWith(".py"))
+          coverPath = "media/python-logo.png";
+        else if (!window.fs.existsSync(coverPath))
+          coverPath = "media/paia-logo.png";
+        $('#latest-projects').append(
+          `<div style="margin-right: 80px; cursor: pointer" title="${project}" onclick="new_project('${id}', '${game.content.name}', '${version}', '${game.content.logo}', '${index}');">
+            <div class="d-flex justify-content-center" style="height: 180px; width: 180px; padding: 10px; border-radius: 15px; border: 1px solid #B6B6B6;">
+              <img src="${coverPath}" style="max-height: 160px; max-width: 160px;">
+            </div>
+            <h5 class="text-center mt-2" id="game-name" style="color: #000; font-size: 20px; font-weight: 800;">${window.path.basename(project)}</h5>
+            <h6 class="text-center" id="game-name" style="color: #B6B6B6; font-size: 14px; font-weight: 800;">${config.saved_at}</h5>
+          </div>`);
       }
     }
+    $('#latest-projects').append(
+      `<div>
+        <div style="height: 180px; width: 180px; border-radius: 15px; border: 1px solid #B6B6B6; padding: 70px; cursor: pointer" onclick="new_project('${id}', '${game.content.name}', '${version}', '${game.content.logo}');">
+          <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40" fill="none">
+            <path d="M40 22.8571H22.8571V40H17.1429V22.8571H0V17.1429H17.1429V0H22.8571V17.1429H40V22.8571Z" fill="#B6B6B6"/>
+          </svg>
+        </div>
+        <h5 class="text-center mt-2" id="game-name" style="color: #000; font-size: 20px; font-weight: 800;">其他...</h5>
+      </div>`);
+    $('#game-version-list').empty();
+    $('#game-dialog').modal('show');
+    game.content.release.sort().reverse().forEach((tag) => {
+      $('#game-version-list').append($(`<a class="dropdown-item" href="#" onclick="git_download('${game.content.name}', '${game.content.project_url}', '${tag}');">${tag}</a>`));
+    });
+    $('#open-project').prop('disabled', !isInstalled);
+    window.paia.gamePermission(id).then((res) => {
+      if (res.ok) {
+        switch (res.content.state) {
+          case "usable":
+            $('#open-project').show();
+            $('#open-project').prop('disabled', !isInstalled);
+            $('#buy-game').hide();
+            $('#try-game').hide();
+            $('#latest-projects-container').toggle(isInstalled);
+            $('#game-status').html('');
+            break;
+          case "locked":
+            $('#open-project').hide();
+            $('#buy-game').show();
+            $('#try-game').show();
+            $('#latest-projects-container').hide();
+            $('#game-status').html('尚未啟用');
+            break;
+          case "trying":
+            $('#open-project').show();
+            $('#open-project').prop('disabled', !isInstalled);
+            $('#buy-game').show();
+            $('#try-game').hide();
+            $('#latest-projects-container').toggle(isInstalled);
+            $('#game-status').html(`試用中，剩餘 ${res.content.trial_max - res.content.trial_count} 次執行次數`);
+            break;
+          case "expired":
+            $('#open-project').hide();
+            $('#buy-game').show();
+            $('#try-game').hide();
+            $('#latest-projects-container').toggle(isInstalled);
+            $('#game-status').html(`試用結束`);
+            break;
+        }
+      }
+    });
   };
   async function show_my_games() {
     $('#my-games-list').empty();
@@ -399,6 +369,7 @@
         const logoPath = (config.logo !== undefined)? config.logo : "media/paia-logo.png";
         const gameName = (config.name !== undefined)? config.name : "unknown";
         const version = (config.version !== undefined)? config.version : "unknown version";
+        const id = (config.id !== undefined)? config.id : "-1";
         window.paia.gamePermission(config.id).then((res) => {
           if (res.ok) {
             switch (res.content.state) {
@@ -416,7 +387,7 @@
                   <div class="list-group-item d-flex padding: 10px">
                     <img src="${logoPath}" style="width: 45px; height: 45px; margin-right: 15px;">
                     <div style="font-size: 24px; font-weight: 700; padding-top: 4px">${gameName}</div>
-                    <button onclick="start_trial('${gameName}');" type="button" class="ml-auto btn"style="color: #0039CF; background-color: white; font-size: 16px; border-radius: 15px; border: 1px solid #0039CF;">試用</button>
+                    <button onclick="start_trial('${id}');" type="button" class="ml-auto btn"style="color: #0039CF; background-color: white; font-size: 16px; border-radius: 15px; border: 1px solid #0039CF;">試用</button>
                     <div style="font-size: 16px; padding-top: 8px; margin-left: 20px; color: gray">尚未啟用</div>
                   </div>
                 `);
@@ -446,14 +417,13 @@
     }
     $('#my-games-dialog').modal('show');
   };
-  function start_trial(name) {
+  function start_trial(id) {
     $('#my-games-dialog').modal('hide');
     $('#game-dialog').modal('hide');
-    const id = window.paia.gameId(name);
     if (id > 0) {
       window.paia.gameTrial(id).then((res) => {
         if (res.ok) {
-          $('#msg-dialog-msg').html(`開始試用 ${name}，剩餘 ${res.content.trial_max} 次執行次數`);
+          $('#msg-dialog-msg').html(`開始試用，剩餘 ${res.content.trial_max} 次執行次數`);
         } else {
           $('#msg-dialog-msg').html(res.content.detail);
         }
@@ -478,11 +448,11 @@
     });
     $('#msg-dialog').modal('show');
   };
-  function new_project(dirent, version, logoPath, latest=-1) {
+  function new_project(id, dirent, version, logoPath, latest=-1) {
     if ($('#editor-mode').attr("mode") == "block") {
-      location.href=`code.html?game=${dirent}&ver=${version}&logo=${logoPath}&latest=${latest}`;
+      location.href=`code.html?id=${id}&game=${dirent}&ver=${version}&logo=${logoPath}&latest=${latest}`;
     } else {
-      location.href=`python.html?game=${dirent}&ver=${version}&logo=${logoPath}&latest=${latest}`;
+      location.href=`python.html?id=${id}&game=${dirent}&ver=${version}&logo=${logoPath}&latest=${latest}`;
     }
   }
   function toggle_editor_mode() {
@@ -498,23 +468,21 @@
       $('#editor-mode').attr("mode", "block");
     }
   };
-  function git_download(game, version) {
-    const gameDir = window.path.join(window.path.__dirname(), 'games', game).replace('app.asar', 'app.asar.unpacked');;
-    const config = JSON.parse(window.file.read(window.path.join(gameDir, 'game_config.json')));
-    const url = (config.url !== undefined)? config.url : "None";
-    const data = url.substring(url.indexOf("github.com") + 11).split('/');
+  function git_download(game, url, version) {
+    const gameDir = window.path.join(window.path.__dirname(), 'games', game).replace('app.asar', 'app.asar.unpacked');
+    const data = url.substring(url.indexOf("github.com") + 11).replace(".git", "").split('/');
     const owner = data[0];
     const repo = data[1];
-    if (window.popup.confirm(`即將更新為 ${game}-${version}，確定執行？`)) {
+    if (window.popup.confirm(`即將下載 ${game}-${version}，確定執行？`)) {
       $('#game-dialog').modal('hide');
       $('#download-dialog').modal('show');
       window.repo.download(`direct:https://github.com/${owner}/${repo}/archive/refs/tags/${version}.zip`, gameDir, function (err) {
         if (err) {
           window.popup.alert(err);
         } else {
-          update_game_list_();
-          const config = JSON.parse(window.file.read(path.join(gameDir, 'game_config.json')));
-          window.popup.alert(config['game_name'] + '-' + config['version'] + ' 更新成功');
+          update_game_list();
+          const config = JSON.parse(window.file.read(window.path.join(gameDir, 'game_config.json')));
+          window.popup.alert(config['game_name'] + '-' + config['version'] + ' 下載成功');
         }
         $('#download-dialog').modal('hide');
       });
@@ -529,21 +497,11 @@
     });
   });
   token_login();
-  update_game_list_();
+  update_game_list();
   window.paia.ga('screen_view', {
     app_name: "paia_desktop",
     app_version: window.app.getVersion(),
     screen_name: 'index'
-  });
-  $("#paia-ads").attr("src", window.paia.ads());
-  const webview = document.getElementById('paia-ads');
-  webview.addEventListener('dom-ready', function() {
-    webview.setZoomFactor(0.77);
-    webview.insertCSS('body { overflow: hidden; }');
-  });
-  webview.addEventListener('will-navigate', (e) => {
-    webview.stop();
-    window.shell.openExternal(e.url);
   });
   window.menu.hide(true);
 </script>

@@ -358,9 +358,12 @@ contextBridge.exposeInMainWorld('paia', {
       return {ok: false, content: error};
     }
   },
-  game: async () => {
+  game: async (id=null) => {
     try {
-      const response = await paiaAPI("GET", "game", null, 'USER_TOKEN');
+      let url = "game"
+      if (id !== null)
+        url = `game/${id}`;
+      const response = await paiaAPI("GET", url, null, 'USER_TOKEN');
       const content = await response.json();
       return {ok: response.ok, content: content};
     } catch(error) {

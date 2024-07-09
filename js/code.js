@@ -18,6 +18,11 @@ const Code = {};
 /**
  * Get the name of the game.
  */
+Code.ID = (new URLSearchParams(window.location.search)).get('id');
+
+/**
+ * Get the name of the game.
+ */
 Code.GAME = (new URLSearchParams(window.location.search)).get('game');
 
 /**
@@ -2235,9 +2240,8 @@ Code.savePython = function() {
  */
 Code.run = async function() {
   // Check trial
-  const id = window.paia.gameId(Code.GAME);
-  if (id > 0) {
-    const permission = await window.paia.gamePermission(id);
+  if (Code.ID > 0) {
+    const permission = await window.paia.gamePermission(Code.ID);
     if (!permission.ok || permission.content.state == "locked") {
       $('#msg-dialog-msg').html("授權錯誤，無法執行程式。");
       $('#msg-dialog').modal('show');
@@ -2249,7 +2253,7 @@ Code.run = async function() {
       return;
     }
     if (permission.content.state == "trying") {
-      window.paia.gameTrialIncrease(id);
+      window.paia.gameTrialIncrease(Code.ID);
     }
   }
 
@@ -2278,17 +2282,15 @@ Code.play = function() {
   const args_elements = document.getElementById('game-args').getElementsByClassName('game-arg');
   const user_num = document.getElementById('user_num').value;;
   const args = [];
-  const params = {};
   for (let i = 0; i < args_elements.length; i++) {
     const e = args_elements[i];
-    args.push(`--${e.id.replace('param-', '')}`);
     if (e.tagName == "SELECT") {
       const value = e.options[e.selectedIndex].getAttribute("value");
+      args.push(`--${e.id.replace('param-', '')}`);
       args.push(value);
-      params[e.id] = value;
-    } else {
+    } else if (e.value !== "") {
+      args.push(`--${e.id.replace('param-', '')}`);
       args.push(e.value);
-      params[e.id] = e.value;
     }
   }
   let total_args = [];

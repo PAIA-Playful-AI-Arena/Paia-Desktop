@@ -77,6 +77,36 @@
         </div>
       </div>
     </div>
+    <!-- Upload dialog -->
+    <div class="modal fade" id="upload-dialog" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog" style="max-width: 800px; position: absolute; left: 50%; transform: translate(-50%, 0%);">
+        <div class="modal-content" style="width: 800px; border-radius: 25px; border: 1px solid #B7B7B7; box-shadow: 0px 4px 10px 0px #011C3C;">
+          <div class="modal-header d-flex justify-content-center" style="background-color: #0039CF; color: white; font-size: 28px; font-weight: 800; border-radius: 25px 25px 0px 0px;">
+            <span class="modal-title" id="upload-dialog-title">上傳 AI</span>
+          </div>
+          <form name="project" action="javascript:Code.newProject()" style="color: #0039CF; font-size: 20px; font-family: Inter;">
+            <div class="modal-body">
+              <div class="form-group">
+                <label for="">AI 命名</label>
+                <input type="text" class="form-control" id="upload-name" title="中、英文、數字都可，20個字以內" required>
+              </div>
+              <div class="form-group">
+                <label for="">AI 說明 (選填)</label>
+                <input type="text" class="form-control" id="upload-description" title="為 AI 加上您的個人註釋如設計策略等">
+              </div>
+              <div class="form-group">
+                <label for="upload-file">選擇上傳檔案</label>
+                <input type="text" class="form-control" id="upload-file" title="請上傳執行檔 ml_play.py 及各AI模型檔 *.pickle" onclick="Code.uploadFile()" multiple readonly required>
+              </div>
+            </div>
+            <div class="modal-footer" style="justify-content: center;">
+              <button type="submit" style="background-color: #0039CF; color: white; border-radius: 15px; border: 2px solid #0039CF;">上傳</button>
+              <button type="button" onclick="$('#upload-dialog').modal('hide');" style="background-color: white; color: #0039CF; border-radius: 15px; border: 2px solid #0039CF;">取消</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
     <!-- Game play dialog -->
     <div class="modal fade" id="run-mlgame-dialog" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
       <div class="modal-dialog" style="max-width: 800px; position: absolute; left: 50%; transform: translate(-50%, 0%);">
@@ -365,12 +395,15 @@
         </div>
       </div>
       <nav class="" id="sidebar" style="background: #EDEDED; overflow-y: auto;">
-        <button onclick="$('#project-file-window').css('display', ($('#project-file-window').css('display') == 'none')? 'block':'none');" style="height: 36px; border: 0px; margin: 30px 36px 50px; padding: 0px;">
+        <button onclick="$('#project-file-window').css('display', ($('#project-file-window').css('display') == 'none')? 'block':'none');" style="height: 36px; border: 0px; margin: 30px 36px 30px; padding: 0px;">
           <svg width="36" height="34" viewBox="0 0 44 34" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M39.6 4.25H22L17.6 0H4.4C1.98 0 0.022 1.9125 0.022 4.25L0 29.75C0 32.0875 1.98 34 4.4 34H39.6C42.02 34 44 32.0875 44 29.75V8.5C44 6.1625 42.02 4.25 39.6 4.25ZM39.6 29.75H4.4V8.5H39.6V29.75Z" fill="#777777"/>
           </svg>
         </button>
-        <button onclick="$('#console-dialog').css('display', ($('#console-dialog').css('display') == 'none')? 'block':'none');" style="height: 40px; border: 0px; margin: calc(100vh - 450px) 34px 20px; padding: 0px;">
+        <button onclick="$('#upload-dialog').modal('show');" style="height: 36px; border: 0px; margin: 30px 36px 50px; padding: 0px;">
+          <img src="media/upload-icon.svg" style="width: 36px; height: 36px;">
+        </button>
+        <button onclick="$('#console-dialog').css('display', ($('#console-dialog').css('display') == 'none')? 'block':'none');" style="height: 40px; border: 0px; margin: calc(100vh - 540px) 34px 20px; padding: 0px;">
           <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40" fill="none">
             <path d="M33.3334 15V8.33333H6.66671V15H33.3334ZM33.3334 18.3333H6.66671V31.6667H33.3334V18.3333ZM5.00004 5H35C35.4421 5 35.866 5.17559 36.1786 5.48816C36.4911 5.80072 36.6667 6.22464 36.6667 6.66667V33.3333C36.6667 33.7754 36.4911 34.1993 36.1786 34.5118C35.866 34.8244 35.4421 35 35 35H5.00004C4.55801 35 4.13409 34.8244 3.82153 34.5118C3.50897 34.1993 3.33337 33.7754 3.33337 33.3333V6.66667C3.33337 6.22464 3.50897 5.80072 3.82153 5.48816C4.13409 5.17559 4.55801 5 5.00004 5ZM8.33337 20H13.3334V28.3333H8.33337V20ZM8.33337 10H11.6667V13.3333H8.33337V10ZM15 10H18.3334V13.3333H15V10Z" fill="#777777"/>
             </svg>

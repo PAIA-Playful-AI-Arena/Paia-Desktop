@@ -2369,6 +2369,23 @@ Code.prevTutorials = function() {
 };
 
 /**
+ * Select the files for uploading.
+ */
+Code.selectUploadFile = function() {
+  const files = window.path.select({
+    title: "選擇上傳檔案",
+    defaultPath: Code.PROJECT_PATH,
+    filters: [
+      { name: 'AI Files', extensions: ['py', 'pickle'] }
+    ],
+    properties: ["openFile", "multiSelections"]
+  });
+  if (files !== undefined) {
+    $("#upload-file").val(files);
+  }
+};
+
+/**
  * Show dialog for adding new project or load existing project. 
  */
 Code.loadProject = function() {

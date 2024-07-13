@@ -5,7 +5,7 @@ if (env.error) {
 
 module.exports = {
   "packagerConfig": {
-    "icon": "media/paia-logo",
+    "icon": "media/paia-owl",
     "ignore": [
       "/.gitignore",
       "/.gitmodules",
@@ -64,7 +64,7 @@ module.exports = {
       "name": "@electron-forge/maker-deb",
       "config": {
         "options": {
-          "icon": "media/paia-logo.png",
+          "icon": "media/paia-owl.png",
           "bin": "PAIA Desktop"
         }
       }
@@ -73,7 +73,7 @@ module.exports = {
       "name": "@electron-forge/maker-rpm",
       "config": {
         "options": {
-          "icon": "media/paia-logo.png",
+          "icon": "media/paia-owl.png",
           "bin": "PAIA Desktop"
         }
       }

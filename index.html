@@ -297,7 +297,7 @@
         if (config.last_saved && config.last_saved.endsWith(".py"))
           coverPath = "media/python-logo.png";
         else if (!window.fs.existsSync(coverPath))
-          coverPath = "media/paia-logo.png";
+          coverPath = "media/paia-owl.png";
         $('#latest-projects').append(
           `<div style="margin-right: 80px; cursor: pointer" title="${project}" onclick="new_project('${id}', '${game.content.name}', '${version}', '${game.content.logo}', '${index}');">
             <div class="d-flex justify-content-center" style="height: 180px; width: 180px; padding: 10px; border-radius: 15px; border: 1px solid #B6B6B6;">
@@ -366,7 +366,7 @@
     if (games.ok) {
       // const gameListDir = window.path.join(window.path.__dirname(), 'games').replace('app.asar', 'app.asar.unpacked');
       games.content.forEach(config => {
-        const logoPath = (config.logo !== undefined)? config.logo : "media/paia-logo.png";
+        const logoPath = (config.logo !== undefined)? config.logo : "media/paia-owl.png";
         const gameName = (config.name !== undefined)? config.name : "unknown";
         const version = (config.version !== undefined)? config.version : "unknown version";
         const id = (config.id !== undefined)? config.id : "-1";

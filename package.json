@@ -37,6 +37,7 @@
     "electron": "^31.1.0"
   },
   "dependencies": {
+    "@azure/storage-blob": "^12.23.0",
     "@blockly/continuous-toolbox": "^5.0.8",
     "@getstation/electron-google-oauth2": "^2.1.0",
     "about-window": "^1.15.1",

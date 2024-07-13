@@ -2381,7 +2381,44 @@ Code.selectUploadFile = function() {
     properties: ["openFile", "multiSelections"]
   });
   if (files !== undefined) {
-    $("#upload-file").val(files);
+    for (const file of files) {
+      let exist = false;
+      for (const child of $("#upload-file-list").children()) {
+        if ($(child).prop("title") == file)
+          exist = true;
+      }
+      if (!exist) {
+        const $tab = $(
+          `<div class="p-2 my-2 d-flex" title="${file}" style="background-color: #E4F5FF;">
+            <div>${window.path.basename(file)}</div>
+            <i class="bi bi-x ml-auto" style="cursor: pointer;" onclick="$(this).parent().remove();">
+          </div>`);
+        $("#upload-file-list").append($tab);
+      }
+    }
+  }
+};
+
+/**
+ * Upload files to cloud.
+ */
+Code.uploadFile = async function() {
+  $('#upload-dialog').modal('hide');
+  const files = []
+  for (const child of $("#upload-file-list").children()) {
+    files.push($(child).prop("title"))
+  }
+  const res1 = await window.paia.uploadAzure(files);
+  if (!res1.ok) {
+    window.popup.alert(res1.content);
+    return;
+  }
+  const res2 = await window.paia.uploadAi(Code.ID, $("#upload-name").val(), $("#upload-description").val(), res1.content.urls);
+  if (res2.ok) {
+    $("#upload-file-list").empty();
+    location.href=window.paia.ais(Code.ID);
+  } else {
+    window.popup.alert(res2.content.detail);
   }
 };
 

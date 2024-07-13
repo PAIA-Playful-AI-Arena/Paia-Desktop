@@ -84,7 +84,7 @@
           <div class="modal-header d-flex justify-content-center" style="background-color: #0039CF; color: white; font-size: 28px; font-weight: 800; border-radius: 25px 25px 0px 0px;">
             <span class="modal-title" id="upload-dialog-title">上傳 AI</span>
           </div>
-          <form name="project" action="javascript:Code.newProject()" style="color: #0039CF; font-size: 20px; font-family: Inter;">
+          <form name="project" action="javascript:Code.uploadFile()" style="color: #0039CF; font-size: 20px; font-family: Inter;">
             <div class="modal-body">
               <div class="form-group">
                 <label for="">AI 命名</label>
@@ -95,8 +95,8 @@
                 <input type="text" class="form-control" id="upload-description" title="為 AI 加上您的個人註釋如設計策略等">
               </div>
               <div class="form-group">
-                <label for="upload-file">選擇上傳檔案</label>
-                <input type="text" class="form-control" id="upload-file" title="請上傳執行檔 ml_play.py 及各AI模型檔 *.pickle" onclick="Code.uploadFile()" multiple readonly required>
+                <label for="upload-file">選擇上傳檔案 <i class="bi bi-plus-square ml-1" style="cursor: pointer;" onclick="Code.selectUploadFile()"></i></label>
+                <div id="upload-file-list" style="font-size: 18px;"></div>
               </div>
             </div>
             <div class="modal-footer" style="justify-content: center;">

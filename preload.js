@@ -11,6 +11,7 @@ const download = require('download-git-repo');
 const showdown = require('showdown');
 const { v4: uuid4 } = require('uuid');
 const { machineIdSync } = require('node-machine-id');
+const { BlockBlobClient } = require('@azure/storage-blob');
 // const ElectronGoogleOAuth2 = require('@getstation/electron-google-oauth2').default;
 const env = require('dotenv').config({ path: path.join(__dirname, '.env') });
 if (env.error) {
@@ -358,6 +359,53 @@ contextBridge.exposeInMainWorld('paia', {
       return {ok: false, content: error};
     }
   },
+  azureSas: async () => {
+    try {
+      const response = await paiaAPI("POST", "auth/azure_sas", null, 'USER_TOKEN');
+      const content = await response.json();
+      return {ok: response.ok, content: content};
+    } catch (error) {
+      return {ok: false, content: error};;
+    }
+  },
+  uploadAzure: async (files) => {
+    try {
+      const response = await paiaAPI("GET", "auth/azure_sas", null, 'USER_TOKEN');
+      const content = await response.json();
+      if (response.ok) {
+        const url = new URL(content.sas_url);
+        const promises = [];
+        const upload_urls = [];
+        for (const file of files) {
+          const paia_upload_url = `${url.origin}${url.pathname}/${dateformat(new Date(), "yyyymmddHHMMss")}/${
+            path.basename(file)}${url.search}`;
+          const blobServiceClient = new BlockBlobClient(paia_upload_url);
+          promises.push(blobServiceClient.uploadFile(file));
+          upload_urls.push(paia_upload_url);
+        }
+        await Promise.all(promises);
+        return {ok: true, content: {urls: upload_urls}};
+      }
+    } catch (error) {
+      return {ok: false, content: error};
+    }
+  },
+  uploadAi: async (id, name, description, filePath) => {
+    try {
+      const data = {
+        name: name,
+        description: description,
+        type: 'PY',
+        files: filePath
+      }
+      const response = await paiaAPI("POST", `game/${id}/ai`, data, 'USER_TOKEN');
+      const content = await response.json();
+      return {ok: response.ok, content: content};
+    } catch(error) {
+      console.error("Error:", error);
+      return {ok: false, content: error};
+    }
+  },
   game: async (id=null) => {
     try {
       let url = "game"
@@ -453,7 +501,9 @@ contextBridge.exposeInMainWorld('paia', {
       case 8:
         return "swimming_squid_battle";
     }
-    return `${env.parsed.PAIA_APP_HOST}/ads`
+  },
+  ais: (id) => {
+    return `${env.parsed.PAIA_APP_HOST}/user/my-ai/ai-list?game_id=${id}`
   },
   ads: () => {
     return `${env.parsed.PAIA_APP_HOST}/ads`

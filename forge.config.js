@@ -10,6 +10,7 @@ module.exports = {
       "/.gitignore",
       "/.gitmodules",
       "/.vscode",
+      "/games",
       "/js/blocks",
       "/js/generators",
       "/js/i18n",
@@ -27,7 +28,7 @@ module.exports = {
       "/dev.env"
     ],
     "asar": {
-      "unpackDir": "{python,games,custom_blocks}"
+      "unpackDir": "{python,custom_blocks}"
     },
     "protocols": [
       {

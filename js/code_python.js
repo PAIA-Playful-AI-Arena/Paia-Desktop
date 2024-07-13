@@ -18,6 +18,11 @@ const Code = {};
 /**
  * Get the name of the game.
  */
+Code.ID = (new URLSearchParams(window.location.search)).get('id');
+
+/**
+ * Get the name of the game.
+ */
 Code.GAME = (new URLSearchParams(window.location.search)).get('game');
 
 /**
@@ -801,7 +806,25 @@ Code.saveTmpPython = function(dir) {
 /**
  * Show dialog for playing or run the code. 
  */
-Code.run = function() {
+Code.run = async function() {
+  // Check trial
+  if (Code.ID > 0) {
+    const permission = await window.paia.gamePermission(Code.ID);
+    if (!permission.ok || permission.content.state == "locked") {
+      $('#msg-dialog-msg').html("授權錯誤，無法執行程式。");
+      $('#msg-dialog').modal('show');
+      return;
+    }
+    if (permission.content.state == "expired") {
+      $('#msg-dialog-msg').html("試用結束，無法執行程式。");
+      $('#msg-dialog').modal('show');
+      return;
+    }
+    if (permission.content.state == "trying") {
+      window.paia.gameTrialIncrease(Code.ID);
+    }
+  }
+  
   // Set PAIA ads url
   if ($("#paia-ads").attr("src") == "") {
     $("#paia-ads").attr("src", window.paia.adsConsole());
@@ -892,6 +915,60 @@ Code.showReadme = function() {
 };
 
 /**
+ * Select the files for uploading.
+ */
+Code.selectUploadFile = function() {
+  const files = window.path.select({
+    title: "選擇上傳檔案",
+    defaultPath: Code.PROJECT_PATH,
+    filters: [
+      { name: 'AI Files', extensions: ['py', 'pickle'] }
+    ],
+    properties: ["openFile", "multiSelections"]
+  });
+  if (files !== undefined) {
+    for (const file of files) {
+      let exist = false;
+      for (const child of $("#upload-file-list").children()) {
+        if ($(child).prop("title") == file)
+          exist = true;
+      }
+      if (!exist) {
+        const $tab = $(
+          `<div class="p-2 my-2 d-flex" title="${file}" style="background-color: #E4F5FF;">
+            <div>${window.path.basename(file)}</div>
+            <i class="bi bi-x ml-auto" style="cursor: pointer;" onclick="$(this).parent().remove();">
+          </div>`);
+        $("#upload-file-list").append($tab);
+      }
+    }
+  }
+};
+
+/**
+ * Upload files to cloud.
+ */
+Code.uploadFile = async function() {
+  $('#upload-dialog').modal('hide');
+  const files = []
+  for (const child of $("#upload-file-list").children()) {
+    files.push($(child).prop("title"))
+  }
+  const res1 = await window.paia.uploadAzure(files);
+  if (!res1.ok) {
+    window.popup.alert(res1.content);
+    return;
+  }
+  const res2 = await window.paia.uploadAi(Code.ID, $("#upload-name").val(), $("#upload-description").val(), res1.content.urls);
+  if (res2.ok) {
+    $("#upload-file-list").empty();
+    location.href=window.paia.ais(Code.ID);
+  } else {
+    window.popup.alert(res2.content.detail);
+  }
+};
+
+/**
  * Show dialog for adding new project or load existing project. 
  */
 Code.loadProject = function() {
@@ -947,11 +1024,17 @@ Code.newProject = function() {
       } else {
         window.fs.mkdirSync(window.path.join(project_path, "other"));
       }
+      let start = "";
+      const config_path = window.path.join(example_path, "start.json");
+      if (window.fs.existsSync(config_path)) {
+        const config = JSON.parse(window.file.read(config_path));
+        start = window.path.join(project_path, config.start);
+      } 
       window.file.write(window.path.join(project_path, "project.json"), JSON.stringify({
         game: Code.GAME,
         created_at: dateformat(new Date(), "yyyy-mm-dd HH:MM:ss"),
         saved_at: dateformat(new Date(), "yyyy-mm-dd HH:MM:ss"),
-        last_saved: ""
+        last_saved: start
       }));
       Code.openProject(project_path);
     } else if (window.popup.confirm(`${project_path} 已存在，是否改為載入此專案？`)) {

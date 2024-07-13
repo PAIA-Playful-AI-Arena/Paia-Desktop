@@ -2215,7 +2215,7 @@ Code.savePython = function() {
       window.path.join(window.path.dirname(state.custom_python_path), 'Lib', 'site-packages', 'mlgame', 'version.py') :
       window.path.join(__dirname, 'python', 'dist', 'interpreter', 'mlgame', 'version.py').replace('app.asar', 'app.asar.unpacked');
     const mlgameVerStr = (window.fs.existsSync(mlgameVerPath))? window.file.read(mlgameVerPath) : "version = unknown";
-    const mlgameVer = (mlgameVerStr.match(/version\s*==*\s*"([\w.]*)"/) || ['', 'unknown'])[1];
+    const mlgameVer = (mlgameVerStr.match(/version\s*==*\s*["']([\w.]*)["']/) || ['', 'unknown'])[1];
     const verInfo = '"""\n' +
                     `created_at_utc  : ${dateformat(new Date(), "isoUtcDateTime")}\n` +
                     `created_at_w3c  : ${dateformat(new Date(), "yyyy-mm-dd'T'HH:MM:ssp")}\n` +

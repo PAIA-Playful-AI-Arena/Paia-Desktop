@@ -441,7 +441,7 @@
     $('#key-dialog').modal('hide');
     window.paia.gameKey($('#game-key').val()).then((res) => {
       if (res.ok) {
-        $('#msg-dialog-msg').html(`${window.paia.gameName(res.content[0].game_id)} 啟用成功`);
+        $('#msg-dialog-msg').html("啟用成功");
       } else {
         $('#msg-dialog-msg').html("金鑰錯誤");
       }

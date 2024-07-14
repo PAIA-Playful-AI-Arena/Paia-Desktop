@@ -1888,7 +1888,7 @@ Code.updateProjectList = function() {
         } else {
           const name = file.substring(0, file.length-4);
           const $button = $(`<a class="dropdown-item d-flex" href="#" id="file-${filePath}" title="${filePath}" style="width: 138px; height: 46px; border-radius: 15px; border: 1px solid #676767; background: #FFF; vertical-align: baseline; padding: 10px 6px 6px 12px; margin: 1px;"></a>`);
-          const $state = $(`<img src="media/state-unexecuted.svg" id="file-${filePath}-state" style="width: 20px;">`);
+          const $state = $(`<img src="media/state-unexecuted.svg" id="file-${filePath}-state" style="width: 20px; padding-bottom: 2px">`);
           const $name = $(`<div id="file-${filePath}-name" style="max-width: 100px; font-size: 16px; color: black; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; margin: 0px auto 0px 15px;"><span class="not-saved"></span>${name}</div>`);
           $button.append($state, $name);
           $(`#group-${group}-list`).append($button);

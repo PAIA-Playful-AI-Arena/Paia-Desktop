@@ -125,9 +125,12 @@ contextBridge.exposeInMainWorld('python_env', {
       document.getElementById('content_console').textContent += '> Python program finished\n';
       const e = document.getElementById('console-body');
       e.scrollTo(0, e.scrollHeight);
-      if (error || python.exitCode != 0) {
+      if (python.exitCode != 0) {
         document.getElementById(`group-${group}-state`).src = "media/state-error.svg";
         document.getElementById(`file-${id}-state`).src = "media/state-error.svg";
+      } else if (error) {
+        document.getElementById(`group-${group}-state`).src = "media/state-warn.svg";
+        document.getElementById(`file-${id}-state`).src = "media/state-warn.svg";
       } else {
         document.getElementById(`group-${group}-state`).src = "media/state-ok.svg";
         document.getElementById(`file-${id}-state`).src = "media/state-ok.svg";

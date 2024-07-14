@@ -199,6 +199,10 @@ python.pythonGenerator.forBlock['model_k_fold'] = function(block, generator) {
 
 python.pythonGenerator.forBlock['model_dl_create'] = function(block, generator) {
   // Create a deep learning model.
+  generator.definitions_['import_logging'] = 'import logging';
+  generator.provideFunction_("tf_set_logger", "logging.getLogger('tensorflow').setLevel(logging.ERROR)");
+  generator.definitions_['import_os'] = 'import os';
+  generator.provideFunction_("tf_cpp_min_log_level", "os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'");
   generator.definitions_['import_keras'] = 'from tensorflow import keras';
   const functionName = generator.provideFunction_('create_sequential_model', `
 def ${generator.FUNCTION_NAME_PLACEHOLDER_}(layers, loss="mean_squared_error"):
@@ -251,6 +255,10 @@ def ${generator.FUNCTION_NAME_PLACEHOLDER_}(layers, loss="mean_squared_error"):
 
 python.pythonGenerator.forBlock['model_dl_create_transformer'] = function(block, generator) {
   // Create a deep learning model.
+  generator.definitions_['import_logging'] = 'import logging';
+  generator.provideFunction_("tf_set_logger", "logging.getLogger('tensorflow').setLevel(logging.ERROR)");
+  generator.definitions_['import_os'] = 'import os';
+  generator.provideFunction_("tf_cpp_min_log_level", "os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'");
   generator.definitions_['import_get_model'] = 'from keras_transformer import get_model';
   const functionName = generator.provideFunction_('create_transformer', `
 def ${generator.FUNCTION_NAME_PLACEHOLDER_}(token_num, embed_dim, encoder_num, decoder_num, head_num, hidden_dim):
@@ -277,6 +285,10 @@ def ${generator.FUNCTION_NAME_PLACEHOLDER_}(token_num, embed_dim, encoder_num, d
 
 python.pythonGenerator.forBlock['model_dl_train'] = function(block, generator) {
   // Train a model.
+  generator.definitions_['import_logging'] = 'import logging';
+  generator.provideFunction_("tf_set_logger", "logging.getLogger('tensorflow').setLevel(logging.ERROR)");
+  generator.definitions_['import_os'] = 'import os';
+  generator.provideFunction_("tf_cpp_min_log_level", "os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'");
   const x = generator.valueToCode(block, 'X', generator.ORDER_COLLECTION) || '[]';
   const y = generator.valueToCode(block, 'Y', generator.ORDER_COLLECTION) || '[]';
   const model = generator.valueToCode(block, 'MODEL', generator.ORDER_NONE) || 'None';
@@ -286,8 +298,22 @@ python.pythonGenerator.forBlock['model_dl_train'] = function(block, generator) {
   return code;
 };
 
+python.pythonGenerator.forBlock['model_dl_predict'] = function(block, generator) {
+  // Use model to predict.
+  generator.definitions_['import_logging'] = 'import logging';
+  generator.provideFunction_("tf_set_logger", "logging.getLogger('tensorflow').setLevel(logging.ERROR)");
+  generator.definitions_['import_os'] = 'import os';
+  generator.provideFunction_("tf_cpp_min_log_level", "os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'");
+  const model = generator.valueToCode(block, 'MODEL', generator.ORDER_NONE) || 'None';
+  const x = generator.valueToCode(block, 'X', generator.ORDER_COLLECTION) || '[]';
+  const code = model + '.predict(' + x + ').tolist()';
+  return [code, generator.ORDER_ATOMIC];
+};
+
 python.pythonGenerator.forBlock['model_dl_summary'] = function(block, generator) {
   // Summarize a model.
+  generator.definitions_['import_os'] = 'import os';
+  generator.provideFunction_("tf_cpp_min_log_level", "os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'");
   const model = generator.valueToCode(block, 'MODEL', generator.ORDER_NONE) || 'None';
   const code = model + '.summary()\n';
   return code;

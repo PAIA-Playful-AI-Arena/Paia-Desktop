@@ -436,6 +436,13 @@
         </block>
       </value>
     </block>
+    <block type="model_dl_predict">
+      <value name="MODEL">
+        <block type="variables_get">
+          <field name="VAR" variabletype="Model">{dlModelVariable}</field>
+        </block>
+      </value>
+    </block>
     <block type="model_dl_summary">
       <value name="MODEL">
         <block type="variables_get">

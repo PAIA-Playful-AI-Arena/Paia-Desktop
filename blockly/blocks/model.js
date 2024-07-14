@@ -550,6 +550,27 @@ Blockly.defineBlocksWithJsonArray([
     "style": "model_dl_blocks",
     "tooltip": "設定參數來訓練深度學習模型"
   },
+  // Block for pridicting using deep learning modal.
+  {
+    "type": "model_dl_predict",
+    "message0": "使用 %1 推論 %2 的對應數值",
+    "args0": [
+      {
+        "type": "input_value",
+        "name": "MODEL",
+        "check": "Model"
+      },
+      {
+        "type": "input_value",
+        "name": "X",
+        "check": "Array"
+      }
+    ],
+    "inputsInline": true,
+    "output": "Array",
+    "style": "model_dl_blocks",
+    "tooltip": "%{BKY_MODEL_PREDICT_TOOLTIP}"
+  },
   // Block for summarizing deep learning modal.
   {
     'type': 'model_dl_summary',

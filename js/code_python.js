@@ -303,12 +303,6 @@ Code.init = async function() {
     }
   });
 
-  // Update library dropdown menu
-  const libraryDir = window.path.join(__dirname, 'library', Code.GAME).replace('app.asar', 'app.asar.unpacked');
-  if (!window.fs.existsSync(libraryDir)) {
-    window.fs.mkdirSync(libraryDir, { recursive: true });
-  }
-
   Code.bindClick('show_readme',
       function() {Code.showReadme();});
   Code.bindClick('run_mlgame',
@@ -486,49 +480,6 @@ Code.selectCustomPython = function() {
 Code.saveCustomPython = function() {
   window.python_env.setCustom($("#custom-python-check").prop('checked'), $("#custom-python-path").html());
   $('#custom-python-dialog').modal('hide');
-};
-
-/**
- * Update library dropdown list.
- */
-Code.updateLibraryList = function() {
-  $('#library').empty();
-  let index = 0;
-  let libraryDir = path.join(__dirname, 'examples', Code.GAME, 'python');
-  if (window.fs.existsSync(libraryDir)) {
-    window.fs.readdirSync(libraryDir).forEach(dirent => {
-      const filesetDir = window.path.join(libraryDir, dirent);
-      $('#library').append($(`<a href="#library-${index}" data-toggle="collapse" aria-expanded="false" class="group mt-2" title="${filesetDir}"><i class="bi bi-caret-right-fill pointer mr-1"></i>${dirent}</a>`))
-      const $list = $(`<ul class="collapse list-unstyled" id="library-${index}"></ul>`)
-      $('#library').append($list);
-      index++;
-      window.fs.readdirSync(filesetDir).forEach(file => {
-        if (file.endsWith(".py")) {
-          const filePath = window.path.join(filesetDir, file);
-          $list.append($(`<li class="ml-3 mt-1"><a href="#" id="${filePath}" title="${filePath}">${file}</a></li>`));
-          Code.bindClick(filePath,
-            function() {Code.loadPython(filePath);});
-        }
-      });
-    });
-  }
-
-  libraryDir = window.path.join(__dirname, 'library', Code.GAME).replace('app.asar', 'app.asar.unpacked');
-  window.fs.readdirSync(libraryDir).forEach(dirent => {
-    const filesetDir = window.path.join(libraryDir, dirent);
-    $('#library').append($(`<a href="#library-${index}" data-toggle="collapse" aria-expanded="false" class="group mt-2" title="${filesetDir}"><i class="bi bi-caret-right-fill pointer mr-1"></i>${dirent}</a>`));
-    const $list = $(`<ul class="collapse list-unstyled" id="library-${index}"></ul>`)
-    $('#library').append($list);
-    index++;
-    window.fs.readdirSync(filesetDir).forEach(file => {
-      if (file.endsWith(".py")) {
-        const filePath = window.path.join(filesetDir, file);
-        $list.append($(`<li class="ml-3 mt-1"><a href="#" id="${filePath}" title="${filePath}">${file}</a></li>`));
-        Code.bindClick(filePath,
-          function() {Code.loadPython(filePath);});
-      }
-    });
-  });
 };
 
 /**

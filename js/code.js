@@ -1396,12 +1396,6 @@ Code.init = async function() {
 
   // Overide the length of indent.
   python.pythonGenerator.INDENT = "    ";
-  
-  // Update library dropdown menu
-  const libraryDir = window.path.join(__dirname, 'library', Code.GAME).replace('app.asar', 'app.asar.unpacked');
-  if (!window.fs.existsSync(libraryDir)) {
-    window.fs.mkdirSync(libraryDir, { recursive: true });
-  }
 
   if ('BlocklyStorage' in window) {
     // Hook a save function onto unload.
@@ -1823,51 +1817,6 @@ Code.selectCustomPython = function() {
 Code.saveCustomPython = function() {
   window.python_env.setCustom($("#custom-python-check").prop('checked'), $("#custom-python-path").html());
   $('#custom-python-dialog').modal('hide');
-};
-
-/**
- * Update library dropdown list.
- */
-Code.updateLibraryList = function() {
-  $('#library').empty();
-  let index = 0;
-  let libraryDir = (app.getVersion().indexOf("competition-tn") != -1 && Code.GAME != "easy_game")? 
-    window.path.join(__dirname, 'examples', Code.GAME, 'tainan') :
-    window.path.join(__dirname, 'examples', Code.GAME, 'xml');
-  if (window.fs.existsSync(libraryDir)) {
-    window.fs.readdirSync(libraryDir).forEach(dirent => {
-      const filesetDir = window.path.join(libraryDir, dirent);
-      $('#library').append($(`<a href="#library-${index}" data-toggle="collapse" aria-expanded="false" class="group mt-2" title="${filesetDir}"><i class="bi bi-caret-right-fill pointer mr-1"></i>${dirent}</a>`))
-      const $list = $(`<ul class="collapse list-unstyled" id="library-${index}"></ul>`)
-      $('#library').append($list);
-      index++;
-      window.fs.readdirSync(filesetDir).forEach(file => {
-        if (file.endsWith(".xml")) {
-          const filePath = window.path.join(filesetDir, file);
-          $list.append($(`<li class="ml-3 mt-1"><a href="#" id="${filePath}" title="${filePath}">${file}</a></li>`));
-          Code.bindClick(filePath,
-            function() {Code.loadXml(filePath); Code.renderContent();});
-        }
-      });
-    });
-  }
-
-  libraryDir = window.path.join(__dirname, 'library', Code.GAME).replace('app.asar', 'app.asar.unpacked');
-  window.fs.readdirSync(libraryDir).forEach(dirent => {
-    const filesetDir = window.path.join(libraryDir, dirent);
-    $('#library').append($(`<a href="#library-${index}" data-toggle="collapse" aria-expanded="false" class="group mt-2" title="${filesetDir}"><i class="bi bi-caret-right-fill pointer mr-1"></i>${dirent}</a>`));
-    const $list = $(`<ul class="collapse list-unstyled" id="library-${index}"></ul>`)
-    $('#library').append($list);
-    index++;
-    window.fs.readdirSync(filesetDir).forEach(file => {
-      if (file.endsWith(".xml")) {
-        const filePath = window.path.join(filesetDir, file);
-        $list.append($(`<li class="ml-3 mt-1"><a href="#" id="${filePath}" title="${filePath}">${file}</a></li>`));
-        Code.bindClick(filePath,
-          function() {Code.loadXml(filePath); Code.renderContent();});
-      }
-    });
-  });
 };
 
 /**

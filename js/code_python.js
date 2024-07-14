@@ -395,7 +395,7 @@ Code.initLanguage = function() {
  * Initialize dialog body for selecting game arguments.
  */
 Code.initGameArgs = function() {
-  const config = JSON.parse(window.file.read(window.path.join(__dirname, 'games', Code.GAME, 'game_config.json').replace('app.asar', 'app.asar.unpacked')));
+  const config = JSON.parse(window.file.read(window.path.join(window.app.getUserData(), 'games', Code.GAME, 'game_config.json')));
   const $div = $('<div class="m-2"></div>')
   $div.append('<div class="form-group"><label>每秒顯示張數 (FPS)</label><input type="number" class="form-control", id="game_fps", min="1", max="300", step="1", value="30", data-bind="value:replyNumber"></div>');
   const userNumConfig = config['user_num'];
@@ -442,7 +442,7 @@ Code.initGameArgs = function() {
 Code.selectParamPath = function(paramId) {
   const paramPath = window.path.select({
     title: "選擇檔案",
-    defaultPath: ($(`#${paramId}`).val() !== "")? $(`#${paramId}`).val() : window.path.join(__dirname, 'games', Code.GAME).replace('app.asar', 'app.asar.unpacked'),
+    defaultPath: ($(`#${paramId}`).val() !== "")? $(`#${paramId}`).val() : window.path.join(window.app.getUserData(), 'games', Code.GAME),
     properties: ["openFile"]
   });
   if (paramPath !== undefined) {
@@ -853,21 +853,21 @@ Code.play = function() {
   const params = {};
   for (let i = 0; i < args_elements.length; i++) {
     const e = args_elements[i];
-    args.push(`--${e.id.replace('param-', '')}`);
     if (e.tagName == "SELECT") {
       const value = e.options[e.selectedIndex].getAttribute("value");
+      args.push(`--${e.id.replace('param-', '')}`);
       args.push(value);
       params[e.id] = value;
-    } else {
+    } else if (e.value !== "") {
+      args.push(`--${e.id.replace('param-', '')}`);
       args.push(e.value);
-      params[e.id] = e.value;
     }
   }
   let total_args = [];
   for (let i = 0; i < user_num; i++) {
     total_args = total_args.concat(['-i', file_name])
   }
-  total_args = total_args.concat(['-f', fps, window.path.join(__dirname, 'games', Code.GAME).replace('app.asar', 'app.asar.unpacked')]).concat(args);
+  total_args = total_args.concat(['-f', fps, window.path.join(window.app.getUserData(), 'games', Code.GAME)]).concat(args);
   const python_path = window.path.join(__dirname, 'python', 'dist', 'interpreter', 'interpreter').replace('app.asar', 'app.asar.unpacked');
   const options = {
     mode: 'text',
@@ -907,7 +907,7 @@ Code.execute = function() {
 };
 
 Code.showReadme = function() {
-  const readme_path = window.path.join(__dirname, 'games', Code.GAME, 'README.md').replace('app.asar', 'app.asar.unpacked');
+  const readme_path = window.path.join(window.app.getUserData(), 'games', Code.GAME, 'README.md');
   const readme_text = window.file.read(readme_path);
   const readme = window.markdown.convert(readme_text);
   $('#readme-body').html(readme);

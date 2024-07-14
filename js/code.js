@@ -1532,7 +1532,7 @@ Code.initLanguage = function() {
  * Initialize dialog body for selecting game arguments.
  */
 Code.initGameArgs = function() {
-  const config = JSON.parse(window.file.read(window.path.join(__dirname, 'games', Code.GAME, 'game_config.json').replace('app.asar', 'app.asar.unpacked')));
+  const config = JSON.parse(window.file.read(window.path.join(window.app.getUserData(), 'games', Code.GAME, 'game_config.json')));
   const $div = $('<div class="m-2"></div>')
   $div.append('<div class="form-group"><label>每秒顯示張數 (FPS)</label><input type="number" class="form-control", id="game_fps", min="1", max="300", step="1", value="30", data-bind="value:replyNumber"></div>');
   const userNumConfig = config['user_num'];
@@ -1579,7 +1579,7 @@ Code.initGameArgs = function() {
 Code.selectParamPath = function(paramId) {
   const paramPath = window.path.select({
     title: "選擇檔案",
-    defaultPath: ($(`#${paramId}`).val() !== "")? $(`#${paramId}`).val() : window.path.join(__dirname, 'games', Code.GAME).replace('app.asar', 'app.asar.unpacked'),
+    defaultPath: ($(`#${paramId}`).val() !== "")? $(`#${paramId}`).val() : window.path.join(window.app.getUserData(), 'games', Code.GAME),
     properties: ["openFile"]
   });
   if (paramPath !== undefined) {
@@ -1605,7 +1605,7 @@ Code.initMlgameBlocks = function() {
   block.setAttribute("type", "mlplay_class");
   mlgameCat.appendChild(block);
   
-  const configPath = window.path.join(__dirname, 'games', Code.GAME, 'blockly.json').replace('app.asar', 'app.asar.unpacked');
+  const configPath = window.path.join(window.app.getUserData(), 'games', Code.GAME, 'blockly.json');
   if (window.fs.existsSync(configPath)) {
     const gameOptions = JSON.parse(window.file.read(configPath));
     const reservedWords = ['MLPlay', 'self', 'scene_info', 'keyboard', 'args', 'kwargs', 'os', 'cmath', 'csv', 'plt', 'pickle', 'pygame', 'neighbors', 'tree', 'svm', 'ensemble', 'neural_network', 'linear_model', 'metrics', 'model_selection', 'keras', 'QLearning', 'MDPInfo', 'Discrete', 'EpsGreedy', 'Parameter', 'SARSA', 'arrays_as_dataset'];
@@ -1628,7 +1628,7 @@ Code.initMlgameBlocks = function() {
       mlgameCat.appendChild(block);
     }
 
-    const gameConfigPath = window.path.join(__dirname, 'games', Code.GAME, 'game_config.json').replace('app.asar', 'app.asar.unpacked');
+    const gameConfigPath = window.path.join(window.app.getUserData(), 'games', Code.GAME, 'game_config.json');
     if (window.fs.existsSync(gameConfigPath)) {
       const options = [];
       for (var params of JSON.parse(window.file.read(gameConfigPath)).game_params) {
@@ -2297,7 +2297,7 @@ Code.play = function() {
   for (let i = 0; i < user_num; i++) {
     total_args = total_args.concat(['-i', file_name])
   }
-  total_args = total_args.concat(['-f', fps, window.path.join(__dirname, 'games', Code.GAME).replace('app.asar', 'app.asar.unpacked')]).concat(args);
+  total_args = total_args.concat(['-f', fps, window.path.join(window.app.getUserData(), 'games', Code.GAME)]).concat(args);
   const python_path = window.path.join(__dirname, 'python', 'dist', 'interpreter', 'interpreter').replace('app.asar', 'app.asar.unpacked');
   const options = {
     mode: 'text',
@@ -2337,7 +2337,7 @@ Code.execute = function() {
 };
 
 Code.showReadme = function() {
-  const readme_path = window.path.join(__dirname, 'games', Code.GAME, 'README.md').replace('app.asar', 'app.asar.unpacked');
+  const readme_path = window.path.join(window.app.getUserData(), 'games', Code.GAME, 'README.md');
   const readme_text = window.file.read(readme_path);
   const readme = window.markdown.convert(readme_text);
   $('#readme-body').html(readme);

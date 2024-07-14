@@ -272,6 +272,10 @@ ipcMain.on('getVersion', (event) => {
   event.returnValue = app.getVersion();
 });
 
+ipcMain.on('getUserData', (event) => {
+  event.returnValue = app.getPath("userData");
+});
+
 ipcMain.on('fixFocus', () => {
   mainWindow.blur();
   mainWindow.focus();

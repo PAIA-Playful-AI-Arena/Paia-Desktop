@@ -217,7 +217,7 @@
   }
   async function update_game_list() {
     $('#game_list').empty();
-    const gameListDir = window.path.join(window.path.__dirname(), 'games').replace('app.asar', 'app.asar.unpacked');
+    const gameListDir = window.path.join(window.app.getUserData(), 'games');
     if (!window.fs.existsSync(gameListDir))
       window.fs.mkdirSync(gameListDir);
     const games = await window.paia.game();
@@ -267,7 +267,7 @@
     if (!game.ok) {
       return;
     }
-    const configPath = window.path.join(window.path.__dirname(), 'games', game.content.name, 'game_config.json').replace('app.asar', 'app.asar.unpacked');
+    const configPath = window.path.join(window.app.getUserData(), 'games', game.content.name, 'game_config.json');
     let gameConfig = null;
     let version = game.content.release[0];
     if (window.fs.existsSync(configPath))
@@ -364,7 +364,6 @@
     $('#my-games-list').empty();
     const games = await window.paia.game();
     if (games.ok) {
-      // const gameListDir = window.path.join(window.path.__dirname(), 'games').replace('app.asar', 'app.asar.unpacked');
       games.content.forEach(config => {
         const logoPath = (config.logo !== undefined)? config.logo : "media/paia-owl.png";
         const gameName = (config.name !== undefined)? config.name : "unknown";
@@ -469,7 +468,7 @@
     }
   };
   function git_download(game, url, version) {
-    const gameDir = window.path.join(window.path.__dirname(), 'games', game).replace('app.asar', 'app.asar.unpacked');
+    const gameDir = window.path.join(window.app.getUserData(), 'games', game);
     const data = url.substring(url.indexOf("github.com") + 11).replace(".git", "").split('/');
     const owner = data[0];
     const repo = data[1];

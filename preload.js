@@ -92,6 +92,9 @@ contextBridge.exposeInMainWorld('markdown', {
 contextBridge.exposeInMainWorld('app', {
   getVersion: () => {
     return ipcRenderer.sendSync('getVersion');
+  },
+  getUserData: () => {
+    return ipcRenderer.sendSync('getUserData');
   }
 });
 contextBridge.exposeInMainWorld('popup', {

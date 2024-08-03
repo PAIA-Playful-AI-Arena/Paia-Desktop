@@ -2188,6 +2188,14 @@ Code.savePython = function() {
  * Show dialog for playing or run the code. 
  */
 Code.run = async function() {
+  // Check running
+  if (window.python_env.isRunning()) {
+    if (window.popup.confirm("已有程式正在執行，是否強制中止目前執行的程式？")) {
+      window.python_env.stop();
+    }
+    return;
+  }
+  
   // Check trial
   if (Code.ID > 0) {
     const permission = await window.paia.gamePermission(Code.ID);
@@ -3014,6 +3022,8 @@ window.lang.onChange((e, lang) => {
   Code.changeLanguage(lang);
 });
 window.onbeforeunload = (e) => {
+  if (window.python_env.isRunning())
+    window.python_env.stop();
   if (Code.FOCUSED_FILE != '')
     Code.saveXml(Code.FOCUSED_FILE);
 }

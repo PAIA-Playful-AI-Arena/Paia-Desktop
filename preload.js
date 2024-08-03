@@ -9,6 +9,7 @@ const Store = require('electron-store');
 const dateformat = require('dateformat');
 const download = require('download-git-repo');
 const showdown = require('showdown');
+const kill = require('tree-kill');
 const { v4: uuid4 } = require('uuid');
 const { machineIdSync } = require('node-machine-id');
 const { BlockBlobClient } = require('@azure/storage-blob');
@@ -51,6 +52,7 @@ const session_id = uuid4();
 let access_token = "";
 let time = new Date().getTime();
 let user_id = "";
+let python = null;
 
 contextBridge.exposeInMainWorld('deeplink', {
   onLogin: (callback) => ipcRenderer.on('login', callback)
@@ -110,7 +112,7 @@ contextBridge.exposeInMainWorld('python_env', {
     const old_cwd = process.cwd();
     process.chdir(cwd);
     document.getElementById(`group-${group}-state`).src = "media/state-unexecuted.svg";
-    let python = new PythonShell(script, options);
+    python = new PythonShell(script, options);
     var error = false;
     python.on('message', function (message) {
       const full_message = document.getElementById('content_console').textContent + message + '\n';
@@ -153,7 +155,11 @@ contextBridge.exposeInMainWorld('python_env', {
     });
   },
   stop: () => {
-
+    if (python !== null && !python.terminated)
+      kill(python.childProcess.pid);
+  },
+  isRunning: () => {
+    return python !== null && !python.terminated;
   },
   getCustom: () => {
     return {

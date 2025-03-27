@@ -8,14 +8,14 @@ Pre-built installers of latest release can be downloaded from the links below.
 
 ### Windows 64-bit
 
-[![](https://img.shields.io/badge/EXE%20Installer-v3.1.0--beta.0-blue)](https://github.com/PAIA-Playful-AI-Arena/Paia-Desktop/releases/download/v3.1.0-beta.0/PAIA.Desktop-3.1.0-beta.0.Setup.exe)
+[![](https://img.shields.io/badge/EXE%20Installer-v3.2.0-blue)](https://github.com/PAIA-Playful-AI-Arena/Paia-Desktop/releases/download/v3.2.0/PAIA.Desktop-3.2.0.Setup.exe)
 
 ### macOS 64-bit
 
 ##### Intel (x64)
 
-[![](https://img.shields.io/badge/DMG%20Installer-v3.1.0--beta.0-red)](https://github.com/PAIA-Playful-AI-Arena/Paia-Desktop/releases/download/v3.1.0-beta.0/PAIA.Desktop-3.1.0-beta.0-x64.dmg)
+[![](https://img.shields.io/badge/DMG%20Installer-v3.2.0-red)](https://github.com/PAIA-Playful-AI-Arena/Paia-Desktop/releases/download/v3.2.0/PAIA.Desktop-3.2.0-x64.dmg)
 
 ##### Apple Silicon (Arm64)
 
-[![](https://img.shields.io/badge/DMG%20Installer-v3.1.0--beta.0-red)](https://github.com/PAIA-Playful-AI-Arena/Paia-Desktop/releases/download/v3.1.0-beta.0/PAIA.Desktop-3.1.0-beta.0-arm64.dmg)
+[![](https://img.shields.io/badge/DMG%20Installer-v3.2.0-red)](https://github.com/PAIA-Playful-AI-Arena/Paia-Desktop/releases/download/v3.2.0/PAIA.Desktop-3.2.0-arm64.dmg)

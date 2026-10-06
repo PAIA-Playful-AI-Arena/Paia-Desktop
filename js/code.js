@@ -1197,7 +1197,35 @@ Code.saveTmpPython = function(dir) {
 };
 
 /**
- * Let user select the path to a python file and save to it. 
+ * Find the installed mlgame's version.py for a custom python interpreter.
+ * Tries the Windows (Lib/site-packages) and POSIX (lib/python<X.Y>/site-packages)
+ * layouts, returning the first candidate that exists. Falls back to the Windows
+ * layout to preserve the previous behaviour.
+ */
+Code.findCustomMlgameVerPath = function(customPythonPath) {
+  const binDir = window.path.dirname(customPythonPath);
+  const candidates = [
+    window.path.join(binDir, 'Lib', 'site-packages', 'mlgame', 'version.py'),
+    window.path.join(binDir, 'lib', 'site-packages', 'mlgame', 'version.py')
+  ];
+  const posixLibDir = window.path.join(binDir, '..', 'lib');
+  if (window.fs.existsSync(posixLibDir)) {
+    for (const entry of window.fs.readdirSync(posixLibDir)) {
+      if (/^python\d/.test(entry)) {
+        candidates.push(window.path.join(posixLibDir, entry, 'site-packages', 'mlgame', 'version.py'));
+      }
+    }
+  }
+  for (const candidate of candidates) {
+    if (window.fs.existsSync(candidate)) {
+      return candidate;
+    }
+  }
+  return candidates[0];
+};
+
+/**
+ * Let user select the path to a python file and save to it.
  */
 Code.savePython = function() {
   const pythonPath = window.path.save({
@@ -1212,8 +1240,8 @@ Code.savePython = function() {
   } else {
     const pythonText = python.pythonGenerator.workspaceToCode(Code.workspace);
     const state = window.python_env.getCustom();
-    const mlgameVerPath = (state.custom_python)? 
-      window.path.join(window.path.dirname(state.custom_python_path), 'Lib', 'site-packages', 'mlgame', 'version.py') :
+    const mlgameVerPath = (state.custom_python)?
+      Code.findCustomMlgameVerPath(state.custom_python_path) :
       window.path.join(__dirname, 'python', 'dist', 'interpreter', 'mlgame', 'version.py').replace('app.asar', 'app.asar.unpacked');
     const mlgameVerStr = (window.fs.existsSync(mlgameVerPath))? window.file.read(mlgameVerPath) : "version = unknown";
     const mlgameVer = (mlgameVerStr.match(/version\s*==*\s*"([\w.]*)"/) || ['', 'unknown'])[1];
